@@ -1,0 +1,76 @@
+export interface Fabric {
+  key: string; // → /assets/images/fabric-<key>.webp (optional photo; a textured placeholder shows without it)
+  name: string;
+  gsmNum: number;
+  gsmRange: string;
+  warmth: 1 | 2 | 3 | 4 | 5;
+  note: string;
+  feel: string;
+  bestFor: string;
+  icon: string;
+}
+
+// Only the fabrics we actually use across hoodies, jackets, trousers and t-shirts.
+export const fabrics: Fabric[] = [
+  { key: "fleece", name: "Heavyweight Fleece", gsmNum: 450, gsmRange: "380–450 GSM", warmth: 5, icon: "fleece", feel: "Dense, brushed, substantial", bestFor: "Hoodies for deep cold",
+    note: "A tight-knit organic cotton face with a deep, brushed interior. It holds its shape on the hanger and traps warmth against the body." },
+  { key: "terry", name: "French Terry", gsmNum: 320, gsmRange: "300–340 GSM", warmth: 3, icon: "terry", feel: "Looped, breathable, light", bestFor: "Crisp days, heated rooms",
+    note: "Smooth on the outside, soft loops on the inside. Wicks moisture and breathes, so it stays comfortable from morning to evening." },
+  { key: "faux-leather", name: "Faux Leather", gsmNum: 320, gsmRange: "300–340 GSM", warmth: 3, icon: "needle", feel: "Supple, glossy, wind-proof", bestFor: "Biker and varsity jackets",
+    note: "A soft polyurethane coating on a knit backing. It drapes and creases like the real thing, blocks the wind, and is entirely animal-free." },
+  { key: "wool", name: "Wool & Tweed", gsmNum: 420, gsmRange: "260–420 GSM", warmth: 4, icon: "sherpa", feel: "Textured, warm, long-lasting", bestFor: "Trousers, varsity bodies, tailoring",
+    note: "Wool-blend twill and Scottish-spun tweed. They hold a crease, breathe naturally and get better with age." },
+  { key: "linen", name: "European Linen", gsmNum: 190, gsmRange: "180–200 GSM", warmth: 1, icon: "leaf", feel: "Airy, crisp, relaxed", bestFor: "Drawstring trousers, warm rooms",
+    note: "Flax from Europe, pre-washed until soft. Linen breathes and dries quickly, and the creases are part of the charm." },
+  { key: "cotton-jersey", name: "Cotton Jersey", gsmNum: 280, gsmRange: "220–280 GSM", warmth: 2, icon: "cotton", feel: "Smooth, heavy, easy", bestFor: "T-shirts, layering",
+    note: "Combed long-staple cotton knitted into a heavyweight jersey or a fine rib. Pre-shrunk and garment-washed, so it keeps its shape." },
+  { key: "knit", name: "Textured Knit", gsmNum: 240, gsmRange: "220–260 GSM", warmth: 2, icon: "fleece", feel: "Honeycomb, soft, tidy", bestFor: "Polos, smart-casual",
+    note: "A cotton-viscose honeycomb knit with a soft hand and a clean drape. Smarter than a tee, easier than a shirt." },
+];
+
+export const whyUs = [
+  { title: "Quality that lasts", text: "Double-needle seams, pre-shrunk cloth and bartacked stress points. Made to outlive trends.", icon: "needle" },
+  { title: "Honest sustainability", text: "Organic and recycled fibres, vegan leather, water-based dyes, and limited runs to avoid waste.", icon: "leaf" },
+  { title: "Sizing that works", text: "A size chart for every category, true-to-size fits and free exchanges on the first swap.", icon: "ruler" },
+  { title: "Delivery & returns", text: "Free shipping over $150. Ships in 24h. 30-day free returns, no questions.", icon: "box" },
+] as const;
+
+export interface Review { id: string; name: string; product: string; rating: number; text: string; likes: number; avatar: number }
+export const reviews: Review[] = [
+  { id: "r1", name: "Amira K.", product: "Cloud Puffer", rating: 5, likes: 42, avatar: 1, text: "Light as air and genuinely warm. The cream shine photographs beautifully and looks even better in person." },
+  { id: "r2", name: "Daniel R.", product: "Nordic Drift", rating: 5, likes: 31, avatar: 2, text: "Perfect boxy fit. The fabric has real weight, you can feel the quality." },
+  { id: "r3", name: "Sana M.", product: "Glacier Haze", rating: 4, likes: 18, avatar: 3, text: "The pastel is gorgeous in person. Runs slightly roomy, I sized down." },
+  { id: "r4", name: "Lukas H.", product: "Noir Biker", rating: 5, likes: 27, avatar: 4, text: "I would never have guessed it's faux leather. Slim cut, great zips, and it only needed a day to soften." },
+  { id: "r5", name: "Noor A.", product: "Regent Trench", rating: 5, likes: 23, avatar: 5, text: "Stone beige is exactly like the photos. Beautiful drape, and it kept me dry through a week of rain." },
+  { id: "r6", name: "Tariq S.", product: "Milan Pleat", rating: 4, likes: 15, avatar: 6, text: "Wide leg, high waist, and a lovely wool feel. Delivery was faster than promised." },
+];
+
+export const faqs = [
+  { q: "How do your pieces fit?", a: "Each product page lists its fit. Oversized pieces (Nordic Drift, Cloud Puffer, Drop Tee, Acid Wash Tee) are cut generously, so size down for a regular fit. Slim pieces (Noir Biker, Savile Slim, Rib Slim Tee) are close-fitting." },
+  { q: "How long does delivery take?", a: "Domestic orders arrive in 2–4 working days. International orders take 5–10 working days. Orders over $150 ship free." },
+  { q: "What is your return policy?", a: "Free returns within 30 days on unworn items with tags. Your first size exchange is always free." },
+  { q: "How should I care for my pieces?", a: "Cotton fleece, terry and jersey: wash cold, inside out, tumble dry low. Wool and tweed: dry clean or hand wash cold and dry flat. Faux leather: wipe clean with a damp cloth. Linen: wash cold and line dry." },
+  { q: "Is the leather real?", a: "No. The Noir Biker and the Campus Varsity sleeves are vegan faux leather: a polyurethane coating on a knit backing." },
+  { q: "Do you ship internationally?", a: "Yes. We ship worldwide with PayPal and Stripe for international payments. Duties may apply depending on your country." },
+  { q: "Which payment methods do you accept?", a: "Cash on delivery, cards, mobile wallets such as JazzCash and Easypaisa, and PayPal or Stripe for customers abroad." },
+];
+
+// Winter Essentials reuses the collection photos (`color` is an index into the product's colours).
+export const lookbook = [
+  { title: "Slow Mornings", slug: "nordic-drift", color: 3 },
+  { title: "First Frost", slug: "glacier-haze", color: 0 },
+  { title: "Long Dusk", slug: "midnight-ember", color: 0 },
+  { title: "Desert Hour", slug: "aurora-peak", color: 1 },
+  { title: "Deep Cold", slug: "cloud-puffer", color: 0 },
+  { title: "City Lights", slug: "regent-trench", color: 0 },
+  { title: "After Dark", slug: "noir-biker", color: 0 },
+];
+
+export const storyLines = [
+  "We make fewer things,",
+  "and we make them heavier,",
+  "softer and longer-lasting.",
+  "A good piece is the first thing",
+  "you reach for in winter",
+  "and the last you ever replace.",
+];

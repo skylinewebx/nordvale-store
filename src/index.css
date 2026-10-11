@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }
+#root { overflow-x: clip; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+body {
+  @apply bg-snow text-ink font-sans font-light antialiased;
+  font-size: 15px;
+  line-height: 1.65;
+}
+h1, h2, h3 { @apply font-display font-light; letter-spacing: -0.01em; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 1px solid #1c1c1e; outline-offset: 3px; }
+
+.hair { border-color: rgba(28, 28, 30, 0.14); }
+.eyebrow { @apply text-[10px] uppercase text-stone font-light; letter-spacing: 0.22em; }
+.btn {
+  @apply inline-flex items-center justify-center min-h-[48px] px-8 text-[11px] uppercase font-light border border-ink transition-colors duration-300;
+  letter-spacing: 0.2em;
+}
+.btn-solid { @apply bg-ink text-snow hover:bg-transparent hover:text-ink; }
+.btn-line { @apply bg-transparent text-ink hover:bg-ink hover:text-snow; }
+.btn:disabled { @apply opacity-40 pointer-events-none; }
+.field {
+  @apply w-full bg-transparent border-0 border-b hair py-3 min-h-[48px] text-[14px] font-light outline-none transition-colors;
+  border-bottom-width: 1px; border-radius: 0;
+}
+.field:focus { border-color: #1c1c1e; }
+.field.err { border-color: #a8623c; }
+.wrap { @apply mx-auto w-full px-5 md:px-10; max-width: 1360px; }
+.link-u { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.4s; }
+.link-u:hover { background-size: 100% 1px; }
+
+/* Skeleton shimmer: transform-only, so it stays on the compositor */
+.skeleton { background: #e9e5de; overflow: hidden; }
+.skeleton::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.55) 50%, transparent 80%);
+  transform: translateX(-100%); animation: shimmer 1.6s ease-in-out infinite;
+}
+@keyframes shimmer { to { transform: translateX(100%); } }
+
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+@keyframes heroSpin { to { transform: rotate(360deg); } }
+@keyframes hintPulse { 0%, 100% { transform: scaleY(0.3); opacity: 0.4; } 50% { transform: scaleY(1); opacity: 1; } }
