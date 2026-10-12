@@ -64,7 +64,7 @@ export default function HeroDismantle({ active }: { active: boolean }) {
       <div ref={stage} className="relative" style={{ aspectRatio: String(ratio), height: "100%", maxWidth: "min(94vw, 900px)", maxHeight: "100%" }} role="img" aria-label="A black Nordvale hoodie assembling from separate pieces">
         <div ref={shadow} className="absolute left-[8%] right-[8%] -bottom-[4%] h-[8%] rounded-[50%] bg-black/45 blur-2xl" aria-hidden="true" />
         {ORDER.map((k) => (
-          <img key={k} ref={(el) => { els.current[k] = el; }} src={`/assets/hero/parts/${k}.webp`} alt="" draggable={false} decoding="async" fetchPriority="high"
+          <img key={k} ref={(el) => { els.current[k] = el; }} src={`${import.meta.env.BASE_URL}assets/hero/parts/${k}.webp`} alt="" draggable={false} decoding="async" fetchPriority="high"
             className="absolute select-none pointer-events-none" style={{ left: `${PARTS[k].x}%`, top: `${PARTS[k].y}%`, width: `${PARTS[k].w}%`, height: `${PARTS[k].h}%`, willChange: "transform" }} />
         ))}
       </div>

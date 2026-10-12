@@ -2,11 +2,11 @@
 // THE ONLY ASSETS THE SITE USES (14 files). Drop them into /public/assets with these exact names.
 // Anything missing falls back to a built-in placeholder. See ASSETS.md for sizes and prompts.
 // ─────────────────────────────────────────────────────────────
-const IMG = "/assets/images";
+const IMG = import.meta.env.BASE_URL + "assets/images";
 
 export const P = {
-  heroVideo: "/assets/hero/hoodie-assembly.mp4", // scroll-scrubbed assembly clip of the featured hoodie
-  heroStatic: "/assets/hero/hoodie-static.webp", // assembled hoodie: iOS, low-end and reduced-motion fallback
+  heroVideo: import.meta.env.BASE_URL + "assets/hero/hoodie-assembly.mp4", // scroll-scrubbed assembly clip of the featured hoodie
+  heroStatic: import.meta.env.BASE_URL + "assets/hero/hoodie-static.webp", // assembled hoodie: iOS, low-end and reduced-motion fallback
   story: `${IMG}/story.webp`,
   fabric: (key: string) => `${IMG}/fabric-${key}.webp`,
   /** ONE neutral-grey photo per hoodie. Every colour is tinted from it in code. */

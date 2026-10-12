@@ -43,7 +43,7 @@ self.addEventListener("fetch", (e) => {
 
   if (req.mode === "navigate" || url.pathname.endsWith("/manifest.json")) {
     e.respondWith(networkFirst(req, PAGE));
-  } else if (url.pathname.startsWith("/assets/products/") && /\.(webp|jpg|jpeg|png|avif)$/i.test(url.pathname)) {
+  } else if (url.pathname.includes("/assets/products/") && /\.(webp|jpg|jpeg|png|avif)$/i.test(url.pathname)) {
     e.respondWith(staleWhileRevalidate(req, IMG));
   }
   // videos (range requests) and everything else: browser default

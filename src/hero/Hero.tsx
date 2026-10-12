@@ -35,7 +35,7 @@ export default function Hero() {
   useEffect(() => {
     (async () => {
       const q = new URLSearchParams(location.search).get("hero");
-      const [vid, stat, parts] = await Promise.all([assetExists(P.heroVideo), assetExists(P.heroStatic), assetExists("/assets/hero/parts/body.webp")]);
+      const [vid, stat, parts] = await Promise.all([assetExists(P.heroVideo), assetExists(P.heroStatic), assetExists(import.meta.env.BASE_URL + "assets/hero/parts/body.webp")]);
       setHasStatic(stat);
       const lite = reduced || veryLowEnd() || isIOS() || saveData();
       let m: Mode = "webgl";

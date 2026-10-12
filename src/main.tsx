@@ -12,14 +12,14 @@ loadCatalog();
 
 // Service worker: production only. In development, remove any registered worker and its caches so stale files never hide changes.
 if ("serviceWorker" in navigator) {
-  if (import.meta.env.PROD) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+  if (import.meta.env.PROD) window.addEventListener("load", () => navigator.serviceWorker.register(import.meta.env.BASE_URL + "sw.js").catch(() => {}));
   else { navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())); caches?.keys().then((ks) => ks.filter((k) => k.startsWith("nv-")).forEach((k) => caches.delete(k))); }
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <LazyMotion features={() => import("./lib/motionFeatures").then((r) => r.default)} strict>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
         <App />
       </BrowserRouter>
     </LazyMotion>

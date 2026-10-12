@@ -9,9 +9,9 @@ interface Cat { items: Record<string, CatItem>; loaded: boolean }
 const inlined = (window as unknown as { __PRODUCTS__?: { items?: Record<string, CatItem> } }).__PRODUCTS__;
 export const useCatalog = create<Cat>(() => ({ items: inlined?.items ?? {}, loaded: !!inlined }));
 
-export const cardUrl = (key: string, it: CatItem) => `/assets/products/${key}-card.webp?v=${it.v}`;
-export const detailUrl = (key: string, it: CatItem) => `/assets/products/${key}.webp?v=${it.v}`;
-export const videoUrl = (key: string, it: CatItem) => `/assets/products/${key}.mp4?v=${it.vv ?? "1"}`;
+export const cardUrl = (key: string, it: CatItem) => `${import.meta.env.BASE_URL}assets/products/${key}-card.webp?v=${it.v}`;
+export const detailUrl = (key: string, it: CatItem) => `${import.meta.env.BASE_URL}assets/products/${key}.webp?v=${it.v}`;
+export const videoUrl = (key: string, it: CatItem) => `${import.meta.env.BASE_URL}assets/products/${key}.mp4?v=${it.vv ?? "1"}`;
 
 export const saveData = () => !!(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
 const slowNet = () => /(^|-)2g$/.test((navigator as Navigator & { connection?: { effectiveType?: string } }).connection?.effectiveType ?? "");
@@ -22,7 +22,7 @@ export const catalogReady = new Promise<void>((r) => (readyRes = r));
 export async function loadCatalog() {
   if (useCatalog.getState().loaded) { readyRes(); return; }
   try {
-    const r = await fetch("/assets/products/manifest.json", { cache: "no-cache" });
+    const r = await fetch(import.meta.env.BASE_URL + "assets/products/manifest.json", { cache: "no-cache" });
     const j = r.ok ? await r.json() : null; // no content-type check: some hosts serve .json oddly
     useCatalog.setState({ items: j?.items ?? {}, loaded: true });
   } catch { useCatalog.setState({ loaded: true }); }

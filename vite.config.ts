@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
 
+const BASE = process.env.BASE || "/";
 const WEB = /\.(webp|avif|jpe?g|png|svg|glb|gltf|mp4|webm)$/i;
 
 function walk(dir: string, out: string[] = []) {
@@ -17,7 +18,7 @@ function walk(dir: string, out: string[] = []) {
 // Serves/emits /assets/manifest.json: the list of files that actually exist in public/assets.
 function assetManifest(): Plugin {
   const publicDir = path.resolve("public");
-  const build = () => JSON.stringify({ generated: new Date().toISOString(), files: walk(path.join(publicDir, "assets")).map((p) => "/" + path.relative(publicDir, p).split(path.sep).join("/")) });
+  const build = () => JSON.stringify({ generated: new Date().toISOString(), files: walk(path.join(publicDir, "assets")).map((p) => BASE + path.relative(publicDir, p).split(path.sep).join("/")) });
   return {
     name: "asset-manifest",
     // Inline the product manifest (sizes, LQIP, hashes) into the HTML: zero extra request, images know their size and blur on first paint.
@@ -28,7 +29,7 @@ function assetManifest(): Plugin {
       return html.replace("</head>", `<script>window.__PRODUCTS__=${data}</script></head>`);
     },
     configureServer(server) {
-      server.middlewares.use("/assets/manifest.json", (_req, res) => {
+      server.middlewares.use(BASE + "assets/manifest.json", (_req, res) => {
         res.setHeader("Content-Type", "application/json"); res.setHeader("Cache-Control", "no-store"); res.end(build());
       });
     },
@@ -41,6 +42,7 @@ function assetManifest(): Plugin {
 }
 
 export default defineConfig({
+  base: BASE,
   plugins: [react(), assetManifest()],
   build: {
     rollupOptions: {

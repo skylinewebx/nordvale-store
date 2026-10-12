@@ -11,7 +11,7 @@ export const manifestReady = new Promise<void>((r) => (done = r));
 
 export async function loadManifest() {
   try {
-    const r = await fetch("/assets/manifest.json", { cache: "no-cache" });
+    const r = await fetch(import.meta.env.BASE_URL + "assets/manifest.json", { cache: "no-cache" });
     if (r.ok && (r.headers.get("content-type") ?? "").includes("json")) {
       const j = await r.json();
       useManifest.setState({ files: new Set<string>(j.files), loaded: true });
