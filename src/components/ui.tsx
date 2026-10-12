@@ -63,7 +63,7 @@ export function Overlay({ open, onClose, side, label, children, z = 70 }: { open
   }, [open, onClose]);
   return (
     <>
-      <m.div className="fixed inset-0 bg-ink/30" style={{ zIndex: z, pointerEvents: open ? "auto" : "none" }} initial={false} animate={open ? { opacity: 1, visibility: "visible" } : { opacity: 0, transitionEnd: { visibility: "hidden" } }} transition={{ duration: 0.4 }} onClick={onClose} aria-hidden="true" />
+      <m.div className="fixed inset-0 bg-black/60" style={{ zIndex: z, pointerEvents: open ? "auto" : "none" }} initial={false} animate={open ? { opacity: 1, visibility: "visible" } : { opacity: 0, transitionEnd: { visibility: "hidden" } }} transition={{ duration: 0.4 }} onClick={onClose} aria-hidden="true" />
       <m.div
         ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-label={label} aria-hidden={!open}
         className={side === "right" ? "fixed top-0 right-0 h-[100dvh] w-full sm:w-[440px] bg-snow outline-none flex flex-col" : "fixed inset-0 md:inset-8 bg-snow outline-none overflow-hidden flex flex-col"}

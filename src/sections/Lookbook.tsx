@@ -5,19 +5,21 @@ import { ProductImage } from "../components/ProductImage";
 import { lookbook } from "../data/content";
 import { getProduct } from "../data/products";
 import { useStore } from "../store/useStore";
+import { useTilt } from "../lib/tilt";
 
 // Winter Essentials: draggable carousel with inertia. Cards use the same photos as the collection.
 function Card({ i, x, center, w, vw, onOpen, moved }: { i: number; x: MotionValue<number>; center: number; w: number; vw: number; onOpen: () => void; moved: React.MutableRefObject<boolean> }) {
   const item = lookbook[i]; const p = getProduct(item.slug)!;
+  const tilt = useTilt(7);
   const color = p.colors[item.color] ?? p.colors[0];
   // distance of this card's centre from the viewport centre, in card widths
   const d = useTransform(x, (v) => Math.min(1.8, Math.abs(center + v - vw / 2) / (w || 1)));
   const scale = useTransform(d, (v) => 1 - v * 0.07);
   const opacity = useTransform(d, (v) => 1 - v * 0.32);
   return (
-    <m.li className="shrink-0 w-[74vw] sm:w-[44vw] md:w-[30vw] lg:w-[24vw]" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "0px -5% 0px 0px" }} transition={{ duration: 0.9, delay: Math.min(i, 4) * 0.08, ease: [0.22, 1, 0.36, 1] }}>
+    <m.li className="lb-card shrink-0 w-[74vw] sm:w-[44vw] md:w-[30vw] lg:w-[24vw]" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "0px -5% 0px 0px" }} transition={{ duration: 0.9, delay: Math.min(i, 4) * 0.08, ease: [0.22, 1, 0.36, 1] }}>
       <m.button style={{ scale, opacity }} className="group block w-full text-left" onClick={() => { if (!moved.current) onOpen(); }} aria-label={`${item.title}: ${p.name}, ${color.name}`}>
-        <div className="relative aspect-[3/4] overflow-hidden select-none">
+        <div ref={tilt.ref} onPointerMove={tilt.onPointerMove} onPointerLeave={tilt.onPointerLeave} className="tilt spot relative aspect-[3/4] rounded-[22px] overflow-hidden select-none bg-mist ring-1 ring-ink/10 transition-[box-shadow] duration-500 group-hover:ring-2 group-hover:ring-accent/80">
           <div className="absolute inset-0 transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"><ProductImage product={p} colorId={color.id} className="absolute inset-0" /></div>
           <span className="absolute top-4 left-4 eyebrow !text-ink/70">0{i + 1}</span>
         </div>
@@ -68,7 +70,7 @@ export default function Lookbook() {
 
       <div ref={vp} className="cursor-grab active:cursor-grabbing" role="region" aria-roledescription="carousel" aria-label="Winter essentials">
         <m.ul
-          ref={track} drag="x" style={{ x }} className="flex gap-4 md:gap-8 px-5 md:px-10 w-max"
+          ref={track} drag="x" style={{ x }} className="lb-track flex gap-5 md:gap-10 px-5 md:px-10 w-max"
           dragConstraints={{ left: meas.min, right: 0 }} dragElastic={0.12} dragTransition={{ power: 0.28, timeConstant: 320, bounceStiffness: 220, bounceDamping: 30 }}
           onPointerDown={() => (moved.current = false)} onDrag={(_, i) => { if (Math.abs(i.offset.x) > 6) moved.current = true; }}
         >

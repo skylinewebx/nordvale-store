@@ -1,12 +1,13 @@
-﻿/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
+const c = (v) => `rgb(var(--c-${v}) / <alpha-value>)`;
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      colors: { snow: "#f4f2ee", ink: "#1c1c1e", stone: "#8a8680", mist: "#e4e0d9", accent: "#a8623c" },
+      colors: { snow: c("snow"), ink: c("ink"), stone: c("stone"), mist: c("mist"), accent: c("accent") },
       fontFamily: {
-        display: ['"Cormorant Garamond"', "serif"],
-        sans: ['"Outfit"', "system-ui", "sans-serif"],
+        display: ['"Bricolage Grotesque"', "system-ui", "sans-serif"],
+        sans: ['"Inter"', "system-ui", "sans-serif"],
       },
       letterSpacing: { wide2: "0.18em" },
     },

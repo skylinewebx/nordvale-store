@@ -8,9 +8,10 @@ import { assetExists, heroProgress, useHero } from "./heroState";
 import HeroFX from "./HeroFX";
 import { HeroStatic, HeroVideo } from "./HeroMedia";
 
+import HeroDismantle from "./HeroDismantle";
 import HeroPlaceholder from "./HeroPlaceholder";
 
-type Mode = "video" | "static" | "webgl";
+type Mode = "video" | "parts" | "static" | "webgl";
 const isIOS = () => /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const saveData = () => !!(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
 
@@ -34,13 +35,14 @@ export default function Hero() {
   useEffect(() => {
     (async () => {
       const q = new URLSearchParams(location.search).get("hero");
-      const [vid, stat] = await Promise.all([assetExists(P.heroVideo), assetExists(P.heroStatic)]);
+      const [vid, stat, parts] = await Promise.all([assetExists(P.heroVideo), assetExists(P.heroStatic), assetExists("/assets/hero/parts/body.webp")]);
       setHasStatic(stat);
       const lite = reduced || veryLowEnd() || isIOS() || saveData();
       let m: Mode = "webgl";
       if (q === "3d") m = "webgl";
       else if (q === "static" && stat) m = "static";
       else if (vid && !(lite && stat)) m = "video";
+      else if (parts) m = "parts";
       else if (stat) m = "static";
       useHero.getState().setMode(m === "video" ? "frames" : m === "webgl" ? "webgl" : "static");
       setMode(m);
@@ -106,13 +108,13 @@ export default function Hero() {
 
   return (
     <section ref={root} id="top" className="relative w-full bg-snow" style={{ height: `${100 + (isMobile() ? 260 : 320)}svh` }} aria-label={`Featured: ${HERO.name}`}>
-      <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
-      <div className="absolute inset-0" style={{ background: mode === "webgl" ? "radial-gradient(ellipse at 50% 42%, #fbfaf7 0%, #e9e5de 62%, #d9d4cb 100%)" : "#f4f2ee" }} />
+      <div className="theme-light sticky top-0 h-[100svh] w-full overflow-hidden bg-snow text-ink">
+      <div className="absolute inset-0" style={{ background: mode === "video" || mode === "static" ? "#eeece7" : "radial-gradient(ellipse at 50% 44%, #f7f6f2 0%, #e4e1db 58%, #cfccc5 100%)" }} />
 
       {/* thin outlined giant word (parallax) */}
       <div className="hero-word absolute inset-x-0 top-[24%] md:top-[18%] flex justify-center pointer-events-none select-none" aria-hidden="true">
         <svg viewBox="0 0 1800 330" className="w-[250vw] md:w-[135vw] max-w-none shrink-0" fill="none">
-          <text x="900" y="250" textAnchor="middle" fontFamily="Cormorant Garamond, serif" fontWeight="300" fontSize="300" letterSpacing="22" stroke="#1c1c1e" strokeOpacity="0.14" strokeWidth="1.3">{HERO.name.toUpperCase()}</text>
+          <text x="900" y="250" textAnchor="middle" fontFamily="Bricolage Grotesque, sans-serif" fontWeight="200" fontSize="290" letterSpacing="4" stroke="#161618" strokeOpacity="0.14" strokeWidth="1.3">{HERO.name.toUpperCase()}</text>
         </svg>
       </div>
 
@@ -121,9 +123,10 @@ export default function Hero() {
       {/* glow pulse when the hoodie locks together */}
       <div className="hero-glow absolute left-1/2 top-[46%] w-[min(90vw,780px)] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none opacity-0" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,246,232,0.55) 30%, rgba(255,255,255,0) 68%)" }} aria-hidden="true" />
 
-      <div className="absolute inset-x-0 top-0 bottom-[27%] md:bottom-[22%] pt-14 md:pt-16">
+      <div className={`absolute inset-x-0 ${mode === "parts" ? "top-[17%] bottom-[36%] md:top-[17%] md:bottom-[35%]" : "top-0 bottom-[27%] md:bottom-[22%] pt-14 md:pt-16"}`}>
         {mode === "video" && <HeroVideo active={visible} onError={fallback} />}
         {mode === "static" && <HeroStatic active={visible} />}
+        {mode === "parts" && <HeroDismantle active={visible} />}
         {mode === "webgl" && <HeroPlaceholder active={visible} color={HERO_COLOR.hex} />}
       </div>
 

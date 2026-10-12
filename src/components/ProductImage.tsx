@@ -13,7 +13,7 @@ export function Placeholder({ product, hex }: { product: Product; hex: string })
   const loaded = useCatalog((s) => s.loaded);
   if (!loaded) return <div className="skeleton absolute inset-0" aria-hidden="true" />; // manifest still loading
   return (
-    <div className="absolute inset-0 flex items-end p-4" style={{ background: `linear-gradient(165deg, ${hex}26, #ece9e3 70%)` }} aria-hidden="true">
+    <div className="absolute inset-0 flex items-end p-4" style={{ background: `linear-gradient(165deg, ${hex}26, rgb(var(--c-mist)) 70%)` }} aria-hidden="true">
       <span className="eyebrow !text-ink/40">{product.name}</span>
     </div>
   );

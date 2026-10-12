@@ -50,7 +50,7 @@ const ReviewCard = memo(function ReviewCard({ r, i, lite }: { r: Review; i: numb
         <blockquote className="font-display text-[20px] md:text-[21px] leading-snug flex-1">“{r.text}”</blockquote>
         <footer className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <span aria-hidden="true" className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-[12px] tracking-wider text-ink/80 border hair" style={{ background: `linear-gradient(145deg, hsl(${(r.avatar * 47) % 360} 22% 90%), hsl(${(r.avatar * 47 + 30) % 360} 18% 80%))` }}>{initials}</span>
+            <span aria-hidden="true" className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-[12px] tracking-wider text-ink/80 border hair" style={{ background: `linear-gradient(145deg, hsl(${(r.avatar * 47) % 360} 18% 22%), hsl(${(r.avatar * 47 + 30) % 360} 16% 14%))` }}>{initials}</span>
             <p className="text-[12px] text-stone truncate"><span className="text-ink">{r.name}</span><br />{r.product} · Verified buyer</p>
           </div>
           <LikeButton id={r.id} base={r.likes} onLike={() => wiggle.start({ rotate: [0, -2.5, 2.5, -1.5, 0], y: [0, -8, 0], transition: { duration: 0.6 } })} />

@@ -6,7 +6,7 @@ const WORDS = ["Heavyweight fleece", "French terry", "Faux leather", "Wool & twe
 function Row({ rev = false, outline = false }: { rev?: boolean; outline?: boolean }) {
   const line = [...WORDS, ...WORDS].map((w, i) => (
     <span key={i} className="inline-flex items-center gap-[4vw] pr-[4vw]">
-      <span className={`font-display font-light text-[clamp(40px,8vw,120px)] leading-none whitespace-nowrap ${outline ? "text-transparent [-webkit-text-stroke:1px_rgba(28,28,30,0.35)]" : "text-ink/85"}`}>{w}</span>
+      <span className={`font-display font-light text-[clamp(40px,8vw,120px)] leading-none whitespace-nowrap ${outline ? "text-transparent [-webkit-text-stroke:1px_rgb(var(--c-ink)/0.4)]" : "text-ink/85"}`}>{w}</span>
       <span className="w-2 h-2 rounded-full bg-accent shrink-0" aria-hidden="true" />
     </span>
   ));

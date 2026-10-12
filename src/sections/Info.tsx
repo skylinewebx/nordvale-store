@@ -125,7 +125,7 @@ export function Contact() {
           <li><a className={ln} href="https://instagram.com" target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} />@nordvale</a></li>
         </ul>
         <a href={`https://www.google.com/maps/search/${encodeURIComponent(BRAND.address)}`} target="_blank" rel="noopener noreferrer" className="mt-10 block relative h-52 border hair overflow-hidden group" aria-label={`Open map: ${BRAND.address}`}
-          style={{ background: "repeating-linear-gradient(0deg,#e4e0d9 0 1px,transparent 1px 34px),repeating-linear-gradient(90deg,#e4e0d9 0 1px,transparent 1px 34px),#efece6" }}>
+          style={{ background: "repeating-linear-gradient(0deg,rgb(var(--c-ink) / 0.08) 0 1px,transparent 1px 34px),repeating-linear-gradient(90deg,#e4e0d9 0 1px,transparent 1px 34px),#efece6" }}>
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"><Icon name="pin" size={30} className="text-accent group-hover:-translate-y-1 transition-transform" /><span className="text-[13px]">{BRAND.address}</span><span className="eyebrow">Open in Maps</span></div>
         </a>
       </div>

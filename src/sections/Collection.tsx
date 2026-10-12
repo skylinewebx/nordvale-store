@@ -95,7 +95,7 @@ export default function Collection() {
   const shown = list.slice(0, cap);
 
   return (
-    <section ref={section} id="collection" className="pt-24 md:pt-36 pb-24 md:pb-36 wrap" aria-labelledby="col-h">
+    <section ref={section} id="collection" className="pt-28 md:pt-44 pb-28 md:pb-44 wrap" aria-labelledby="col-h">
       {/* editorial title with a live count */}
       <Reveal className="mb-10 md:mb-14 flex items-end justify-between gap-6">
         <div>
@@ -106,7 +106,7 @@ export default function Collection() {
       </Reveal>
 
       {/* sticky pill bar */}
-      <div onPointerEnter={() => setLay(true)} onTouchStart={() => setLay(true)} onFocus={() => setLay(true)} className="sticky z-30 top-[92px] md:top-[100px] -mx-5 px-5 md:-mx-10 md:px-10 py-3 mb-8 md:mb-12 bg-snow/95 border-y hair">
+      <div onPointerEnter={() => setLay(true)} onTouchStart={() => setLay(true)} onFocus={() => setLay(true)} className="sticky z-30 top-[92px] md:top-[100px] -mx-5 px-5 md:-mx-10 md:px-10 py-3 mb-8 md:mb-12 bg-snow/90 border-y hair rounded-none">
         <div className="flex items-center gap-3">
           <LayoutGroup id="pills">
             <div className="flex gap-1 overflow-x-auto no-scrollbar flex-1 -mx-1 px-1" role="tablist" aria-label="Category">
@@ -125,13 +125,13 @@ export default function Collection() {
       </div>
 
       {/* bento grid: one large featured card, the rest standard (2 columns on mobile) */}
-      <div role="tabpanel" className="grid grid-cols-2 lg:grid-cols-4 grid-flow-dense gap-x-4 md:gap-x-6 gap-y-12 md:gap-y-16">
-        {!loaded && Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className={i === 0 ? "col-span-2 lg:row-span-2" : ""}><div className={`skeleton relative ${i === 0 ? "aspect-[4/5] lg:aspect-auto lg:h-[640px]" : "aspect-[3/4]"}`} /><div className="mt-4 h-4 w-1/2 skeleton relative" /></div>
+      <div role="tabpanel" className="card-grid grid grid-cols-2 lg:grid-cols-4 gap-x-5 md:gap-x-8 lg:gap-x-10 gap-y-14 md:gap-y-24">
+        {!loaded && Array.from({ length: 8 }).map((_, i) => (
+          <div key={i}><div className="skeleton relative aspect-[3/4] rounded-[20px]" /><div className="mt-6 h-4 w-1/2 skeleton relative rounded" /></div>
         ))}
         {loaded && (
           <AnimatePresence mode="popLayout" initial={false}>
-            {shown.map((p, i) => <ProductCard key={p.slug} p={p} index={i} featured={i === 0 && list.length >= 8} priority={i < 4} animateLayout={lay} />)}
+            {shown.map((p, i) => <ProductCard key={p.slug} p={p} index={i} priority={i < 4} animateLayout={lay} />)}
           </AnimatePresence>
         )}
       </div>
