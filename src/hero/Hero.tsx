@@ -108,7 +108,7 @@ export default function Hero() {
 
   return (
     <section ref={root} id="top" className="relative w-full bg-snow" style={{ height: `${100 + (isMobile() ? 260 : 320)}svh` }} aria-label={`Featured: ${HERO.name}`}>
-      <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-snow text-ink" style={{ ["--c-accent" as string]: "255 255 255", ["--c-stone" as string]: "255 214 218" }}>
+      <div className="theme-dark sticky top-0 h-[100svh] w-full overflow-hidden bg-snow text-ink">
       <div className="absolute inset-0" style={{ background: mode === "video" || mode === "static" ? "#c4101f" : "radial-gradient(ellipse at 50% 44%, #ff4a58 0%, #d4132a 40%, #8d0517 78%, #4a020b 100%)" }} />
 
       {/* thin outlined giant word (parallax) */}

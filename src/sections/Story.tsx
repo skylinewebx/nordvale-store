@@ -159,48 +159,48 @@ export function Craft() {
   }), []);
 
   return (
-    <section ref={root} id="craft" className="py-24 md:py-36 bg-ink text-snow overflow-hidden">
+    <section ref={root} id="craft" className="py-24 md:py-36 theme-red text-ink overflow-hidden">
       <div className="wrap">
         <SectionHead eyebrow="Fabric & Craftsmanship" title={<>Cloth with <em>real weight.</em></>} />
         <div className="cf-list relative pl-8 md:pl-0 space-y-16 md:space-y-28">
           {/* thin line connecting the items; draws as you scroll */}
-          <div className="absolute top-0 bottom-0 left-[3px] md:left-1/2 w-px bg-snow/10" aria-hidden="true">
-            <div className="cf-line absolute inset-0 bg-snow/50 origin-top" />
+          <div className="absolute top-0 bottom-0 left-[3px] md:left-1/2 w-px bg-ink/10" aria-hidden="true">
+            <div className="cf-line absolute inset-0 bg-ink/50 origin-top" />
           </div>
           {fabrics.map((f, i) => {
             const left = i % 2 === 0;
             return (
               <article key={f.key} className="cf-row relative grid md:grid-cols-12 gap-8 md:gap-12 items-center">
-                <span className="cf-dot absolute -left-[33px] md:left-1/2 -top-6 md:-top-14 w-[7px] h-[7px] -ml-[0px] md:-ml-[3px] rounded-full bg-snow z-20" aria-hidden="true" />
+                <span className="cf-dot absolute -left-[33px] md:left-1/2 -top-6 md:-top-14 w-[7px] h-[7px] -ml-[0px] md:-ml-[3px] rounded-full bg-ink z-20" aria-hidden="true" />
                 <figure className={`cf-fig group md:col-span-7 ${left ? "" : "md:col-start-6 md:order-2"}`}>
-                  <div className="relative aspect-square overflow-hidden bg-snow/5">
+                  <div className="relative aspect-square overflow-hidden bg-ink/5">
                     <div className="cf-par absolute inset-x-0 -top-[8%] h-[116%]">
                       <div className="cf-zoom absolute inset-0"><SmartImg src={P.fabric(f.key)} alt={`Macro close-up of ${f.name} fabric`} className="absolute inset-0" imgClass="transition-transform duration-[1400ms] ease-out group-hover:scale-[1.07]" fallback={<FabricFallback k={f.key} />} /></div>
                     </div>
-                    <figcaption className="absolute bottom-4 left-4 eyebrow !text-snow/70 pointer-events-none">{f.gsmRange}</figcaption>
+                    <figcaption className="absolute bottom-4 left-4 eyebrow !text-ink/70 pointer-events-none">{f.gsmRange}</figcaption>
                   </div>
                 </figure>
                 <div className={`cf-txt md:col-span-5 ${left ? "md:col-start-8" : "md:col-start-1 md:order-1"}`}>
-                  <div className="flex items-center gap-4 text-snow/60">
-                    <span className="font-display text-[56px] md:text-[72px] font-light leading-none text-snow/25">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="flex items-center gap-4 text-ink/60">
+                    <span className="font-display text-[56px] md:text-[72px] font-light leading-none text-ink/25">{String(i + 1).padStart(2, "0")}</span>
                     <Icon name={f.icon} size={34} sw={0.8} />
                   </div>
                   <h3 className="text-[clamp(28px,3vw,38px)] leading-tight mt-4">{f.name}</h3>
-                  <p className="text-[13px] text-snow/60 mt-4 leading-relaxed max-w-sm">{f.note}</p>
-                  <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-snow/15 pt-6">
+                  <p className="text-[13px] text-ink/60 mt-4 leading-relaxed max-w-sm">{f.note}</p>
+                  <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-ink/15 pt-6">
                     <div>
-                      <dt className="eyebrow !text-snow/45">Weight</dt>
-                      <dd className="mt-2 font-display text-[40px] leading-none tabular-nums"><span className="cf-gsm inline-block" style={{ contain: "layout paint", minWidth: `${String(f.gsmNum).length}ch` }} data-to={f.gsmNum}>{f.gsmNum}</span><span className="text-[13px] font-sans text-snow/50 ml-1">GSM</span></dd>
+                      <dt className="eyebrow !text-ink/45">Weight</dt>
+                      <dd className="mt-2 font-display text-[40px] leading-none tabular-nums"><span className="cf-gsm inline-block" style={{ contain: "layout paint", minWidth: `${String(f.gsmNum).length}ch` }} data-to={f.gsmNum}>{f.gsmNum}</span><span className="text-[13px] font-sans text-ink/50 ml-1">GSM</span></dd>
                     </div>
                     <div>
-                      <dt className="eyebrow !text-snow/45">Warmth</dt>
+                      <dt className="eyebrow !text-ink/45">Warmth</dt>
                       <dd className="mt-2">
-                        <span className="font-display text-[40px] leading-none tabular-nums"><span className="cf-warm inline-block" style={{ contain: "layout paint", minWidth: "1ch" }} data-to={f.warmth}>{f.warmth}</span><span className="text-[13px] font-sans text-snow/50 ml-1">/ 5</span></span>
-                        <span className="flex gap-1 mt-3" aria-hidden="true">{[1, 2, 3, 4, 5].map((n) => <span key={n} className="relative w-5 h-[2px] bg-snow/20 overflow-hidden"><span className={`cf-bar absolute inset-0 origin-left bg-snow ${n <= f.warmth ? "" : "hidden"}`} /></span>)}</span>
+                        <span className="font-display text-[40px] leading-none tabular-nums"><span className="cf-warm inline-block" style={{ contain: "layout paint", minWidth: "1ch" }} data-to={f.warmth}>{f.warmth}</span><span className="text-[13px] font-sans text-ink/50 ml-1">/ 5</span></span>
+                        <span className="flex gap-1 mt-3" aria-hidden="true">{[1, 2, 3, 4, 5].map((n) => <span key={n} className="relative w-5 h-[2px] bg-ink/20 overflow-hidden"><span className={`cf-bar absolute inset-0 origin-left bg-ink ${n <= f.warmth ? "" : "hidden"}`} /></span>)}</span>
                       </dd>
                     </div>
                   </dl>
-                  <p className="mt-6 text-[12px] text-snow/50"><span className="text-snow/80">{f.feel}</span> · Best for {f.bestFor.toLowerCase()}</p>
+                  <p className="mt-6 text-[12px] text-ink/50"><span className="text-ink/80">{f.feel}</span> · Best for {f.bestFor.toLowerCase()}</p>
                 </div>
               </article>
             );

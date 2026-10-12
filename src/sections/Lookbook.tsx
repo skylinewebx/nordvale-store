@@ -59,7 +59,7 @@ export default function Lookbook() {
   };
 
   return (
-    <section id="lookbook" className="relative bg-mist/50 overflow-hidden py-24 md:py-36" aria-labelledby="lb-h">
+    <section id="lookbook" className="relative bg-mist overflow-hidden py-24 md:py-36" aria-labelledby="lb-h">
       <div className="wrap mb-10 md:mb-14 flex items-end justify-between gap-6">
         <div><p className="eyebrow">Winter Essentials</p><h2 id="lb-h" className="mt-3 text-[clamp(28px,4.2vw,48px)] leading-[1.1]">The <em>lookbook.</em></h2></div>
         <div className="hidden md:flex gap-2">

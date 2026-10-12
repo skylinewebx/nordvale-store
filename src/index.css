@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 /* THEME: deep black + white + crimson red. `.theme-light` flips a section to a white "stage" (used by the hero). */
-:root { color-scheme: dark; --c-snow: 10 8 9; --c-ink: 250 248 248; --c-stone: 154 148 150; --c-mist: 26 20 22; --c-accent: 232 36 52; --hair: 250 248 248; }
-.theme-light { color-scheme: light; --c-snow: 255 255 255; --c-ink: 14 10 11; --c-stone: 115 108 110; --c-mist: 244 238 238; --c-accent: 220 28 44; --hair: 22 22 24; }
+:root { color-scheme: light; --c-snow: 255 255 255; --c-ink: 20 8 10; --c-stone: 112 98 100; --c-mist: 252 238 238; --c-accent: 214 24 42; --hair: 20 8 10; }
+.theme-dark { color-scheme: dark; --c-snow: 10 8 9; --c-ink: 255 255 255; --c-stone: 255 214 218; --c-mist: 26 20 22; --c-accent: 255 255 255; --hair: 255 255 255; }
+.theme-red { color-scheme: dark; --c-snow: 196 16 31; --c-ink: 255 255 255; --c-stone: 255 214 218; --c-mist: 160 10 25; --c-accent: 255 255 255; --hair: 255 255 255; background: rgb(196 16 31); }
 html { -webkit-text-size-adjust: 100%; }
 #root { overflow-x: clip; }
 html.lenis, html.lenis body { height: auto; }
@@ -88,5 +89,4 @@ html[data-lite="1"] .band-track { animation: none !important; }
 html[data-lite="1"] .tilt { transform: none; }
 
 /* red glow atmosphere */
-body { background-image: radial-gradient(900px 500px at 85% -5%, rgb(var(--c-accent) / 0.10), transparent 70%), radial-gradient(700px 500px at -5% 60%, rgb(var(--c-accent) / 0.06), transparent 70%); background-attachment: fixed; }
-.theme-light { background-image: radial-gradient(700px 520px at 50% 45%, rgb(var(--c-accent) / 0.10), transparent 70%); }
+body { background-image: radial-gradient(900px 500px at 85% -5%, rgb(var(--c-accent) / 0.07), transparent 70%); background-attachment: fixed; }

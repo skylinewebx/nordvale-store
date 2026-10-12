@@ -95,7 +95,7 @@ export default function Reviews() {
     io.observe(el); return () => io.disconnect();
   }, [lite]);
   return (
-    <section ref={sec} id="reviews" className="py-24 md:py-36 bg-mist/50 overflow-hidden">
+    <section ref={sec} id="reviews" className="py-24 md:py-36 bg-mist overflow-hidden">
       <div className="wrap">
         <SectionHead eyebrow="Reviews" title={<>Loved by <em>12,000+</em> customers.</>} />
         <div className="flex items-center gap-3 -mt-6 mb-12 text-[13px] text-stone"><Stars value={4.7} size={14} />4.7 average · 1,240 verified reviews</div>

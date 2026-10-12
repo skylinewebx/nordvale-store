@@ -82,16 +82,16 @@ export function Newsletter() {
     setState("ok");
   };
   return (
-    <section className="py-24 md:py-32 bg-ink text-snow">
+    <section className="py-24 md:py-32 theme-red text-ink">
       <div className="wrap max-w-2xl text-center">
-        <p className="eyebrow !text-snow/50">Newsletter</p>
+        <p className="eyebrow !text-ink/50">Newsletter</p>
         <h2 className="mt-4 text-[clamp(28px,4vw,44px)]">Join the first frost.</h2>
-        <p className="text-[14px] text-snow/60 mt-4">New drops, restocks and 10% off your first order.</p>
+        <p className="text-[14px] text-ink/60 mt-4">New drops, restocks and 10% off your first order.</p>
         {state === "ok" ? <p className="mt-10 font-display text-[22px]" role="status">Thank you. Check your inbox for WINTER10.</p> : (
           <form className="mt-10 flex flex-col sm:flex-row gap-4 items-end" onSubmit={submit} noValidate>
             <label className="flex-1 w-full text-left"><span className="sr-only">Email address</span>
-              <input type="email" autoComplete="email" placeholder="Your email" value={email} onChange={(e) => { setEmail(e.target.value); setState("idle"); }} aria-invalid={state === "err"} className={`field !text-snow placeholder:text-snow/40 !border-snow/30 focus:!border-snow ${state === "err" ? "!border-accent" : ""}`} /></label>
-            <button className="btn !border-snow text-snow hover:bg-snow hover:text-ink w-full sm:w-auto" type="submit">Subscribe</button>
+              <input type="email" autoComplete="email" placeholder="Your email" value={email} onChange={(e) => { setEmail(e.target.value); setState("idle"); }} aria-invalid={state === "err"} className={`field !text-ink placeholder:text-ink/40 !border-ink/30 focus:!border-ink ${state === "err" ? "!border-accent" : ""}`} /></label>
+            <button className="btn !border-ink text-ink hover:bg-ink hover:text-snow w-full sm:w-auto" type="submit">Subscribe</button>
           </form>
         )}
         {state === "err" && <p role="alert" className="text-[12px] text-accent mt-3">Please enter a valid email.</p>}
