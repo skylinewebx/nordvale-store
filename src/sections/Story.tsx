@@ -159,7 +159,7 @@ export function Craft() {
   }), []);
 
   return (
-    <section ref={root} id="craft" className="py-24 md:py-36 theme-red text-ink overflow-hidden">
+    <section ref={root} id="craft" className="py-24 md:py-36 bg-mist text-ink overflow-hidden">
       <div className="wrap">
         <SectionHead eyebrow="Fabric & Craftsmanship" title={<>Cloth with <em>real weight.</em></>} />
         <div className="cf-list relative pl-8 md:pl-0 space-y-16 md:space-y-28">

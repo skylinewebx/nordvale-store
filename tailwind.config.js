@@ -6,8 +6,8 @@ export default {
     extend: {
       colors: { snow: c("snow"), ink: c("ink"), stone: c("stone"), mist: c("mist"), accent: c("accent") },
       fontFamily: {
-        display: ['"Bricolage Grotesque"', "system-ui", "sans-serif"],
-        sans: ['"Inter"', "system-ui", "sans-serif"],
+        display: ['"Instrument Serif"', "Georgia", "serif"],
+        sans: ['"Manrope"', "system-ui", "sans-serif"],
       },
       letterSpacing: { wide2: "0.18em" },
     },

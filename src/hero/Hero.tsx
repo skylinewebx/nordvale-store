@@ -114,7 +114,7 @@ export default function Hero() {
       {/* thin outlined giant word (parallax) */}
       <div className="hero-word absolute inset-x-0 top-[24%] md:top-[18%] flex justify-center pointer-events-none select-none" aria-hidden="true">
         <svg viewBox="0 0 1800 330" className="w-[250vw] md:w-[135vw] max-w-none shrink-0" fill="none">
-          <text x="900" y="250" textAnchor="middle" fontFamily="Bricolage Grotesque, sans-serif" fontWeight="200" fontSize="290" letterSpacing="4" stroke="#161618" strokeOpacity="0.14" strokeWidth="1.3">{HERO.name.toUpperCase()}</text>
+          <text x="900" y="250" textAnchor="middle" fontFamily="Instrument Serif, Georgia, serif" fontWeight="400" fontSize="290" letterSpacing="4" stroke="#161618" strokeOpacity="0.14" strokeWidth="1.3">{HERO.name.toUpperCase()}</text>
         </svg>
       </div>
 
@@ -154,13 +154,6 @@ export default function Hero() {
         <div className="overflow-hidden mt-5 py-1">
           <div className="hero-outro-line flex items-center justify-center gap-5 opacity-0">
             <button className="btn btn-solid" onClick={() => shop()}>Shop Now</button>
-            <div className="flex" role="group" aria-label={`${HERO.name} colours`}>
-              {HERO.colors.map((c) => (
-                <button key={c.id} onClick={() => shop(c.id)} aria-label={`Shop ${HERO.name} in ${c.name}`} className="w-10 h-10 flex items-center justify-center">
-                  <span className={`block w-4 h-4 rounded-full border border-ink/20 transition-transform hover:scale-125 ${c.id === HERO_COLOR.id ? "ring-1 ring-ink ring-offset-2 ring-offset-snow" : ""}`} style={{ background: c.hex2 ? `linear-gradient(135deg, ${c.hex} 50%, ${c.hex2} 50%)` : c.hex }} />
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </div>

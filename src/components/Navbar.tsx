@@ -32,7 +32,7 @@ export default function Navbar() {
   const iconBtn = "relative w-12 h-12 flex items-center justify-center hover:opacity-60 transition-opacity";
   return (
     <header className="sticky top-0 z-50">
-      <div className="bg-ink text-snow h-9 flex items-center justify-center overflow-hidden" role="region" aria-label="Announcements">
+      <div className="bg-accent text-white h-9 flex items-center justify-center overflow-hidden" role="region" aria-label="Announcements">
         <AnimatePresence mode="wait">
           <m.p key={i} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -12, opacity: 0 }} transition={{ duration: 0.4 }} className="text-[10px] uppercase tracking-[0.2em] font-light px-4 text-center">{MSGS[i]}</m.p>
         </AnimatePresence>
@@ -42,18 +42,18 @@ export default function Navbar() {
           <div className="flex items-center">
             <button className={`${iconBtn} md:hidden -ml-3`} onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" /></button>
             <ul className="hidden md:flex gap-8">
-              {LINKS.map(([l, id]) => <li key={id}><button onClick={() => go(id)} className="text-[11px] uppercase tracking-[0.18em] link-u py-2">{l}</button></li>)}
+              {LINKS.map(([l, id]) => <li key={id}><button onClick={() => go(id)} className="text-[11px] uppercase tracking-[0.18em] nav-u py-2 font-medium">{l}</button></li>)}
             </ul>
           </div>
           <Link to="/" className="font-display text-[22px] md:text-[26px] tracking-[0.38em] pl-[0.38em]" aria-label={`${BRAND.name} home`}>{BRAND.name}</Link>
           <div className="flex items-center justify-end -mr-3">
             <button className={iconBtn} onClick={() => set({ searchOpen: true })} aria-label="Search"><Icon name="search" /></button>
             <button className={`${iconBtn} hidden sm:flex`} onClick={() => set({ wishlistOpen: true })} aria-label={`Wishlist, ${wish} items`}>
-              <Icon name="heart" />{wish > 0 && <span className="absolute top-2.5 right-2 text-[9px] bg-ink text-snow w-4 h-4 rounded-full flex items-center justify-center">{wish}</span>}
+              <Icon name="heart" />{wish > 0 && <span className="absolute top-2.5 right-2 text-[9px] bg-accent text-white w-4 h-4 rounded-full flex items-center justify-center">{wish}</span>}
             </button>
             <Link to="/track" className={`${iconBtn} hidden md:flex`} aria-label="Track order"><Icon name="truck" /></Link>
             <button className={iconBtn} onClick={() => set({ cartOpen: true })} aria-label={`Cart, ${count} items`}>
-              <Icon name="bag" />{count > 0 && <span className="absolute top-2.5 right-2 text-[9px] bg-ink text-snow w-4 h-4 rounded-full flex items-center justify-center">{count}</span>}
+              <Icon name="bag" />{count > 0 && <span className="absolute top-2.5 right-2 text-[9px] bg-accent text-white w-4 h-4 rounded-full flex items-center justify-center">{count}</span>}
             </button>
           </div>
         </div>

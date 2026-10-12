@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* THEME: deep black + white + crimson red. `.theme-light` flips a section to a white "stage" (used by the hero). */
-:root { color-scheme: light; --c-snow: 255 255 255; --c-ink: 20 8 10; --c-stone: 112 98 100; --c-mist: 252 238 238; --c-accent: 214 24 42; --hair: 20 8 10; }
+/* THEME: near-black + soft white + crimson accent. `.theme-light` flips a section to a white "stage" (used by the hero). */
+:root { color-scheme: dark; --c-snow: 11 9 10; --c-ink: 246 242 241; --c-stone: 163 154 156; --c-mist: 24 20 21; --c-accent: 230 32 50; --hair: 246 242 241; }
 .theme-dark { color-scheme: dark; --c-snow: 10 8 9; --c-ink: 255 255 255; --c-stone: 255 214 218; --c-mist: 26 20 22; --c-accent: 255 255 255; --hair: 255 255 255; }
-.theme-red { color-scheme: dark; --c-snow: 196 16 31; --c-ink: 255 255 255; --c-stone: 255 214 218; --c-mist: 160 10 25; --c-accent: 255 255 255; --hair: 255 255 255; background: rgb(196 16 31); }
+.theme-red { color-scheme: dark; --c-snow: 190 14 30; --c-ink: 255 255 255; --c-stone: 255 224 227; --c-mist: 150 8 22; --c-accent: 255 255 255; --hair: 255 255 255; background: rgb(190 14 30); }
 html { -webkit-text-size-adjust: 100%; }
 #root { overflow-x: clip; }
 html.lenis, html.lenis body { height: auto; }
@@ -13,11 +13,11 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-stopped { overflow: hidden; }
 
 body {
-  @apply bg-snow text-ink font-sans font-light antialiased;
+  @apply bg-snow text-ink font-sans font-normal antialiased;
   font-size: 15px;
   line-height: 1.65;
 }
-h1, h2, h3 { @apply font-display font-light; letter-spacing: -0.03em; }
+h1, h2, h3 { @apply font-display font-normal; letter-spacing: -0.015em; line-height: 1.04; }
 button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 1px solid rgb(var(--c-accent)); outline-offset: 3px; }
 em { font-style: normal; color: rgb(var(--c-accent)); }
@@ -26,15 +26,18 @@ em { font-style: normal; color: rgb(var(--c-accent)); }
 .hair { border-color: rgb(var(--hair) / 0.14); }
 .eyebrow { @apply text-[10px] uppercase text-stone font-light; letter-spacing: 0.22em; }
 .btn {
-  @apply relative inline-flex items-center justify-center min-h-[48px] px-8 text-[11px] uppercase font-light border border-ink transition-colors duration-500 overflow-hidden;
+  @apply relative inline-flex items-center justify-center min-h-[48px] px-8 text-[11px] uppercase font-medium border border-ink transition-colors duration-500 overflow-hidden;
   letter-spacing: 0.2em; isolation: isolate; --sweep: rgb(var(--c-ink));
 }
 /* a fill that sweeps up from the bottom on hover: transform only */
 .btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--sweep); transform: translateY(101%); transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
 .btn:hover::before, .btn:focus-visible::before { transform: translateY(0); }
 .btn:active { transform: scale(0.98); }
-.btn-solid { @apply bg-ink text-snow hover:text-snow; --sweep: rgb(var(--c-accent)); }
-.btn-line { @apply bg-transparent text-ink hover:text-snow; }
+.btn-solid { @apply bg-ink text-snow; --sweep: rgb(var(--c-accent)); }
+.btn-solid:hover, .btn-solid:focus-visible { color: #fff; }
+.theme-dark .btn-solid, .theme-red .btn-solid { --sweep: #0b090a; }
+.btn-line { @apply bg-transparent text-ink; }
+.btn-line:hover, .btn-line:focus-visible { color: #0b090a; }
 .btn:disabled { @apply opacity-40 pointer-events-none; }
 .field {
   @apply w-full bg-transparent border-0 border-b hair py-3 min-h-[48px] text-[14px] font-light outline-none transition-colors;
@@ -89,4 +92,20 @@ html[data-lite="1"] .band-track { animation: none !important; }
 html[data-lite="1"] .tilt { transform: none; }
 
 /* red glow atmosphere */
-body { background-image: radial-gradient(900px 500px at 85% -5%, rgb(var(--c-accent) / 0.07), transparent 70%); background-attachment: fixed; }
+body { background-image: radial-gradient(900px 500px at 85% -5%, rgb(var(--c-accent) / 0.12), transparent 70%); background-attachment: fixed; }
+
+/* reviews: pure-CSS marquee (transform only), pauses on hover/focus, native swipe row on touch / reduced motion / LITE */
+.rv-row { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.rv-track { display: flex; width: max-content; }
+[data-live="1"] .rv-track { animation: bandMove var(--rv, 70s) linear infinite; }
+[data-live="1"] .rv-row.rev .rv-track { animation-direction: reverse; }
+.rv-row:hover .rv-track, .rv-row:focus-within .rv-track { animation-play-state: paused; }
+.rv-scroll { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-mask-image: none; mask-image: none; }
+.rv-scroll > * { scroll-snap-align: center; }
+.rv-card { transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s, background-color 0.3s; }
+.rv-card:hover { transform: translateY(-4px); border-color: rgb(var(--c-accent) / 0.7); }
+/* nav link underline + subtle press feedback */
+.nav-u { position: relative; }
+.nav-u::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: rgb(var(--c-accent)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.nav-u:hover::after, .nav-u:focus-visible::after { transform: scaleX(1); }
+button:not(:disabled):active, a.btn:active { transition-duration: 0.1s; }

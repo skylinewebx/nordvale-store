@@ -1,9 +1,9 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { AnimatePresence, m, useAnimationControls, useAnimationFrame, useMotionValue } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Icon, Stars } from "../components/Icons";
 import { SectionHead } from "../components/ui";
 import { Review, reviews } from "../data/content";
-import { reducedMotion, usePerfLite } from "../lib/env";
+import { reducedMotion } from "../lib/env";
 import { useStore } from "../store/useStore";
 
 const BURST = Array.from({ length: 8 }, (_, i) => (i / 8) * Math.PI * 2);
@@ -38,77 +38,55 @@ function LikeButton({ id, base, onLike }: { id: string; base: number; onLike: ()
   );
 }
 
-const ReviewCard = memo(function ReviewCard({ r, i, lite }: { r: Review; i: number; lite: boolean }) {
-  const wiggle = useAnimationControls();
+const ReviewCard = memo(function ReviewCard({ r }: { r: Review }) {
   const initials = r.name.split(" ").map((n) => n[0]).join("");
   return (
-    // outer: endless gentle breathing · inner: wiggle/lift when liked
-    // CSS keyframes (compositor-only transform) instead of per-frame JS; they only run while the section is on screen and not in LITE mode
-    <div className="breathe shrink-0 w-[78vw] sm:w-[380px]" style={{ "--d": `${5 + (i % 4) * 0.9}s`, "--dl": `-${(i % 5) * 0.9}s`, "--r": i % 2 ? "0.4deg" : "-0.4deg" } as React.CSSProperties}>
-      <m.article animate={wiggle} whileHover={{ y: -4 }} className="bg-snow border hair p-7 md:p-8 h-full flex flex-col gap-5 select-none">
-        <Stars value={r.rating} />
-        <blockquote className="font-display text-[20px] md:text-[21px] leading-snug flex-1">“{r.text}”</blockquote>
-        <footer className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <span aria-hidden="true" className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-[12px] tracking-wider text-ink/80 border hair" style={{ background: `linear-gradient(145deg, hsl(${(r.avatar * 47) % 360} 18% 22%), hsl(${(r.avatar * 47 + 30) % 360} 16% 14%))` }}>{initials}</span>
-            <p className="text-[12px] text-stone truncate"><span className="text-ink">{r.name}</span><br />{r.product} · Verified buyer</p>
-          </div>
-          <LikeButton id={r.id} base={r.likes} onLike={() => wiggle.start({ rotate: [0, -2.5, 2.5, -1.5, 0], y: [0, -8, 0], transition: { duration: 0.6 } })} />
-        </footer>
-      </m.article>
-    </div>
+    <article className="rv-card shrink-0 mr-5 md:mr-6 w-[82vw] sm:w-[400px] bg-mist border hair p-7 md:p-8 flex flex-col gap-5 select-none">
+      <Stars value={r.rating} />
+      <blockquote className="font-display text-[22px] md:text-[24px] leading-[1.25] flex-1">“{r.text}”</blockquote>
+      <footer className="flex items-center justify-between gap-3 pt-4 border-t hair">
+        <div className="flex items-center gap-3 min-w-0">
+          <span aria-hidden="true" className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-[12px] font-medium tracking-wider bg-accent text-white">{initials}</span>
+          <p className="text-[12px] text-stone truncate"><span className="text-ink font-medium">{r.name}</span><br />{r.product} · Verified buyer</p>
+        </div>
+        <LikeButton id={r.id} base={r.likes} onLike={() => {}} />
+      </footer>
+    </article>
   );
 });
 
-// Endless drifting row. Pauses on hover/touch/drag; draggable (swipe) on touch. Doubled content gives a seamless loop.
-function Row({ items, dir, speed, lite, live }: { items: Review[]; dir: 1 | -1; speed: number; lite: boolean; live: React.MutableRefObject<boolean> }) {
-  const x = useMotionValue(0); const track = useRef<HTMLDivElement>(null);
-  const half = useRef(0); const hold = useRef(0); const resume = useRef<number>();
-  useEffect(() => {
-    const measure = () => { half.current = (track.current?.scrollWidth ?? 0) / 2; if (dir === 1 && half.current) x.set(-half.current / 2); };
-    measure(); const ro = new ResizeObserver(measure); track.current && ro.observe(track.current); return () => ro.disconnect();
-  }, [dir, x]);
-  const wrap = (v: number) => { const h = half.current; if (!h) return v; if (v <= -h) return v + h; if (v > 0) return v - h; return v; };
-  useAnimationFrame((_, dt) => { if (lite || !live.current || hold.current > 0) return; x.set(wrap(x.get() - dir * speed * Math.min(dt, 50) / 1000)); });
-  const pause = () => { hold.current++; window.clearTimeout(resume.current); };
-  const release = (delay = 0) => { resume.current = window.setTimeout(() => (hold.current = Math.max(0, hold.current - 1)), delay); };
-  const doubled = [...items, ...items];
+/** Endless row: the list is rendered twice and the track slides -50% (seamless). CSS only, compositor-driven. */
+function Row({ items, rev, speed, swipe }: { items: Review[]; rev?: boolean; speed: number; swipe: boolean }) {
+  const list = swipe ? items : [...items, ...items];
   return (
-    <div className={`py-4 -my-4 ${lite ? "overflow-x-auto no-scrollbar" : "overflow-hidden"}`} onMouseEnter={pause} onMouseLeave={() => release()} aria-roledescription="carousel">
-      <m.div ref={track} className="flex gap-5 md:gap-6 w-max px-5" style={{ x }}
-        drag={lite ? false : "x"} dragMomentum={false}
-        onPointerDown={(e) => { if (e.pointerType === "touch") pause(); }} onPointerUp={(e) => { if (e.pointerType === "touch") release(1600); }}
-        onDragStart={pause} onDrag={() => x.set(wrap(x.get()))} onDragEnd={() => release(1600)}>
-        {doubled.map((r, i) => <ReviewCard key={`${r.id}-${i}`} r={r} i={i} lite={lite} />)}
-      </m.div>
+    <div className={`rv-row ${rev ? "rev" : ""} ${swipe ? "rv-scroll no-scrollbar" : ""}`} style={{ "--rv": `${Math.round(items.length * 400 / speed)}s` } as React.CSSProperties} role="region" aria-roledescription="carousel" aria-label="Customer reviews">
+      <div className={swipe ? "flex w-max px-5" : "rv-track py-3"}>
+        {list.map((r, i) => <ReviewCard key={`${r.id}-${i}`} r={r} />)}
+      </div>
     </div>
   );
 }
 
 export default function Reviews() {
-  const lite = usePerfLite();
-  const reduced = reducedMotion();
-  const sec = useRef<HTMLElement>(null); const live = useRef(false);
+  const swipe = reducedMotion(); // reduced motion: native swipe row, no auto-movement
+  const sec = useRef<HTMLElement>(null);
   useEffect(() => {
     const el = sec.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => { live.current = e.isIntersecting; el.dataset.live = e.isIntersecting && !lite ? "1" : "0"; }, { rootMargin: "80px" });
+    const io = new IntersectionObserver(([e]) => { el.dataset.live = e.isIntersecting ? "1" : "0"; }, { rootMargin: "80px" });
     io.observe(el); return () => io.disconnect();
-  }, [lite]);
+  }, []);
+  const rev = [...reviews].reverse();
   return (
-    <section ref={sec} id="reviews" className="py-24 md:py-36 bg-mist overflow-hidden">
+    <section ref={sec} id="reviews" className="py-24 md:py-36 bg-snow overflow-hidden border-t hair">
       <div className="wrap">
         <SectionHead eyebrow="Reviews" title={<>Loved by <em>12,000+</em> customers.</>} />
         <div className="flex items-center gap-3 -mt-6 mb-12 text-[13px] text-stone"><Stars value={4.7} size={14} />4.7 average · 1,240 verified reviews</div>
       </div>
-      {reduced ? (
-        <div className="flex gap-5 overflow-x-auto px-5 pb-4 snap-x no-scrollbar">{reviews.map((r, i) => <div key={r.id} className="snap-center"><ReviewCard r={r} i={i} lite /></div>)}</div>
-      ) : (
-        <m.div className="space-y-6 md:space-y-8" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-8% 0px" }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
-          <Row items={reviews} dir={1} speed={34} lite={lite} live={live} />
-          <div className="hidden md:block"><Row items={[...reviews].reverse()} dir={-1} speed={26} lite={lite} live={live} /></div>
-        </m.div>
-      )}
-      <p className="wrap mt-8 text-[11px] text-stone md:hidden">Swipe to browse · tap the heart to like</p>
+      <div className="space-y-5 md:space-y-6">
+        <Row items={reviews} speed={34} swipe={swipe} />
+        {!swipe && <div className="hidden md:block"><Row items={rev} rev speed={28} swipe={false} /></div>}
+      </div>
+      <p className="wrap mt-8 text-[11px] text-stone">{swipe ? "Swipe to browse · tap the heart to like" : "Hover or press to pause · tap the heart to like"}</p>
     </section>
   );
 }

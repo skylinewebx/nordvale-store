@@ -6,7 +6,7 @@ export default function Footer() {
   const go = useGoSection();
   const col = "space-y-1 text-[13px] text-ink/60 [&_a]:min-h-[36px] [&_a]:inline-flex [&_a]:items-center [&_a:hover]:text-ink";
   return (
-    <footer className="theme-red pt-20 pb-10 text-ink">
+    <footer className="bg-mist border-t border-accent/60 pt-20 pb-10 text-ink">
       <div className="wrap grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
         <div><p className="font-display text-[26px] tracking-[0.38em]">{BRAND.name}</p><p className="text-[13px] text-ink/50 mt-4 max-w-[220px]">{BRAND.tagline}</p></div>
         <nav aria-label="Shop"><p className="eyebrow !text-ink/40 mb-4">Shop</p><ul className={col}><li><button onClick={() => go("collection")}>Collection</button></li><li><button onClick={() => go("lookbook")}>Lookbook</button></li><li><button onClick={() => go("craft")}>Fabrics</button></li><li><button onClick={() => go("size-guide")}>Size guide</button></li></ul></nav>
