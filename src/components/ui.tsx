@@ -26,10 +26,15 @@ export function SplitReveal({ text, className = "" }: { text: string; className?
 
 export function SectionHead({ eyebrow, title, className = "" }: { eyebrow: string; title: ReactNode; className?: string }) {
   return (
-    <Reveal className={`mb-10 md:mb-16 ${className}`}>
-      <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-3 text-[clamp(28px,4.2vw,48px)] leading-[1.1]">{title}</h2>
-    </Reveal>
+    <div className={`mb-10 md:mb-16 ${className}`}>
+      <div className="flex items-center gap-4 overflow-hidden">
+        <m.span className="block h-px w-10 bg-current opacity-40 origin-left" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true, margin: "-8% 0px" }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+        <m.p className="eyebrow" initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-8% 0px" }} transition={{ duration: 0.8, delay: 0.1 }}>{eyebrow}</m.p>
+      </div>
+      <h2 className="mt-3 text-[clamp(28px,4.2vw,48px)] leading-[1.1] overflow-hidden pb-[0.12em]">
+        <m.span className="block" initial={{ y: "105%" }} whileInView={{ y: 0 }} viewport={{ once: true, margin: "-8% 0px" }} transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}>{title}</m.span>
+      </h2>
+    </div>
   );
 }
 

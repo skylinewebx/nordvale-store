@@ -22,10 +22,8 @@ export const fabrics: Fabric[] = [
     note: "Wool-blend twill and Scottish-spun tweed. They hold a crease, breathe naturally and get better with age." },
   { key: "linen", name: "European Linen", gsmNum: 190, gsmRange: "180–200 GSM", warmth: 1, icon: "leaf", feel: "Airy, crisp, relaxed", bestFor: "Drawstring trousers, warm rooms",
     note: "Flax from Europe, pre-washed until soft. Linen breathes and dries quickly, and the creases are part of the charm." },
-  { key: "cotton-jersey", name: "Cotton Jersey", gsmNum: 280, gsmRange: "220–280 GSM", warmth: 2, icon: "cotton", feel: "Smooth, heavy, easy", bestFor: "T-shirts, layering",
-    note: "Combed long-staple cotton knitted into a heavyweight jersey or a fine rib. Pre-shrunk and garment-washed, so it keeps its shape." },
-  { key: "knit", name: "Textured Knit", gsmNum: 240, gsmRange: "220–260 GSM", warmth: 2, icon: "fleece", feel: "Honeycomb, soft, tidy", bestFor: "Polos, smart-casual",
-    note: "A cotton-viscose honeycomb knit with a soft hand and a clean drape. Smarter than a tee, easier than a shirt." },
+  { key: "cotton-jersey", name: "Cotton Jersey", gsmNum: 280, gsmRange: "220–280 GSM", warmth: 2, icon: "cotton", feel: "Smooth, heavy, easy", bestFor: "T-shirts, polos, layering",
+    note: "Combed long-staple cotton knitted into a heavyweight jersey, a fine rib or a textured polo knit. Pre-shrunk and garment-washed, so it keeps its shape." },
 ];
 
 export const whyUs = [

@@ -21,6 +21,7 @@ const ProductPage = lazy(() => import("./pages/Misc").then((m) => ({ default: m.
 const Track = lazy(() => import("./pages/Misc").then((m) => ({ default: m.Track })));
 import Deferred from "./components/Deferred";
 import Footer from "./sections/Footer";
+import ScrollProgress from "./components/ScrollProgress";
 
 export default function App() {
   const location = useLocation(); const { pathname } = location;
@@ -40,6 +41,7 @@ export default function App() {
   }, [catLoaded]);
   return (
     <>
+      <ScrollProgress />
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:bg-snow focus:p-3">Skip to content</a>
       {pathname === "/" && <Loader />}
       <Navbar />

@@ -121,6 +121,7 @@ export function Craft() {
         gsap.set(q(row, ".cf-fig"), { xPercent: dir * 14, opacity: 0 });
         gsap.set(q(row, ".cf-txt"), { xPercent: -dir * 8, opacity: 0 });
         gsap.set(q(row, ".cf-dot"), { scale: 0 });
+        gsap.set(q(row, ".cf-zoom"), { scale: 1.22 });
         gsap.set(row.querySelectorAll(".cf-bar"), { scaleX: 0 });
         q(row, ".cf-gsm").textContent = "0"; q(row, ".cf-warm").textContent = "0";
       });
@@ -134,6 +135,7 @@ export function Craft() {
           gsap.timeline()
             .to(q(row as HTMLElement, ".cf-fig"), { xPercent: 0, opacity: 1, duration: 1.2, ease: "power3.out", clearProps: "transform,opacity" }) // clearProps: the layer is released once it has landed
             .to(q(row as HTMLElement, ".cf-txt"), { xPercent: 0, opacity: 1, duration: 1.1, ease: "power3.out", clearProps: "transform,opacity" }, 0.12)
+            .to(q(row as HTMLElement, ".cf-zoom"), { scale: 1, duration: 2.2, ease: "power2.out", clearProps: "transform" }, 0)
             .to(q(row as HTMLElement, ".cf-dot"), { scale: 1, duration: 0.5, ease: "back.out(2.4)", clearProps: "transform" }, 0.1)
             .to(o, { g: Number(gsm.dataset.to), w: Number(warm.dataset.to), duration: 1.8, ease: "power2.out", onUpdate: () => { wg(o.g); ww(o.w); }, onComplete: () => { wg(o.g, true); ww(o.w, true); } }, 0.35)
             .to((row as HTMLElement).querySelectorAll(".cf-bar"), { scaleX: 1, duration: 0.5, stagger: 0.12, ease: "power2.out", clearProps: "transform" }, 0.6);
@@ -173,7 +175,7 @@ export function Craft() {
                 <figure className={`cf-fig group md:col-span-7 ${left ? "" : "md:col-start-6 md:order-2"}`}>
                   <div className="relative aspect-square overflow-hidden bg-snow/5">
                     <div className="cf-par absolute inset-x-0 -top-[8%] h-[116%]">
-                      <SmartImg src={P.fabric(f.key)} alt={`Macro close-up of ${f.name} fabric`} className="absolute inset-0" imgClass="transition-transform duration-[1400ms] ease-out group-hover:scale-[1.07]" fallback={<FabricFallback k={f.key} />} />
+                      <div className="cf-zoom absolute inset-0"><SmartImg src={P.fabric(f.key)} alt={`Macro close-up of ${f.name} fabric`} className="absolute inset-0" imgClass="transition-transform duration-[1400ms] ease-out group-hover:scale-[1.07]" fallback={<FabricFallback k={f.key} />} /></div>
                     </div>
                     <figcaption className="absolute bottom-4 left-4 eyebrow !text-snow/70 pointer-events-none">{f.gsmRange}</figcaption>
                   </div>
