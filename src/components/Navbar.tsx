@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { BRAND } from "../config/assets";
 import { scrollToId } from "../lib/scroll";
 import { totals, useStore } from "../store/useStore";
@@ -34,10 +34,10 @@ export default function Navbar() {
     <header className="sticky top-0 z-50">
       <div className="bg-ink text-snow h-9 flex items-center justify-center overflow-hidden" role="region" aria-label="Announcements">
         <AnimatePresence mode="wait">
-          <motion.p key={i} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -12, opacity: 0 }} transition={{ duration: 0.4 }} className="text-[10px] uppercase tracking-[0.2em] font-light px-4 text-center">{MSGS[i]}</motion.p>
+          <m.p key={i} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -12, opacity: 0 }} transition={{ duration: 0.4 }} className="text-[10px] uppercase tracking-[0.2em] font-light px-4 text-center">{MSGS[i]}</m.p>
         </AnimatePresence>
       </div>
-      <nav className={`transition-colors duration-500 border-b ${scrolled ? "bg-snow/85 backdrop-blur-md hair" : "bg-snow/60 backdrop-blur-sm border-transparent"}`} aria-label="Main">
+      <nav className={`transition-colors duration-500 border-b ${scrolled ? "bg-snow/95 hair" : "bg-snow/95 border-transparent"}`} aria-label="Main">
         <div className="wrap h-14 md:h-16 grid grid-cols-[1fr_auto_1fr] items-center">
           <div className="flex items-center">
             <button className={`${iconBtn} md:hidden -ml-3`} onClick={() => setMenu(true)} aria-label="Open menu"><Icon name="menu" /></button>
@@ -61,23 +61,23 @@ export default function Navbar() {
 
       <AnimatePresence>
         {menu && (
-          <motion.div className="fixed inset-0 z-[90] bg-snow flex flex-col" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} role="dialog" aria-modal="true" aria-label="Menu">
+          <m.div className="fixed inset-0 z-[90] bg-snow flex flex-col" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} role="dialog" aria-modal="true" aria-label="Menu">
             <div className="wrap h-14 flex items-center justify-between">
               <span className="font-display text-[22px] tracking-[0.38em]">{BRAND.name}</span>
               <button className={`${iconBtn} -mr-3`} onClick={() => setMenu(false)} aria-label="Close menu"><Icon name="close" /></button>
             </div>
             <ul className="wrap flex-1 flex flex-col justify-center gap-1">
               {LINKS.map(([l, id], k) => (
-                <motion.li key={id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.08 * k + 0.1 }}>
+                <m.li key={id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.08 * k + 0.1 }}>
                   <button onClick={() => { setMenu(false); setTimeout(() => go(id), 250); }} className="font-display text-[40px] font-light py-2 min-h-[56px] w-full text-left">{l}</button>
-                </motion.li>
+                </m.li>
               ))}
               <li className="mt-6 flex gap-6 text-[12px] uppercase tracking-[0.18em] text-stone">
                 <Link to="/track" onClick={() => setMenu(false)}>Track order</Link>
                 <button onClick={() => { setMenu(false); set({ wishlistOpen: true }); }}>Wishlist ({wish})</button>
               </li>
             </ul>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </header>

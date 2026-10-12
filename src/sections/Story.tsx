@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { P } from "../config/assets";
@@ -9,6 +9,12 @@ import SmartImg from "../components/SmartImg";
 import { Reveal, SectionHead } from "../components/ui";
 import { fabrics, storyLines, whyUs } from "../data/content";
 import { perfLite, reducedMotion } from "../lib/env";
+
+// Counter text is written at most every 90 ms (a textContent write per frame forces layout + paint: it cost ~6 ms/frame while scrolling)
+const writer = (el: HTMLElement) => { let last = 0; return (v: number, force = false) => { const n = performance.now(); if (force || n - last > 90) { el.textContent = String(Math.round(v)); last = n; } }; };
+
+// GSAP setup runs in its own short task right after the section mounts (the section is below the fold, so nothing flashes)
+const deferSetup = (setup: () => (() => void) | void) => { let c: (() => void) | void; const id = setTimeout(() => { c = setup(); }, 40); return () => { clearTimeout(id); if (c) c(); }; };
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,7 +31,7 @@ const STATS = [
 
 export function Story() {
   const root = useRef<HTMLElement>(null);
-  useLayoutEffect(() => {
+  useEffect(() => deferSetup(() => {
     const reduced = reducedMotion(), lite = perfLite();
     const ctx = gsap.context(() => {
       const counters = gsap.utils.toArray<HTMLElement>(".st-count");
@@ -41,20 +47,21 @@ export function Story() {
       // counters
       counters.forEach((el) => {
         const o = { v: 0 }, to = Number(el.dataset.to);
-        gsap.to(o, { v: to, duration: 1.8, ease: "power2.out", scrollTrigger: { trigger: ".st-stats", start: "top 88%" }, onUpdate: () => { el.textContent = String(Math.round(o.v)); } });
+        const w = writer(el);
+        gsap.to(o, { v: to, duration: 1.8, ease: "power2.out", scrollTrigger: { trigger: ".st-stats", start: "top 88%" }, onUpdate: () => w(o.v), onComplete: () => w(to, true) });
       });
     }, root);
     return () => ctx.revert();
-  }, []);
+  }), []);
 
   return (
     <section ref={root} id="story" className="relative py-28 md:py-44 wrap grid md:grid-cols-12 gap-12 md:gap-16 items-center">
-      <div className="st-vline hidden md:block absolute left-0 top-28 bottom-28 w-px bg-ink/15 origin-top will-change-transform" aria-hidden="true" />
+      <div className="st-vline hidden md:block absolute left-0 top-28 bottom-28 w-px bg-ink/15 origin-top" aria-hidden="true" />
       <div className="st-text md:col-span-6 md:pl-10">
         <p className="eyebrow mb-8">Our Story</p>
         <h2 className="font-display font-light text-[clamp(26px,3.3vw,46px)] leading-[1.2]" aria-label={storyLines.join(" ")}>
           {storyLines.map((l) => (
-            <span key={l} className="block overflow-hidden pb-[0.12em]" aria-hidden="true"><span className="st-line block will-change-transform">{l}</span></span>
+            <span key={l} className="block overflow-hidden pb-[0.12em]" aria-hidden="true"><span className="st-line block">{l}</span></span>
           ))}
         </h2>
         <p className="st-sub mt-10 max-w-md text-[14px] text-ink/70">Nordvale began with a single sample, cut from a fleece so dense it held its shape on the hanger. Sixteen pieces later, across hoodies, jackets, trousers and tees, we still design around one idea: quality you can feel, craft you can see.</p>
@@ -63,7 +70,7 @@ export function Story() {
           <dl className="grid grid-cols-3 gap-4 pt-6">
             {STATS.map((s) => (
               <div key={s.label}>
-                <dd className="font-display text-[clamp(34px,4vw,52px)] leading-none tabular-nums"><span className="st-count" data-to={s.to}>{s.to}</span></dd>
+                <dd className="font-display text-[clamp(34px,4vw,52px)] leading-none tabular-nums"><span className="st-count inline-block" style={{ contain: "layout paint", minWidth: `${String(s.to).length}ch` }} data-to={s.to}>{s.to}</span></dd>
                 <dt className="eyebrow mt-2">{s.label}</dt>
               </div>
             ))}
@@ -71,9 +78,9 @@ export function Story() {
         </div>
       </div>
       <div className="st-imgwrap md:col-span-6">
-        <div className="st-img will-change-transform">
+        <div className="st-img">
           <figure className="relative aspect-[4/5] overflow-hidden">
-            <div className="st-par absolute inset-x-0 -top-[6%] h-[112%] will-change-transform">
+            <div className="st-par absolute inset-x-0 -top-[6%] h-[112%]">
               <SmartImg src={P.story} alt="The model wearing the Nordvale Nordic Drift hoodie in a plain light studio" eager className="absolute inset-0"
                 fallback={<ProductImage product={HERO} colorId={HERO_COLOR.id} variant="detail" className="absolute inset-0" />} />
             </div>
@@ -101,29 +108,53 @@ function FabricFallback({ k }: { k: string }) {
 
 export function Craft() {
   const root = useRef<HTMLElement>(null);
-  useLayoutEffect(() => {
+  const measureRef = useRef<() => void>(() => {});
+  useEffect(() => deferSetup(() => {
     const reduced = reducedMotion(), lite = perfLite();
     const ctx = gsap.context(() => {
-      if (!reduced) gsap.fromTo(".cf-line", { scaleY: 0 }, { scaleY: 1, ease: "none", scrollTrigger: { trigger: ".cf-list", start: "top 65%", end: "bottom 70%", scrub: 0.6 } });
-      gsap.utils.toArray<HTMLElement>(".cf-row").forEach((row, i) => {
+      const rows = gsap.utils.toArray<HTMLElement>(".cf-row");
+      if (reduced) return;
+      const q = (row: HTMLElement, s: string) => row.querySelector<HTMLElement>(s)!;
+      // initial (hidden) states, set once
+      rows.forEach((row, i) => {
         const dir = i % 2 === 0 ? -1 : 1; // even rows: image on the left, slides in from the left
-        const q = (s: string) => row.querySelector<HTMLElement>(s)!;
-        const gsm = q(".cf-gsm"), warm = q(".cf-warm");
-        const gTo = Number(gsm.dataset.to), wTo = Number(warm.dataset.to);
-        if (reduced) return;
-        gsm.textContent = "0"; warm.textContent = "0";
-        const o = { g: 0, w: 0 };
-        gsap.timeline({ scrollTrigger: { trigger: row, start: "top 76%", toggleActions: "play none none none" } })
-          .fromTo(q(".cf-fig"), { xPercent: dir * 14, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 1.2, ease: "power3.out" })
-          .fromTo(q(".cf-txt"), { xPercent: -dir * 8, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 1.1, ease: "power3.out" }, 0.12)
-          .fromTo(q(".cf-dot"), { scale: 0 }, { scale: 1, duration: 0.5, ease: "back.out(2.4)" }, 0.1)
-          .to(o, { g: gTo, w: wTo, duration: 1.8, ease: "power2.out", onUpdate: () => { gsm.textContent = String(Math.round(o.g)); warm.textContent = String(Math.round(o.w)); } }, 0.35)
-          .fromTo(row.querySelectorAll(".cf-bar"), { scaleX: 0 }, { scaleX: 1, duration: 0.5, stagger: 0.12, ease: "power2.out" }, 0.6);
-        if (!lite) gsap.fromTo(q(".cf-par"), { yPercent: -7 }, { yPercent: 7, ease: "none", scrollTrigger: { trigger: row, start: "top bottom", end: "bottom top", scrub: true } });
+        gsap.set(q(row, ".cf-fig"), { xPercent: dir * 14, opacity: 0 });
+        gsap.set(q(row, ".cf-txt"), { xPercent: -dir * 8, opacity: 0 });
+        gsap.set(q(row, ".cf-dot"), { scale: 0 });
+        gsap.set(row.querySelectorAll(".cf-bar"), { scaleX: 0 });
+        q(row, ".cf-gsm").textContent = "0"; q(row, ".cf-warm").textContent = "0";
       });
+      // ONE batched trigger for all rows' entrances (instead of one trigger per row)
+      ScrollTrigger.batch(rows, {
+        start: "top 80%", once: true, interval: 0.1,
+        onEnter: (batch) => batch.forEach((row) => {
+          const i = rows.indexOf(row as HTMLElement);
+          const gsm = q(row as HTMLElement, ".cf-gsm"), warm = q(row as HTMLElement, ".cf-warm");
+          const o = { g: 0, w: 0 }, wg = writer(gsm), ww = writer(warm);
+          gsap.timeline()
+            .to(q(row as HTMLElement, ".cf-fig"), { xPercent: 0, opacity: 1, duration: 1.2, ease: "power3.out", clearProps: "transform,opacity" }) // clearProps: the layer is released once it has landed
+            .to(q(row as HTMLElement, ".cf-txt"), { xPercent: 0, opacity: 1, duration: 1.1, ease: "power3.out", clearProps: "transform,opacity" }, 0.12)
+            .to(q(row as HTMLElement, ".cf-dot"), { scale: 1, duration: 0.5, ease: "back.out(2.4)", clearProps: "transform" }, 0.1)
+            .to(o, { g: Number(gsm.dataset.to), w: Number(warm.dataset.to), duration: 1.8, ease: "power2.out", onUpdate: () => { wg(o.g); ww(o.w); }, onComplete: () => { wg(o.g, true); ww(o.w, true); } }, 0.35)
+            .to((row as HTMLElement).querySelectorAll(".cf-bar"), { scaleX: 1, duration: 0.5, stagger: 0.12, ease: "power2.out", clearProps: "transform" }, 0.6);
+          void i;
+        }),
+      });
+      gsap.fromTo(".cf-line", { scaleY: 0 }, { scaleY: 1, ease: "none", scrollTrigger: { trigger: ".cf-list", start: "top 65%", end: "bottom 70%", scrub: 0.6 } });
+      // ONE trigger for all parallax layers: positions are cached on refresh, so scrolling reads no layout
+      if (!lite) {
+        const items = rows.map((row) => { const el = q(row, ".cf-par"); gsap.set(el, { force3D: true }); return { row, el, set: gsap.quickSetter(el, "yPercent") as (v: number) => void, top: 0, h: 0 }; });
+        const measure = () => items.forEach((it) => { const r = it.row.getBoundingClientRect(); it.top = r.top + window.scrollY; it.h = r.height; });
+        measureRef.current = measure; measure(); ScrollTrigger.addEventListener("refresh", measure);
+        ScrollTrigger.create({ trigger: ".cf-list", start: "top bottom", end: "bottom top", onUpdate: () => {
+          if (document.documentElement.dataset.lite) { for (const it of items) it.set(0); return; } // LITE mode (FPS monitor): no parallax
+          const y = window.scrollY, vh = window.innerHeight;
+          for (const it of items) { if (it.top > y + vh || it.top + it.h < y) continue; it.set(((y + vh - it.top) / (vh + it.h) * 2 - 1) * 7); }
+        } });
+      }
     }, root);
-    return () => ctx.revert();
-  }, []);
+    return () => { ScrollTrigger.removeEventListener("refresh", measureRef.current); ctx.revert(); };
+  }), []);
 
   return (
     <section ref={root} id="craft" className="py-24 md:py-36 bg-ink text-snow overflow-hidden">
@@ -132,22 +163,22 @@ export function Craft() {
         <div className="cf-list relative pl-8 md:pl-0 space-y-16 md:space-y-28">
           {/* thin line connecting the items; draws as you scroll */}
           <div className="absolute top-0 bottom-0 left-[3px] md:left-1/2 w-px bg-snow/10" aria-hidden="true">
-            <div className="cf-line absolute inset-0 bg-snow/50 origin-top will-change-transform" />
+            <div className="cf-line absolute inset-0 bg-snow/50 origin-top" />
           </div>
           {fabrics.map((f, i) => {
             const left = i % 2 === 0;
             return (
               <article key={f.key} className="cf-row relative grid md:grid-cols-12 gap-8 md:gap-12 items-center">
                 <span className="cf-dot absolute -left-[33px] md:left-1/2 -top-6 md:-top-14 w-[7px] h-[7px] -ml-[0px] md:-ml-[3px] rounded-full bg-snow z-20" aria-hidden="true" />
-                <figure className={`cf-fig group md:col-span-7 will-change-transform ${left ? "" : "md:col-start-6 md:order-2"}`}>
+                <figure className={`cf-fig group md:col-span-7 ${left ? "" : "md:col-start-6 md:order-2"}`}>
                   <div className="relative aspect-square overflow-hidden bg-snow/5">
-                    <div className="cf-par absolute inset-x-0 -top-[8%] h-[116%] will-change-transform">
+                    <div className="cf-par absolute inset-x-0 -top-[8%] h-[116%]">
                       <SmartImg src={P.fabric(f.key)} alt={`Macro close-up of ${f.name} fabric`} className="absolute inset-0" imgClass="transition-transform duration-[1400ms] ease-out group-hover:scale-[1.07]" fallback={<FabricFallback k={f.key} />} />
                     </div>
                     <figcaption className="absolute bottom-4 left-4 eyebrow !text-snow/70 pointer-events-none">{f.gsmRange}</figcaption>
                   </div>
                 </figure>
-                <div className={`cf-txt md:col-span-5 will-change-transform ${left ? "md:col-start-8" : "md:col-start-1 md:order-1"}`}>
+                <div className={`cf-txt md:col-span-5 ${left ? "md:col-start-8" : "md:col-start-1 md:order-1"}`}>
                   <div className="flex items-center gap-4 text-snow/60">
                     <span className="font-display text-[56px] md:text-[72px] font-light leading-none text-snow/25">{String(i + 1).padStart(2, "0")}</span>
                     <Icon name={f.icon} size={34} sw={0.8} />
@@ -157,12 +188,12 @@ export function Craft() {
                   <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-snow/15 pt-6">
                     <div>
                       <dt className="eyebrow !text-snow/45">Weight</dt>
-                      <dd className="mt-2 font-display text-[40px] leading-none tabular-nums"><span className="cf-gsm" data-to={f.gsmNum}>{f.gsmNum}</span><span className="text-[13px] font-sans text-snow/50 ml-1">GSM</span></dd>
+                      <dd className="mt-2 font-display text-[40px] leading-none tabular-nums"><span className="cf-gsm inline-block" style={{ contain: "layout paint", minWidth: `${String(f.gsmNum).length}ch` }} data-to={f.gsmNum}>{f.gsmNum}</span><span className="text-[13px] font-sans text-snow/50 ml-1">GSM</span></dd>
                     </div>
                     <div>
                       <dt className="eyebrow !text-snow/45">Warmth</dt>
                       <dd className="mt-2">
-                        <span className="font-display text-[40px] leading-none tabular-nums"><span className="cf-warm" data-to={f.warmth}>{f.warmth}</span><span className="text-[13px] font-sans text-snow/50 ml-1">/ 5</span></span>
+                        <span className="font-display text-[40px] leading-none tabular-nums"><span className="cf-warm inline-block" style={{ contain: "layout paint", minWidth: "1ch" }} data-to={f.warmth}>{f.warmth}</span><span className="text-[13px] font-sans text-snow/50 ml-1">/ 5</span></span>
                         <span className="flex gap-1 mt-3" aria-hidden="true">{[1, 2, 3, 4, 5].map((n) => <span key={n} className="relative w-5 h-[2px] bg-snow/20 overflow-hidden"><span className={`cf-bar absolute inset-0 origin-left bg-snow ${n <= f.warmth ? "" : "hidden"}`} /></span>)}</span>
                       </dd>
                     </div>

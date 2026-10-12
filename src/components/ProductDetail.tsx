@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { BRAND, money } from "../config/assets";
 import { colorOf, effectivePrice, photoKey, Product, products, SIZE_CHARTS } from "../data/products";
 import { detailUrl, useCatalog } from "../lib/catalog";
@@ -17,7 +17,7 @@ function Acc({ title, children, open: o = false }: { title: string; children: Re
         {title}<Icon name={open ? "minus" : "plus"} size={16} />
       </button>
       <AnimatePresence initial={false}>
-        {open && <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden"><div className="pb-5 text-[13px] text-ink/75 leading-relaxed">{children}</div></motion.div>}
+        {open && <m.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden"><div className="pb-5 text-[13px] text-ink/75 leading-relaxed">{children}</div></m.div>}
       </AnimatePresence>
     </div>
   );
@@ -93,13 +93,13 @@ export default function ProductDetail({ product: p, onOpen }: { product: Product
           {err && <p role="alert" className="text-[12px] text-accent mt-2">Please select a size.</p>}
           <AnimatePresence>
             {guide && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+              <m.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                 <table className="w-full mt-4 text-[12px] text-center"><caption className="sr-only">{chart.title} size chart in centimetres</caption>
                   <thead className="text-stone"><tr>{chart.head.map((h) => <th key={h} scope="col" className="py-2 font-light">{h}</th>)}</tr></thead>
                   <tbody>{chart.rows.map((r) => <tr key={r[0]} className={`border-t hair ${r[0] === size ? "bg-mist/60" : ""}`}>{r.map((cell, i) => <td key={i} className="py-2">{cell}</td>)}</tr>)}</tbody>
                 </table>
                 <p className="text-[11px] text-stone mt-2">Measurements in cm{p.category === "trousers" ? " (waist size in inches)" : ""}. {chart.note}</p>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </fieldset>

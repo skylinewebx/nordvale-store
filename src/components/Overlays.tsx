@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { money } from "../config/assets";
 import { getProduct, products } from "../data/products";
 import { useStore } from "../store/useStore";
@@ -81,10 +81,10 @@ export function SearchOverlay() {
           <AnimatePresence mode="popLayout">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {results.map((p) => (
-                <motion.button layout key={p.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-left" onClick={() => { close(); setTimeout(() => set({ openProduct: p.slug }), 300); }}>
+                <m.button layout key={p.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-left" onClick={() => { close(); setTimeout(() => set({ openProduct: p.slug }), 300); }}>
                   <div className="aspect-[3/4] relative"><ProductImage product={p} colorId={p.colors[0].id} className="absolute inset-0" /></div>
                   <p className="font-display text-[19px] mt-2">{p.name}</p><p className="text-[12px] text-stone">{p.category}</p>
-                </motion.button>
+                </m.button>
               ))}
             </div>
           </AnimatePresence>
@@ -100,11 +100,11 @@ export function CookieNotice() {
   return (
     <AnimatePresence>
       {c === "unset" && (
-        <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ delay: 2.5 }} role="region" aria-label="Cookie notice"
+        <m.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ delay: 2.5 }} role="region" aria-label="Cookie notice"
           className="fixed z-[60] bottom-4 left-4 right-4 md:right-auto md:max-w-[400px] bg-snow border hair p-5 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
           <p className="text-[13px] text-ink/80">We use a few cookies to remember your bag and improve the site. See our <Link className="underline" to="/privacy">privacy notice</Link>.</p>
           <div className="flex gap-3 mt-4"><button className="btn btn-solid flex-1 !px-4" onClick={() => set("accepted")}>Accept</button><button className="btn btn-line flex-1 !px-4" onClick={() => set("declined")}>Decline</button></div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

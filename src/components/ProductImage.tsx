@@ -6,6 +6,9 @@ import { colorOf, photoKey, Product } from "../data/products";
 import { reducedMotion } from "../lib/env";
 
 // ── clean placeholder (used only while a photo does not exist yet) ──
+/** true when the caller already positions the box (absolute/relative/fixed), so we must not add `relative` */
+const hasPos = (c: string) => c.split(" ").some((t) => t === "absolute" || t === "relative" || t === "fixed");
+
 export function Placeholder({ product, hex }: { product: Product; hex: string }) {
   const loaded = useCatalog((s) => s.loaded);
   if (!loaded) return <div className="skeleton absolute inset-0" aria-hidden="true" />; // manifest still loading
@@ -16,27 +19,28 @@ export function Placeholder({ product, hex }: { product: Product; hex: string })
   );
 }
 
-const lqipStyle = (it?: CatItem) => (it ? { backgroundImage: `url(${it.lqip})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined);
+const lqipStyle = (it: CatItem | undefined, show: boolean) => (it && show ? { backgroundImage: `url(${it.lqip})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined);
 const hi = (p: boolean) => (p ? ({ fetchpriority: "high" } as object) : {});
+const SIZES_CARD = "(max-width: 767px) 170px, 270px"; // a card is never wider than this, so DPR ≤ 2 (desktop) / ≤ 3 (phone) picks the 540w variant
 
-/** Single image: LQIP blur instantly, sharp image fades in (opacity only). No fade when already cached. */
+/** Single image: LQIP blur instantly, sharp image fades in (opacity only). The blur is ALWAYS removed on load or on error. */
 export function ProductImage({ product, colorId, className = "", variant = "card", priority = false }: { product: Product; colorId?: string; className?: string; variant?: "card" | "detail"; priority?: boolean }) {
   const color = colorOf(product, colorId);
   const key = photoKey(product.slug, color.slug);
   const it = useCatalog((s) => s.items[key]);
   const url = it ? (variant === "card" ? cardUrl(key, it) : detailUrl(key, it)) : null;
-  const [ok, setOk] = useState(() => !!url && isDecoded(url));
-  useEffect(() => { setOk(!!url && isDecoded(url)); }, [url]);
+  const [st, setSt] = useState<"loading" | "ok" | "err">(() => (url && isDecoded(url) ? "ok" : "loading"));
+  useEffect(() => { setSt(url && isDecoded(url) ? "ok" : "loading"); }, [url]);
   return (
-    <div className={`overflow-hidden ${/\b(absolute|relative|fixed)\b/.test(className) ? "" : "relative"} ${className}`} style={lqipStyle(it)}>
-      {!it && <Placeholder product={product} hex={color.hex} />}
-      {it && url && (
+    <div className={`overflow-hidden ${hasPos(className) ? "" : "relative"} ${className}`} style={lqipStyle(it, st === "loading")}>
+      {(!it || st === "err") && <Placeholder product={product} hex={color.hex} />}
+      {it && url && st !== "err" && (
         <img
-          src={url} alt={`${product.name} in ${color.name}`} width={it.cw} height={it.ch} decoding="async" draggable={false}
+          src={url} alt={`${product.name} in ${color.name}`} width={variant === "card" ? it.cw : it.w} height={variant === "card" ? it.ch : it.h} decoding="async" draggable={false}
           loading={priority ? "eager" : "lazy"} {...hi(priority)}
-          ref={(el) => { if (el?.complete && el.naturalWidth && !ok) setOk(true); }}
-          onLoad={() => setOk(true)}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${ok ? "opacity-100" : "opacity-0"}`}
+          ref={(el) => { if (el?.complete && el.naturalWidth && st === "loading") setSt("ok"); }}
+          onLoad={() => setSt("ok")} onError={() => setSt("err")}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${st === "ok" ? "opacity-100" : "opacity-0"}`}
           style={{ objectPosition: product.objectPosition }}
         />
       )}
@@ -44,53 +48,60 @@ export function ProductImage({ product, colorId, className = "", variant = "card
   );
 }
 
+interface LayerProps { src: string | null; visible: boolean; alt: string; w: number; h: number; pos: string; priority: boolean; srcSet?: string; sizes?: string; onReady: (u: string) => void; onFail: (u: string) => void }
+function Layer({ src, visible, alt, w, h, pos, priority, srcSet, sizes, onReady, onFail }: LayerProps) {
+  const ref = useRef<HTMLImageElement>(null);
+  useEffect(() => { const el = ref.current; if (el && src && el.complete && el.naturalWidth) onReady(src); }, [src]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!src) return null;
+  return (
+    <img ref={ref} src={src} srcSet={srcSet} sizes={sizes} alt={visible ? alt : ""} aria-hidden={!visible} width={w} height={h} draggable={false} decoding="async"
+      loading={priority ? "eager" : "lazy"} {...hi(priority)} onLoad={() => onReady(src)} onError={() => onFail(src)}
+      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-100 ease-linear ${visible ? "opacity-100" : "opacity-0"}`} style={{ objectPosition: pos }} />
+  );
+}
+
 /**
- * Two stacked <img> layers that never unmount. Changing `urls` loads the new image, then crossfades (90ms)
- * from one layer to the other, so a swatch tap never flickers. `urls` is ordered low→high quality: the best
- * one already in memory is shown at once, then it upgrades as better versions finish decoding.
+ * Two stacked <img> layers that never unmount. A new target (colour swatch, or the sharper detail variant) is loaded into the
+ * hidden layer, and only when it has really loaded do the layers swap by opacity (100ms): no flicker, no blank frame.
+ * onError keeps the current image (or shows the placeholder); the blur is removed as soon as anything has loaded or failed.
  */
 export function SwapImage({ product, colorId, upgrade = false, priority = false, className = "" }: { product: Product; colorId?: string; upgrade?: boolean; priority?: boolean; className?: string }) {
   const color = colorOf(product, colorId);
   const key = photoKey(product.slug, color.slug);
   const it = useCatalog((s) => s.items[key]);
-  const urls = it ? (upgrade ? [cardUrl(key, it), detailUrl(key, it)] : [cardUrl(key, it)]) : [];
-  const sig = urls.join("|");
+  const card = it ? cardUrl(key, it) : null;
+  const detail = it && upgrade ? detailUrl(key, it) : null;
 
-  const initial = [...urls].reverse().find(isDecoded) ?? null;
-  const [layers, setLayers] = useState<{ a: string | null; b: string | null; top: "a" | "b" }>({ a: initial, b: null, top: "a" });
-  const shown = useRef(initial ? urls.indexOf(initial) : -1);
+  const start = detail && isDecoded(detail) ? detail : card;
+  const [s, setS] = useState<{ a: string | null; b: string | null; top: "a" | "b"; settled: boolean; failed: boolean }>({ a: start, b: null, top: "a", settled: !!start && isDecoded(start), failed: false });
+  const wanted = useRef<string | null>(start);
 
+  const retarget = (url: string | null) => {
+    wanted.current = url;
+    if (!url) return;
+    setS((p) => { const cur = p.top === "a" ? p.a : p.b; if (cur === url) return p; return p.top === "a" ? { ...p, b: url } : { ...p, a: url }; });
+  };
+  const onReady = (url: string) => {
+    if (url !== wanted.current) return;
+    setS((p) => { const cur = p.top === "a" ? p.a : p.b; const to = p.a === url ? "a" : p.b === url ? "b" : null; return cur === url || !to ? { ...p, settled: true, failed: false } : { ...p, top: to, settled: true, failed: false }; });
+  };
+  const onFail = (url: string) => { if (url === wanted.current) setS((p) => ({ ...p, settled: true, failed: p.top === "a" ? !p.a || p.a === url : !p.b || p.b === url })); };
+
+  useEffect(() => { if (card) retarget(detail && isDecoded(detail) ? detail : card); }, [card]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!urls.length) return;
+    if (!detail) return;
     let live = true;
-    const show = (u: string, idx: number) => {
-      shown.current = idx;
-      setLayers((l) => { const cur = l.top === "a" ? l.a : l.b; if (cur === u) return l; return l.top === "a" ? { ...l, b: u, top: "b" } : { ...l, a: u, top: "a" }; });
-    };
-    shown.current = -1;
-    const best = urls.map((u, i) => [u, i] as const).reverse().find(([u]) => isDecoded(u));
-    if (best) show(best[0], best[1]);
-    (async () => {
-      for (let i = 0; i < urls.length; i++) {
-        try { await loadImage(urls[i], i === 0 && priority ? "high" : i === 0 ? "auto" : "low"); } catch { return; }
-        if (!live) return;
-        if (i > shown.current) show(urls[i], i);
-      }
-    })();
+    loadImage(detail, "low").then(() => { if (live) retarget(detail); }).catch(() => {});
     return () => { live = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sig]);
+  }, [detail]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const layer = (u: string | null, on: boolean, id: string) => u && it && (
-    <img key={id} src={u} alt={on ? `${product.name} in ${color.name}` : ""} aria-hidden={!on} width={it.w} height={it.h} draggable={false}
-      loading={priority ? "eager" : "lazy"} {...hi(priority)}
-      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-100 ease-linear ${on ? "opacity-100" : "opacity-0"}`} style={{ objectPosition: product.objectPosition }} />
-  );
+  const common = { alt: `${product.name} in ${color.name}`, w: it?.cw ?? 540, h: it?.ch ?? 960, pos: product.objectPosition, priority, onReady, onFail };
+  const srcSet = (u: string | null) => (u && !upgrade && u === card && it ? `${card} 540w, ${detailUrl(key, it)} 1080w` : undefined);
   return (
-    <div className={`overflow-hidden ${/\b(absolute|relative|fixed)\b/.test(className) ? "" : "relative"} ${className}`} style={lqipStyle(it)}>
-      {!it && <Placeholder product={product} hex={color.hex} />}
-      {layer(layers.a, layers.top === "a", "a")}
-      {layer(layers.b, layers.top === "b", "b")}
+    <div className={`overflow-hidden ${hasPos(className) ? "" : "relative"} ${className}`} style={lqipStyle(it, !s.settled)}>
+      {(!it || s.failed) && <Placeholder product={product} hex={color.hex} />}
+      <Layer {...common} src={s.a} visible={s.top === "a"} srcSet={srcSet(s.a)} sizes={SIZES_CARD} />
+      <Layer {...common} src={s.b} visible={s.top === "b"} srcSet={srcSet(s.b)} sizes={SIZES_CARD} />
     </div>
   );
 }

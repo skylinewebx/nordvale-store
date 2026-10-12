@@ -43,7 +43,7 @@ export interface Product {
   madeIn: string;
   manufacturing: string;
   care: string[];
-  objectPosition: string; // crop focus for the 3:4 card, e.g. "50% 12%"
+  objectPosition: string; // crop focus: tops/jackets "center top", trench "center 20%", trousers (waist-down photos) "center bottom"
   rating: number;
   reviewCount: number;
   // ── merchandising flags ──
@@ -72,7 +72,7 @@ export const products: Product[] = [
     details: ["Double-layer hood with flat drawcord", "Kangaroo pocket with hidden side entry", "2×2 rib cuffs and hem", "Dropped shoulders, cropped boxy body"],
     story: "A dense 450 GSM fleece falls straight from a dropped shoulder, holding its shape without ever feeling stiff. Nordic Drift is the hoodie we wear on repeat from the first frost to the last.",
     madeIn: "Portugal", manufacturing: "Cut and sewn in a family-run mill near Guimarães. Flatlock seams, double-needle hems, garment-washed for a lived-in hand.",
-    care: CARE_COTTON, objectPosition: "50% 14%", rating: 4.8, reviewCount: 214,
+    care: CARE_COTTON, objectPosition: "center top", rating: 4.8, reviewCount: 214,
   heroFeatured: true, heroColor: "black", bestSeller: true },
   {
     id: "h2", slug: "midnight-ember", name: "Midnight Ember", tagline: "A slow glow in deep colour.", category: "hoodies",
@@ -82,7 +82,7 @@ export const products: Product[] = [
     details: ["Full-length metal zip", "Single-layer hood with round drawcord", "Two zip welt pockets", "Rib cuffs and hem with 2% elastane"],
     story: "Jewel tones were meant for the long dark. A full-length zip and a silky brushed interior make Midnight Ember an easy layer over anything.",
     madeIn: "Turkey", manufacturing: "Garment-dyed in small batches in Bursa for depth of colour, finished with a metal zip and bartacked stress points.",
-    care: CARE_COTTON, objectPosition: "50% 14%", rating: 4.7, reviewCount: 168,
+    care: CARE_COTTON, objectPosition: "center top", rating: 4.7, reviewCount: 168,
   },
   {
     id: "h3", slug: "glacier-haze", name: "Glacier Haze", tagline: "Soft as first frost.", category: "hoodies",
@@ -92,7 +92,7 @@ export const products: Product[] = [
     details: ["Self-fabric hood with round drawcord", "Kangaroo pocket", "Rib cuffs and hem", "Enzyme-washed soft finish"],
     story: "A lighter French terry keeps the silhouette easy and breathable, ideal for crisp days and heated rooms alike, in colours as soft as the first frost.",
     madeIn: "Portugal", manufacturing: "Knitted and sewn in the same mill for full traceability. Pigment-free pastel dyeing keeps colours soft and even.",
-    care: CARE_COTTON, objectPosition: "50% 14%", rating: 4.6, reviewCount: 131,
+    care: CARE_COTTON, objectPosition: "center top", rating: 4.6, reviewCount: 131,
   },
   {
     id: "h4", slug: "aurora-peak", name: "Aurora Peak", tagline: "Worn-in from day one.", category: "hoodies",
@@ -102,7 +102,7 @@ export const products: Product[] = [
     details: ["Mountain-and-sun line-art chest print", "Raw-edge hem", "Kangaroo pocket", "Hand-finished vintage wash, every piece is slightly different"],
     story: "A mountain and a low sun, drawn in one thin line. Aurora Peak is pigment-dyed and washed by hand until it feels like your favourite hoodie from ten winters ago.",
     madeIn: "Pakistan", manufacturing: "Pigment-dyed and stone-washed in Lahore in small runs. Water-based chest print, raw-edge hem finished by hand.",
-    care: [...CARE_COTTON, "Wash alone the first time: pigment dye may bleed"], objectPosition: "50% 14%", rating: 4.7, reviewCount: 96,
+    care: [...CARE_COTTON, "Wash alone the first time: pigment dye may bleed"], objectPosition: "center top", rating: 4.7, reviewCount: 96,
   isNew: true },
 
   // ───────────── JACKETS ─────────────
@@ -114,7 +114,7 @@ export const products: Product[] = [
     details: ["Horizontal baffle quilting", "Stand collar, full-length matte zip", "Two zip hand pockets", "Elasticated cuffs and hem"],
     story: "Cloud Puffer is cut oversized and filled generously, with a high-gloss finish that catches winter light. Light on the shoulders, serious against the wind.",
     madeIn: "Turkey", manufacturing: "Quilted and filled in Istanbul with a recycled down-alternative that keeps its loft after every wash.",
-    care: ["Machine wash cold, gentle cycle", "Tumble dry low with two dryer balls", "Do not iron", "Do not dry clean"], objectPosition: "50% 12%", rating: 4.9, reviewCount: 302,
+    care: ["Machine wash cold, gentle cycle", "Tumble dry low with two dryer balls", "Do not iron", "Do not dry clean"], objectPosition: "center top", rating: 4.9, reviewCount: 302,
   bestSeller: true },
   {
     id: "j2", slug: "noir-biker", name: "Noir Biker", tagline: "Sharp lines, soft conscience.", category: "jackets",
@@ -124,7 +124,7 @@ export const products: Product[] = [
     details: ["Asymmetric zip with notch lapel", "Chest zip pocket and two zip hip pockets", "Belted hem with buckle", "Zipped cuffs, silver-tone hardware"],
     story: "The classic biker, rebuilt in a supple vegan leather. A slim cut, an asymmetric zip and a belted hem give it all the attitude of the original without the animal.",
     madeIn: "Italy", manufacturing: "Cut from a soft-touch faux leather and assembled in Tuscany with bar-tacked hardware and a full viscose lining.",
-    care: CARE_FAUX, objectPosition: "50% 14%", rating: 4.7, reviewCount: 142,
+    care: CARE_FAUX, objectPosition: "center top", rating: 4.7, reviewCount: 142,
   },
   {
     id: "j3", slug: "campus-varsity", name: "Campus Varsity", tagline: "Old-school, finished properly.", category: "jackets",
@@ -134,7 +134,7 @@ export const products: Product[] = [
     details: ["Snap-button front", "Striped rib collar, cuffs and hem", "Two welt pockets", "Quilted satin lining"],
     story: "A heavy melton body, contrast faux-leather sleeves and striped rib trims. Campus Varsity keeps the heritage look and adds a relaxed, modern cut.",
     madeIn: "Portugal", manufacturing: "Assembled in Porto with snap closures, striped rib trims knitted to match each colourway and a quilted lining.",
-    care: CARE_WOOL, objectPosition: "50% 14%", rating: 4.6, reviewCount: 187,
+    care: CARE_WOOL, objectPosition: "center top", rating: 4.6, reviewCount: 187,
   },
   {
     id: "j4", slug: "regent-trench", name: "Regent Trench", tagline: "The long way round the rain.", category: "jackets",
@@ -144,7 +144,7 @@ export const products: Product[] = [
     details: ["Double-breasted button front with storm flap", "Self-fabric belt and adjustable cuff straps", "Shoulder epaulettes, back vent", "Knee length, fully lined"],
     story: "Cut long and belted at the waist, Regent Trench is cotton gabardine with a water-repellent finish. It's the coat you buy once and wear for twenty winters.",
     madeIn: "Italy", manufacturing: "Tailored in Veneto from tightly woven gabardine with horn-effect buttons and taped inner seams.",
-    care: ["Dry clean recommended", "Do not tumble dry", "Hang to dry", "Reproof the finish yearly"], objectPosition: "50% 18%", rating: 4.9, reviewCount: 258,
+    care: ["Dry clean recommended", "Do not tumble dry", "Hang to dry", "Reproof the finish yearly"], objectPosition: "center 20%", rating: 4.9, reviewCount: 258,
   bestSeller: true },
 
   // ───────────── TROUSERS ─────────────
@@ -156,7 +156,7 @@ export const products: Product[] = [
     details: ["High waist with side adjusters", "Double forward pleats", "Wide straight leg with a clean break", "Slanted side pockets, back welt pockets"],
     story: "A high waist, deep double pleats and a wide leg that falls straight to the shoe. Milan Pleat is tailoring with room to breathe.",
     madeIn: "Italy", manufacturing: "Cut and pressed in Prato from a wool-blend twill that holds its crease and resists creasing.",
-    care: CARE_WOOL, objectPosition: "50% 45%", rating: 4.8, reviewCount: 119,
+    care: CARE_WOOL, objectPosition: "center bottom", rating: 4.8, reviewCount: 119,
   },
   {
     id: "t2", slug: "savile-slim", name: "Savile Slim", tagline: "Sharp from the first fitting.", category: "trousers",
@@ -166,7 +166,7 @@ export const products: Product[] = [
     details: ["Mid rise, flat front", "Slim straight leg, ankle length", "Belt loops, back welt pockets", "A sharp pressed crease"],
     story: "A clean flat front and a slim, straight leg with just enough stretch to move. Savile Slim goes from the office to dinner without changing.",
     madeIn: "Portugal", manufacturing: "Tailored in Braga with a half-canvas waistband and a pressed-in crease that lasts.",
-    care: CARE_WOOL, objectPosition: "50% 45%", rating: 4.7, reviewCount: 203,
+    care: CARE_WOOL, objectPosition: "center bottom", rating: 4.7, reviewCount: 203,
   },
   {
     id: "t3", slug: "coastline-linen", name: "Coastline Linen", tagline: "Cool, creased, completely at ease.", category: "trousers",
@@ -176,7 +176,7 @@ export const products: Product[] = [
     details: ["Elasticated waist with drawstring", "Relaxed tapered leg, cropped length", "Side pockets, one back pocket", "Pre-washed for softness"],
     story: "Breathable European linen with an elasticated, drawstring waist. Coastline Linen gets softer and better with every wash. The creases are part of the charm.",
     madeIn: "Portugal", manufacturing: "Woven from European flax and garment-washed in Guimarães for a soft, lived-in hand from day one.",
-    care: ["Machine wash cold, gentle cycle", "Line dry", "Iron damp on high heat if desired", "Do not bleach"], objectPosition: "50% 45%", rating: 4.6, reviewCount: 88,
+    care: ["Machine wash cold, gentle cycle", "Line dry", "Iron damp on high heat if desired", "Do not bleach"], objectPosition: "center bottom", rating: 4.6, reviewCount: 88,
   isNew: true },
   {
     id: "t4", slug: "tweed-check", name: "Tweed Check", tagline: "Heritage cloth, cut for now.", category: "trousers",
@@ -186,7 +186,7 @@ export const products: Product[] = [
     details: ["Regular straight leg with turn-ups", "Belt loops, flat front", "Slanted side pockets, back welt pockets", "Half-lined at the front"],
     story: "Glen check, houndstooth, pinstripe and herringbone: four classic tweeds, one clean straight cut. Tweed Check wears in beautifully and lasts for decades.",
     madeIn: "United Kingdom", manufacturing: "Woven from Scottish-spun wool and made up in Yorkshire with turn-ups and a half lining.",
-    care: CARE_WOOL, objectPosition: "50% 45%", rating: 4.8, reviewCount: 74,
+    care: CARE_WOOL, objectPosition: "center bottom", rating: 4.8, reviewCount: 74,
   },
 
   // ───────────── T-SHIRTS ─────────────
@@ -198,7 +198,7 @@ export const products: Product[] = [
     details: ["Ribbed crew neck", "Dropped shoulder, boxy body", "Short sleeves with a clean hem", "Pre-shrunk, garment washed"],
     story: "A 280 GSM combed cotton jersey with a dropped shoulder and a boxy hang. Drop Tee has real weight, so it never clings.",
     madeIn: "Portugal", manufacturing: "Knitted and sewn in the same mill, then garment-washed for a soft hand and minimal shrinkage.",
-    care: CARE_COTTON, objectPosition: "50% 14%", rating: 4.8, reviewCount: 412,
+    care: CARE_COTTON, objectPosition: "center top", rating: 4.8, reviewCount: 412,
   bestSeller: true },
   {
     id: "s2", slug: "rib-slim-tee", name: "Rib Slim Tee", tagline: "Close, clean, quietly textured.", category: "tshirts",
@@ -208,7 +208,7 @@ export const products: Product[] = [
     details: ["Fine vertical rib texture", "Close fit through chest and arm", "Crew neck, short sleeves", "Hip-length hem"],
     story: "A fine rib that hugs the body and holds its shape. Rib Slim Tee layers cleanly under a jacket and looks just as sharp worn alone.",
     madeIn: "Turkey", manufacturing: "Knitted on fine-gauge circular machines in Denizli with a touch of elastane for recovery.",
-    care: CARE_COTTON, objectPosition: "50% 14%", rating: 4.6, reviewCount: 177,
+    care: CARE_COTTON, objectPosition: "center top", rating: 4.6, reviewCount: 177,
   },
   {
     id: "s3", slug: "acid-wash-tee", name: "Acid Wash Tee", tagline: "No two pieces the same.", category: "tshirts",
@@ -218,7 +218,7 @@ export const products: Product[] = [
     details: ["Hand-applied acid wash, unique mottling", "Small line-art graphic on the chest", "Oversized fit with dropped shoulder", "Contrast stitched neck"],
     story: "Each Acid Wash Tee is mottled by hand, so no two are quite alike. A small line-art graphic on the chest keeps it quietly confident.",
     madeIn: "Pakistan", manufacturing: "Garment-dyed and acid-washed in Karachi in small runs, with a water-based chest print.",
-    care: [...CARE_COTTON, "Wash alone the first time"], objectPosition: "50% 14%", rating: 4.5, reviewCount: 131,
+    care: [...CARE_COTTON, "Wash alone the first time"], objectPosition: "center top", rating: 4.5, reviewCount: 131,
   isNew: true },
   {
     id: "s4", slug: "knit-polo", name: "Knit Polo", tagline: "Textured, tidy, easy to wear.", category: "tshirts",
@@ -228,7 +228,7 @@ export const products: Product[] = [
     details: ["Honeycomb textured knit", "Two-button placket, soft collar", "Ribbed cuffs and hem", "Regular fit"],
     story: "A honeycomb-textured knit with a soft collar and a two-button placket. Knit Polo is smarter than a tee and easier than a shirt.",
     madeIn: "Portugal", manufacturing: "Knitted in Barcelos on fine-gauge machines, then linked at the collar for a flat, soft finish.",
-    care: ["Machine wash cold, gentle cycle", "Reshape and dry flat", "Do not tumble dry", "Cool iron if needed"], objectPosition: "50% 14%", rating: 4.7, reviewCount: 156,
+    care: ["Machine wash cold, gentle cycle", "Reshape and dry flat", "Do not tumble dry", "Cool iron if needed"], objectPosition: "center top", rating: 4.7, reviewCount: 156,
   isNew: true },
 ];
 

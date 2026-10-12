@@ -1,15 +1,14 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { BRAND, money, P } from "../config/assets";
 import { effectivePrice, getHeroProduct } from "../data/products";
-import { isMobile, lowEndDevice, reducedMotion, webglSupported } from "../lib/env";
+import { isMobile, reducedMotion, veryLowEnd } from "../lib/env";
 import { useStore } from "../store/useStore";
 import { assetExists, heroProgress, useHero } from "./heroState";
 import HeroFX from "./HeroFX";
 import { HeroStatic, HeroVideo } from "./HeroMedia";
 
-const HeroScene = lazy(() => import("./HeroScene"));
+import HeroPlaceholder from "./HeroPlaceholder";
 
 type Mode = "video" | "static" | "webgl";
 const isIOS = () => /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -31,19 +30,18 @@ export default function Hero() {
 
   // Pick the best available hero once.
   //   video  → desktop + Android (smooth scrub)        static → iOS, low-end, save-data, reduced motion
-  //   webgl  → built-in procedural hoodie, used only while the real assets don't exist yet
+  //   webgl  → built-in procedural SVG hoodie (no WebGL / no 3D library), used only while the real assets don't exist yet
   useEffect(() => {
     (async () => {
       const q = new URLSearchParams(location.search).get("hero");
       const [vid, stat] = await Promise.all([assetExists(P.heroVideo), assetExists(P.heroStatic)]);
       setHasStatic(stat);
-      const lite = reduced || lowEndDevice() || isIOS() || saveData();
+      const lite = reduced || veryLowEnd() || isIOS() || saveData();
       let m: Mode = "webgl";
-      if (q === "3d" && webglSupported()) m = "webgl";
+      if (q === "3d") m = "webgl";
       else if (q === "static" && stat) m = "static";
       else if (vid && !(lite && stat)) m = "video";
       else if (stat) m = "static";
-      else if (!webglSupported()) m = "static";
       useHero.getState().setMode(m === "video" ? "frames" : m === "webgl" ? "webgl" : "static");
       setMode(m);
     })();
@@ -75,12 +73,11 @@ export default function Hero() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: root.current, start: "top top", end: isMobile() ? "+=260%" : "+=320%", pin: true, scrub: 0.8, anticipatePin: 1 },
+        scrollTrigger: { trigger: root.current, start: "top top", end: "bottom bottom", scrub: 0.8 }, // position: sticky (below), not pin: no fixed↔absolute swaps, no layout shift
       });
       tl.to(heroProgress, { v: 1, duration: 1, ease: "power1.inOut" }, 0)
         // giant outlined word drifts sideways (parallax) and rises slightly
         .fromTo(".hero-word", { xPercent: 7, yPercent: 4 }, { xPercent: -9, yPercent: -3, duration: 1 }, 0)
-        .fromTo(".hero-rays", { scale: 1 }, { scale: 1.25, duration: 1 }, 0)
         // intro copy and the hint leave early
         .to(".hero-intro", { opacity: 0, y: -26, duration: 0.14 }, 0.05)
         .to(".hero-hint", { opacity: 0, y: 10, duration: 0.08 }, 0.02)
@@ -104,31 +101,30 @@ export default function Hero() {
     return () => io.disconnect();
   }, []);
 
-  useEffect(() => { if (mode) ScrollTrigger.refresh(); }, [mode]);
-
   const fallback = useCallback(() => { if (hasStatic) { useHero.getState().setMode("static"); setMode("static"); } }, [hasStatic]);
   const price = effectivePrice(HERO);
 
   return (
-    <section ref={root} id="top" className="relative h-[100svh] w-full overflow-hidden bg-snow" aria-label={`Featured: ${HERO.name}`}>
-      <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 42%, #fbfaf7 0%, #e9e5de 62%, #d9d4cb 100%)" }} />
+    <section ref={root} id="top" className="relative w-full bg-snow" style={{ height: `${100 + (isMobile() ? 260 : 320)}svh` }} aria-label={`Featured: ${HERO.name}`}>
+      <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+      <div className="absolute inset-0" style={{ background: mode === "webgl" ? "radial-gradient(ellipse at 50% 42%, #fbfaf7 0%, #e9e5de 62%, #d9d4cb 100%)" : "#f4f2ee" }} />
 
       {/* thin outlined giant word (parallax) */}
-      <div className="hero-word absolute inset-x-0 top-[24%] md:top-[18%] flex justify-center pointer-events-none select-none will-change-transform" aria-hidden="true">
+      <div className="hero-word absolute inset-x-0 top-[24%] md:top-[18%] flex justify-center pointer-events-none select-none" aria-hidden="true">
         <svg viewBox="0 0 1800 330" className="w-[250vw] md:w-[135vw] max-w-none shrink-0" fill="none">
           <text x="900" y="250" textAnchor="middle" fontFamily="Cormorant Garamond, serif" fontWeight="300" fontSize="300" letterSpacing="22" stroke="#1c1c1e" strokeOpacity="0.14" strokeWidth="1.3">{HERO.name.toUpperCase()}</text>
         </svg>
       </div>
 
-      <div className="hero-rays absolute inset-0 will-change-transform"><HeroFX active={visible} /></div>
+      <HeroFX active={visible} />
 
       {/* glow pulse when the hoodie locks together */}
-      <div className="hero-glow absolute left-1/2 top-[46%] w-[min(90vw,780px)] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none opacity-0 will-change-transform" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,246,232,0.55) 30%, rgba(255,255,255,0) 68%)" }} aria-hidden="true" />
+      <div className="hero-glow absolute left-1/2 top-[46%] w-[min(90vw,780px)] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none opacity-0" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,246,232,0.55) 30%, rgba(255,255,255,0) 68%)" }} aria-hidden="true" />
 
       <div className="absolute inset-x-0 top-0 bottom-[27%] md:bottom-[22%] pt-14 md:pt-16">
         {mode === "video" && <HeroVideo active={visible} onError={fallback} />}
         {mode === "static" && <HeroStatic active={visible} />}
-        {mode === "webgl" && <Suspense fallback={null}><HeroScene active={visible} onLowFps={fallback} color={HERO_COLOR.hex} /></Suspense>}
+        {mode === "webgl" && <HeroPlaceholder active={visible} color={HERO_COLOR.hex} />}
       </div>
 
       {/* intro */}
@@ -164,6 +160,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { animate, motion, MotionValue, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { animate, m, MotionValue, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Icon } from "../components/Icons";
 import { ProductImage } from "../components/ProductImage";
 import { lookbook } from "../data/content";
@@ -15,15 +15,15 @@ function Card({ i, x, center, w, vw, onOpen, moved }: { i: number; x: MotionValu
   const scale = useTransform(d, (v) => 1 - v * 0.07);
   const opacity = useTransform(d, (v) => 1 - v * 0.32);
   return (
-    <motion.li className="shrink-0 w-[74vw] sm:w-[44vw] md:w-[30vw] lg:w-[24vw]" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "0px -5% 0px 0px" }} transition={{ duration: 0.9, delay: Math.min(i, 4) * 0.08, ease: [0.22, 1, 0.36, 1] }}>
-      <motion.button style={{ scale, opacity }} className="group block w-full text-left will-change-transform" onClick={() => { if (!moved.current) onOpen(); }} aria-label={`${item.title}: ${p.name}, ${color.name}`}>
+    <m.li className="shrink-0 w-[74vw] sm:w-[44vw] md:w-[30vw] lg:w-[24vw]" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "0px -5% 0px 0px" }} transition={{ duration: 0.9, delay: Math.min(i, 4) * 0.08, ease: [0.22, 1, 0.36, 1] }}>
+      <m.button style={{ scale, opacity }} className="group block w-full text-left" onClick={() => { if (!moved.current) onOpen(); }} aria-label={`${item.title}: ${p.name}, ${color.name}`}>
         <div className="relative aspect-[3/4] overflow-hidden select-none">
           <div className="absolute inset-0 transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"><ProductImage product={p} colorId={color.id} className="absolute inset-0" /></div>
           <span className="absolute top-4 left-4 eyebrow !text-ink/70">0{i + 1}</span>
         </div>
         <div className="mt-4 flex justify-between items-baseline gap-3"><h3 className="font-display text-[24px] md:text-[26px]">{item.title}</h3><span className="text-[12px] text-stone shrink-0">{p.name}</span></div>
-      </motion.button>
-    </motion.li>
+      </m.button>
+    </m.li>
   );
 }
 
@@ -31,28 +31,28 @@ export default function Lookbook() {
   const set = useStore((s) => s.set);
   const vp = useRef<HTMLDivElement>(null); const track = useRef<HTMLUListElement>(null);
   const x = useMotionValue(0); const moved = useRef(false);
-  const [m, setM] = useState({ min: 0, vw: 0, w: 0, centers: [] as number[] });
+  const [meas, setMeas] = useState({ min: 0, vw: 0, w: 0, centers: [] as number[] });
 
   const measure = useCallback(() => {
     if (!vp.current || !track.current) return;
     const kids = [...track.current.children] as HTMLElement[];
     const vw = vp.current.clientWidth;
-    setM({ vw, min: -Math.max(0, track.current.scrollWidth - vw), w: kids[0]?.offsetWidth ?? 0, centers: kids.map((k) => k.offsetLeft + k.offsetWidth / 2) });
+    setMeas({ vw, min: -Math.max(0, track.current.scrollWidth - vw), w: kids[0]?.offsetWidth ?? 0, centers: kids.map((k) => k.offsetLeft + k.offsetWidth / 2) });
   }, []);
   useLayoutEffect(() => { measure(); const ro = new ResizeObserver(measure); vp.current && ro.observe(vp.current); return () => ro.disconnect(); }, [measure]);
 
-  const progress = useTransform(x, [m.min || -1, 0], [1, 0]);
+  const progress = useTransform(x, [meas.min || -1, 0], [1, 0]);
   const bar = useSpring(progress, { stiffness: 120, damping: 24, mass: 0.4 });
   const [idx, setIdx] = useState(0);
   useEffect(() => x.on("change", (v) => {
-    const c = m.vw / 2 - v; let best = 0, bd = Infinity;
-    m.centers.forEach((cc, i) => { const dd = Math.abs(cc - c); if (dd < bd) { bd = dd; best = i; } });
+    const c = meas.vw / 2 - v; let best = 0, bd = Infinity;
+    meas.centers.forEach((cc, i) => { const dd = Math.abs(cc - c); if (dd < bd) { bd = dd; best = i; } });
     setIdx((p) => (p === best ? p : best));
-  }), [x, m]);
+  }), [x, meas]);
 
   const go = (dir: number) => {
     const next = Math.max(0, Math.min(lookbook.length - 1, idx + dir));
-    const target = Math.max(m.min, Math.min(0, m.vw / 2 - (m.centers[next] ?? 0)));
+    const target = Math.max(meas.min, Math.min(0, meas.vw / 2 - (meas.centers[next] ?? 0)));
     animate(x, target, { type: "spring", stiffness: 140, damping: 24 });
   };
 
@@ -67,19 +67,19 @@ export default function Lookbook() {
       </div>
 
       <div ref={vp} className="cursor-grab active:cursor-grabbing" role="region" aria-roledescription="carousel" aria-label="Winter essentials">
-        <motion.ul
-          ref={track} drag="x" style={{ x }} className="flex gap-4 md:gap-8 px-5 md:px-10 w-max will-change-transform"
-          dragConstraints={{ left: m.min, right: 0 }} dragElastic={0.12} dragTransition={{ power: 0.28, timeConstant: 320, bounceStiffness: 220, bounceDamping: 30 }}
+        <m.ul
+          ref={track} drag="x" style={{ x }} className="flex gap-4 md:gap-8 px-5 md:px-10 w-max"
+          dragConstraints={{ left: meas.min, right: 0 }} dragElastic={0.12} dragTransition={{ power: 0.28, timeConstant: 320, bounceStiffness: 220, bounceDamping: 30 }}
           onPointerDown={() => (moved.current = false)} onDrag={(_, i) => { if (Math.abs(i.offset.x) > 6) moved.current = true; }}
         >
-          {lookbook.map((l, i) => <Card key={l.title} i={i} x={x} center={m.centers[i] ?? 0} w={m.w} vw={m.vw} moved={moved} onOpen={() => set({ openProduct: l.slug })} />)}
+          {lookbook.map((l, i) => <Card key={l.title} i={i} x={x} center={meas.centers[i] ?? 0} w={meas.w} vw={meas.vw} moved={moved} onOpen={() => set({ openProduct: l.slug })} />)}
           <li className="shrink-0 w-2 md:w-10" aria-hidden="true" />
-        </motion.ul>
+        </m.ul>
       </div>
 
       <div className="wrap mt-10 flex items-center gap-5">
         <span className="eyebrow tabular-nums w-14">{String(idx + 1).padStart(2, "0")} / {String(lookbook.length).padStart(2, "0")}</span>
-        <div className="flex-1 h-px bg-ink/15 relative overflow-hidden"><motion.div className="absolute inset-0 bg-ink origin-left" style={{ scaleX: bar }} /></div>
+        <div className="flex-1 h-px bg-ink/15 relative overflow-hidden"><m.div className="absolute inset-0 bg-ink origin-left" style={{ scaleX: bar }} /></div>
         <span className="eyebrow">Drag →</span>
       </div>
     </section>

@@ -5,7 +5,9 @@ import { loadImage } from "./imageCache";
 // It lists which photos / videos exist, their sizes and a 24px base64 LQIP, so the browser never probes for 404s.
 export interface CatItem { w: number; h: number; cw: number; ch: number; lqip: string; v: string; video?: boolean; vv?: string }
 interface Cat { items: Record<string, CatItem>; loaded: boolean }
-export const useCatalog = create<Cat>(() => ({ items: {}, loaded: false }));
+// The build inlines the manifest as window.__PRODUCTS__ (vite.config.ts), so the catalog is ready synchronously on first render.
+const inlined = (window as unknown as { __PRODUCTS__?: { items?: Record<string, CatItem> } }).__PRODUCTS__;
+export const useCatalog = create<Cat>(() => ({ items: inlined?.items ?? {}, loaded: !!inlined }));
 
 export const cardUrl = (key: string, it: CatItem) => `/assets/products/${key}-card.webp?v=${it.v}`;
 export const detailUrl = (key: string, it: CatItem) => `/assets/products/${key}.webp?v=${it.v}`;
@@ -18,12 +20,11 @@ let readyRes: () => void = () => {};
 export const catalogReady = new Promise<void>((r) => (readyRes = r));
 
 export async function loadCatalog() {
+  if (useCatalog.getState().loaded) { readyRes(); return; }
   try {
     const r = await fetch("/assets/products/manifest.json", { cache: "no-cache" });
-    if (r.ok && (r.headers.get("content-type") ?? "").includes("json")) {
-      const j = await r.json();
-      useCatalog.setState({ items: j.items ?? {}, loaded: true });
-    } else useCatalog.setState({ loaded: true });
+    const j = r.ok ? await r.json() : null; // no content-type check: some hosts serve .json oddly
+    useCatalog.setState({ items: j?.items ?? {}, loaded: true });
   } catch { useCatalog.setState({ loaded: true }); }
   readyRes();
 }
@@ -41,10 +42,14 @@ export function preloadHigh(urls: string[]) {
 }
 
 /** order = card URLs in the order we want them (default colours of every product first). */
+let lastScroll = 0;
+if (typeof window !== "undefined") window.addEventListener("scroll", () => { lastScroll = performance.now(); }, { passive: true });
+
 export function warmCards(order: string[]) {
   if (saveData() || slowNet()) return; // data saver: only what is visible
   let i = 0;
   const step = () => {
+    if (performance.now() - lastScroll < 300) { setTimeout(step, 300); return; } // never decode images while the visitor is scrolling
     const batch = order.slice(i, i + 6); i += 6;
     Promise.allSettled(batch.map((u) => loadImage(u, "low"))).then(() => { if (i < order.length) idle(step); });
   };

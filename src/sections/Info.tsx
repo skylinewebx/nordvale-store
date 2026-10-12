@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Link } from "react-router-dom";
 import { BRAND, money } from "../config/assets";
 import { Icon, Stars } from "../components/Icons";
@@ -43,7 +43,7 @@ export function Faq() {
               <h3><button className="w-full flex justify-between items-center gap-6 text-left min-h-[60px] font-display text-[20px]" aria-expanded={open === i} aria-controls={`faq-${i}`} onClick={() => setOpen(open === i ? null : i)}>
                 {f.q}<Icon name={open === i ? "minus" : "plus"} size={18} className="shrink-0" /></button></h3>
               <AnimatePresence initial={false}>
-                {open === i && <motion.div id={`faq-${i}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden"><p className="pb-6 text-[14px] text-ink/65 max-w-md">{f.a}</p></motion.div>}
+                {open === i && <m.div id={`faq-${i}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden"><p className="pb-6 text-[14px] text-ink/65 max-w-md">{f.a}</p></m.div>}
               </AnimatePresence>
             </div>
           ))}

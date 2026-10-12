@@ -1,0 +1,24 @@
+{
+  "score": 86,
+  "FCP": "1.9 s",
+  "LCP": "2.4 s",
+  "TBT": "390 ms",
+  "CLS": "0",
+  "SI": "3.5 s",
+  "TTI": "4.1 s",
+  "totalBytes": "Total size was 482 KiB",
+  "bootup": [
+    "index-C_gy6L1F.js total 4216ms script 3146ms",
+    "motion-CBSGub7A.js total 3053ms script 486ms",
+    " total 1809ms script 6ms",
+    "Unattributable total 1000ms script 38ms"
+  ],
+  "render": [
+    "Script Evaluation 3793ms",
+    "Other 2948ms",
+    "Style & Layout 2112ms",
+    "Rendering 1217ms",
+    "Garbage Collection 159ms",
+    "Parse HTML & CSS 15ms"
+  ]
+}

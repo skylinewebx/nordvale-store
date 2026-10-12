@@ -1,0 +1,24 @@
+{
+  "score": 77,
+  "FCP": "1.9 s",
+  "LCP": "2.4 s",
+  "TBT": "740 ms",
+  "CLS": "0",
+  "SI": "3.7 s",
+  "TTI": "4.4 s",
+  "totalBytes": "Total size was 681 KiB",
+  "bootup": [
+    "index-D78ZOrmE.js total 4389ms script 3102ms",
+    "motion-CBSGub7A.js total 3140ms script 462ms",
+    " total 1952ms script 9ms",
+    "Unattributable total 1048ms script 40ms"
+  ],
+  "render": [
+    "Script Evaluation 3698ms",
+    "Other 3151ms",
+    "Style & Layout 2482ms",
+    "Rendering 1103ms",
+    "Garbage Collection 221ms",
+    "Script Parsing & Compilation 19ms"
+  ]
+}

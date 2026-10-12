@@ -1,0 +1,24 @@
+{
+  "score": 73,
+  "FCP": "2.1 s",
+  "LCP": "2.6 s",
+  "TBT": "890 ms",
+  "CLS": "0",
+  "SI": "3.9 s",
+  "TTI": "4.3 s",
+  "totalBytes": "Total size was 480 KiB",
+  "bootup": [
+    "index-DnGFmD1D.js total 3564ms script 2211ms",
+    "motion-5Jn_Bpqd.js total 2906ms script 726ms",
+    " total 1880ms script 15ms",
+    "Unattributable total 807ms script 38ms"
+  ],
+  "render": [
+    "Script Evaluation 3091ms",
+    "Style & Layout 2508ms",
+    "Other 2364ms",
+    "Rendering 1247ms",
+    "Garbage Collection 67ms",
+    "Parse HTML & CSS 33ms"
+  ]
+}

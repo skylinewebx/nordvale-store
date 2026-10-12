@@ -1,0 +1,54 @@
+{
+  "profile": "desktop",
+  "loaderMs": 3587,
+  "fpsAvg": 16.9,
+  "frameP95": 83.4,
+  "framesOver33": 93.8,
+  "frameCount": 1217,
+  "longTasksTotal": 243,
+  "longTasksWhileScrolling": 243,
+  "longestWhileScrolling": 80,
+  "over100WhileScrolling": 0,
+  "cls": 1.0401,
+  "lcpMs": 416,
+  "lcpEl": "text ",
+  "totalKB": 2451,
+  "imageKB": 1904,
+  "requests": 290,
+  "failedRequests": [],
+  "httpErrors": [],
+  "mimeMismatch": [],
+  "consoleErrors": [],
+  "tabs": [
+    {
+      "tab": "All",
+      "cards": 16,
+      "bad": [],
+      "hidden": []
+    },
+    {
+      "tab": "Hoodies",
+      "cards": 4,
+      "bad": [],
+      "hidden": []
+    },
+    {
+      "tab": "Jackets",
+      "cards": 4,
+      "bad": [],
+      "hidden": []
+    },
+    {
+      "tab": "Trousers",
+      "cards": 4,
+      "bad": [],
+      "hidden": []
+    },
+    {
+      "tab": "T-Shirts",
+      "cards": 4,
+      "bad": [],
+      "hidden": []
+    }
+  ]
+}

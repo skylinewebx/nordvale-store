@@ -20,6 +20,13 @@ function assetManifest(): Plugin {
   const build = () => JSON.stringify({ generated: new Date().toISOString(), files: walk(path.join(publicDir, "assets")).map((p) => "/" + path.relative(publicDir, p).split(path.sep).join("/")) });
   return {
     name: "asset-manifest",
+    // Inline the product manifest (sizes, LQIP, hashes) into the HTML: zero extra request, images know their size and blur on first paint.
+    transformIndexHtml(html) {
+      const f = path.join(publicDir, "assets/products/manifest.json");
+      if (!fs.existsSync(f)) return html;
+      const data = JSON.stringify(JSON.parse(fs.readFileSync(f, "utf8"))).replace(/</g, "\u003c");
+      return html.replace("</head>", `<script>window.__PRODUCTS__=${data}</script></head>`);
+    },
     configureServer(server) {
       server.middlewares.use("/assets/manifest.json", (_req, res) => {
         res.setHeader("Content-Type", "application/json"); res.setHeader("Cache-Control", "no-store"); res.end(build());
@@ -39,8 +46,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          three: ["three", "@react-three/fiber", "@react-three/drei"],
-          motion: ["gsap", "framer-motion", "lenis"],
+          motion: ["gsap", "lenis"], // framer-motion is split by Rollup: core in the entry, domMax features in a lazy chunk
         },
       },
     },

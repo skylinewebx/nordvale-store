@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import Hero from "../hero/Hero";
+import Deferred from "../components/Deferred";
 import Collection from "../sections/Collection";
 import { Craft, Story, WhyUs } from "../sections/Story";
 import { useSeo } from "../lib/seo";
@@ -20,9 +21,10 @@ export default function Home() {
   return (
     <main>
       <Hero />
-      <Story />
-      <Craft />
-      <Collection />
+      <Deferred minHeight="110vh" delay={300}><Story /></Deferred>
+      <Deferred minHeight="620vh" delay={900}><Craft /></Deferred>
+      <Deferred minHeight="360vh" delay={1500} refresh><Collection /></Deferred>
+      <Deferred minHeight="720vh" delay={2000}>
       <Suspense fallback={<div className="min-h-[80vh]" />}>
         <Lookbook />
         <WhyUs />
@@ -33,6 +35,7 @@ export default function Home() {
         <Newsletter />
         <Contact />
       </Suspense>
+      </Deferred>
     </main>
   );
 }

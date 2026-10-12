@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, animate, LayoutGroup, motion, useMotionValue, useTransform } from "framer-motion";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, animate, LayoutGroup, m, useMotionValue, useTransform } from "framer-motion";
 import { Icon } from "../components/Icons";
 import ProductCard from "../components/ProductCard";
 import { Overlay, Reveal } from "../components/ui";
@@ -24,7 +24,7 @@ function Count({ n }: { n: number }) {
   const mv = useMotionValue(n);
   const text = useTransform(mv, (v) => String(Math.round(v)).padStart(2, "0"));
   useEffect(() => { if (reducedMotion()) mv.set(n); else { const c = animate(mv, n, { duration: 0.6, ease: [0.22, 1, 0.36, 1] }); return () => c.stop(); } }, [n, mv]);
-  return <motion.span>{text}</motion.span>;
+  return <m.span>{text}</m.span>;
 }
 
 /** Thin ring that follows the pointer over product cards (desktop with a fine pointer only). */
@@ -46,7 +46,7 @@ function CursorFollower({ scope }: { scope: React.RefObject<HTMLElement> }) {
     return () => { s.removeEventListener("pointermove", move); s.removeEventListener("pointerleave", leave); cancelAnimationFrame(raf); };
   }, [scope]);
   return (
-    <div ref={el} aria-hidden="true" className="fixed left-0 top-0 z-40 w-[84px] h-[84px] rounded-full border border-ink/40 flex items-center justify-center pointer-events-none opacity-0 max-md:hidden" style={{ backdropFilter: "blur(2px)" }}>
+    <div ref={el} aria-hidden="true" className="fixed left-0 top-0 z-40 w-[84px] h-[84px] rounded-full border border-ink/40 flex items-center justify-center pointer-events-none opacity-0 max-md:hidden">
       <span className="eyebrow !text-ink">View</span>
     </div>
   );
@@ -66,6 +66,8 @@ export default function Collection() {
   const [price, setPrice] = useState("");
   const [sort, setSort] = useState<keyof typeof SORTS>("featured");
   const [drawer, setDrawer] = useState(false);
+  const [lay, setLay] = useState(false); // layout animations are enabled on first intent (pointer/touch/focus on the filter bar)
+  const [cap, setCap] = useState(8); // progressive mount: first 8 cards now, the rest in idle steps
 
   const inTab = useMemo(() => products.filter((p) => tab === "all" || p.category === tab), [tab]);
   const sizeOptions = useMemo(() => [...new Set(inTab.flatMap((p) => p.sizes))], [inTab]);
@@ -85,6 +87,12 @@ export default function Collection() {
   const activeCount = [fam, size, fit, price, sort !== "featured" ? sort : ""].filter(Boolean).length;
   const clear = () => { setFam(null); setSize(""); setFit(""); setPrice(""); setSort("featured"); };
   const switchTab = (t: "all" | Category) => { setTab(t); setSize(""); };
+  useEffect(() => {
+    if (cap >= products.length) return;
+    const id = setTimeout(() => startTransition(() => setCap((c) => c + 4)), 120);
+    return () => clearTimeout(id);
+  }, [cap]);
+  const shown = list.slice(0, cap);
 
   return (
     <section ref={section} id="collection" className="pt-24 md:pt-36 pb-24 md:pb-36 wrap" aria-labelledby="col-h">
@@ -98,13 +106,13 @@ export default function Collection() {
       </Reveal>
 
       {/* sticky pill bar */}
-      <div className="sticky z-30 top-[92px] md:top-[100px] -mx-5 px-5 md:-mx-10 md:px-10 py-3 mb-8 md:mb-12 bg-snow/85 backdrop-blur-md border-y hair">
+      <div onPointerEnter={() => setLay(true)} onTouchStart={() => setLay(true)} onFocus={() => setLay(true)} className="sticky z-30 top-[92px] md:top-[100px] -mx-5 px-5 md:-mx-10 md:px-10 py-3 mb-8 md:mb-12 bg-snow/95 border-y hair">
         <div className="flex items-center gap-3">
           <LayoutGroup id="pills">
             <div className="flex gap-1 overflow-x-auto no-scrollbar flex-1 -mx-1 px-1" role="tablist" aria-label="Category">
               {TABS.map((t) => (
                 <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => switchTab(t.id)} className={`relative shrink-0 min-h-[44px] px-5 rounded-full text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${tab === t.id ? "text-snow" : "text-stone hover:text-ink"}`}>
-                  {tab === t.id && <motion.span layoutId="pill" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
+                  {tab === t.id && <m.span layoutId="pill" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
                   <span className="relative">{t.label}<span className="ml-1.5 opacity-50 text-[10px]">{t.id === "all" ? products.length : products.filter((p) => p.category === t.id).length}</span></span>
                 </button>
               ))}
@@ -123,7 +131,7 @@ export default function Collection() {
         ))}
         {loaded && (
           <AnimatePresence mode="popLayout" initial={false}>
-            {list.map((p, i) => <ProductCard key={p.slug} p={p} index={i} featured={i === 0 && list.length >= 3} priority={i < 8 && tab === "all"} />)}
+            {shown.map((p, i) => <ProductCard key={p.slug} p={p} index={i} featured={i === 0 && list.length >= 8} priority={i < 4} animateLayout={lay} />)}
           </AnimatePresence>
         )}
       </div>

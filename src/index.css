@@ -57,3 +57,8 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 
 @keyframes heroSpin { to { transform: rotate(360deg); } }
 @keyframes hintPulse { 0%, 100% { transform: scaleY(0.3); opacity: 0.4; } 50% { transform: scaleY(1); opacity: 1; } }
+
+/* gentle card breathing: transform-only keyframes, active only while the reviews section is visible */
+@keyframes breathe { 0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); } 50% { transform: translate3d(0, -7px, 0) rotate(var(--r, 0deg)); } }
+[data-live="1"] .breathe { animation: breathe var(--d, 6s) ease-in-out var(--dl, 0s) infinite; }
+html[data-lite="1"] .breathe { animation: none !important; }
