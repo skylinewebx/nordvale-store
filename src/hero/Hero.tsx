@@ -108,8 +108,8 @@ export default function Hero() {
 
   return (
     <section ref={root} id="top" className="relative w-full bg-snow" style={{ height: `${100 + (isMobile() ? 260 : 320)}svh` }} aria-label={`Featured: ${HERO.name}`}>
-      <div className="theme-light sticky top-0 h-[100svh] w-full overflow-hidden bg-snow text-ink">
-      <div className="absolute inset-0" style={{ background: mode === "video" || mode === "static" ? "#eeece7" : "radial-gradient(ellipse at 50% 44%, #f7f6f2 0%, #e4e1db 58%, #cfccc5 100%)" }} />
+      <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-snow text-ink" style={{ ["--c-accent" as string]: "255 255 255", ["--c-stone" as string]: "255 214 218" }}>
+      <div className="absolute inset-0" style={{ background: mode === "video" || mode === "static" ? "#c4101f" : "radial-gradient(ellipse at 50% 44%, #ff4a58 0%, #d4132a 40%, #8d0517 78%, #4a020b 100%)" }} />
 
       {/* thin outlined giant word (parallax) */}
       <div className="hero-word absolute inset-x-0 top-[24%] md:top-[18%] flex justify-center pointer-events-none select-none" aria-hidden="true">
@@ -121,7 +121,7 @@ export default function Hero() {
       <HeroFX active={visible} />
 
       {/* glow pulse when the hoodie locks together */}
-      <div className="hero-glow absolute left-1/2 top-[46%] w-[min(90vw,780px)] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none opacity-0" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,246,232,0.55) 30%, rgba(255,255,255,0) 68%)" }} aria-hidden="true" />
+      <div className="hero-glow absolute left-1/2 top-[46%] w-[min(90vw,780px)] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none opacity-0" style={{ background: "radial-gradient(circle, rgba(255,200,205,0.85) 0%, rgba(255,120,130,0.4) 30%, rgba(255,255,255,0) 68%)" }} aria-hidden="true" />
 
       <div className={`absolute inset-x-0 ${mode === "parts" ? "top-[17%] bottom-[36%] md:top-[17%] md:bottom-[35%]" : "top-0 bottom-[27%] md:bottom-[22%] pt-14 md:pt-16"}`}>
         {mode === "video" && <HeroVideo active={visible} onError={fallback} />}

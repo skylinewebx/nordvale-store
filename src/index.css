@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* THEME: midnight + bone + acid lime. `.theme-light` flips a section back to a light "stage" (used by the hero). */
-:root { color-scheme: dark; --c-snow: 11 11 13; --c-ink: 236 235 231; --c-stone: 143 141 137; --c-mist: 24 24 28; --c-accent: 198 255 61; --hair: 236 235 231; }
-.theme-light { color-scheme: light; --c-snow: 238 236 231; --c-ink: 22 22 24; --c-stone: 120 117 112; --c-mist: 222 219 212; --c-accent: 150 70 20; --hair: 22 22 24; }
+/* THEME: deep black + white + crimson red. `.theme-light` flips a section to a white "stage" (used by the hero). */
+:root { color-scheme: dark; --c-snow: 10 8 9; --c-ink: 250 248 248; --c-stone: 154 148 150; --c-mist: 26 20 22; --c-accent: 232 36 52; --hair: 250 248 248; }
+.theme-light { color-scheme: light; --c-snow: 255 255 255; --c-ink: 14 10 11; --c-stone: 115 108 110; --c-mist: 244 238 238; --c-accent: 220 28 44; --hair: 22 22 24; }
 html { -webkit-text-size-adjust: 100%; }
 #root { overflow-x: clip; }
 html.lenis, html.lenis body { height: auto; }
@@ -20,7 +20,7 @@ h1, h2, h3 { @apply font-display font-light; letter-spacing: -0.03em; }
 button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 1px solid rgb(var(--c-accent)); outline-offset: 3px; }
 em { font-style: normal; color: rgb(var(--c-accent)); }
-::selection { background: rgb(var(--c-accent)); color: #0b0b0d; }
+::selection { background: rgb(var(--c-accent)); color: #fff; }
 
 .hair { border-color: rgb(var(--hair) / 0.14); }
 .eyebrow { @apply text-[10px] uppercase text-stone font-light; letter-spacing: 0.22em; }
@@ -86,3 +86,7 @@ html[data-lite="1"] .band-track { animation: none !important; }
 .lb-track:has(.lb-card:hover) .lb-card:not(:hover) { opacity: 0.28 !important; }
 @media (hover: none) { .tilt { transform: none; } .card-grid:has(.pcard:hover) .pcard:not(:hover), .lb-track:has(.lb-card:hover) .lb-card:not(:hover) { opacity: 1 !important; } }
 html[data-lite="1"] .tilt { transform: none; }
+
+/* red glow atmosphere */
+body { background-image: radial-gradient(900px 500px at 85% -5%, rgb(var(--c-accent) / 0.10), transparent 70%), radial-gradient(700px 500px at -5% 60%, rgb(var(--c-accent) / 0.06), transparent 70%); background-attachment: fixed; }
+.theme-light { background-image: radial-gradient(700px 520px at 50% 45%, rgb(var(--c-accent) / 0.10), transparent 70%); }
