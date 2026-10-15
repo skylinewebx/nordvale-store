@@ -7,12 +7,27 @@
 export type Category = "hoodies" | "jackets" | "trousers" | "tshirts";
 export type FitGroup = "Oversized" | "Loose" | "Relaxed" | "Regular" | "Slim";
 
-export const CATEGORIES: { id: Category; label: string }[] = [
-  { id: "hoodies", label: "Hoodies" },
-  { id: "jackets", label: "Jackets" },
-  { id: "trousers", label: "Trousers" },
-  { id: "tshirts", label: "T-Shirts" },
+export interface CategoryInfo {
+  id: Category; slug: string; label: string; title: string; description: string;
+  heroFeatured: string; // ← CHANGE THE FEATURED PRODUCT OF A CATEGORY HERE (product slug): it is the one shown on the showcase
+  thumbnail: string;    // product slug whose picture is the round chip in the showcase strip
+}
+export const CATEGORIES: CategoryInfo[] = [
+  { id: "hoodies", slug: "hoodies", label: "Hoodies", title: "HOODIES", heroFeatured: "nordic-drift", thumbnail: "nordic-drift",
+    description: "Heavyweight fleece and French terry, cut boxy with a dropped shoulder. Soft inside, structured outside, built for the cold." },
+  { id: "tshirts", slug: "t-shirts", label: "T-Shirts", title: "T-SHIRTS", heroFeatured: "drop-tee", thumbnail: "drop-tee",
+    description: "Dense cotton jersey that holds its shape wash after wash. Clean necklines, quiet details and a fit that layers or stands alone." },
+  { id: "trousers", slug: "trousers", label: "Trousers", title: "TROUSERS", heroFeatured: "milan-pleat", thumbnail: "milan-pleat",
+    description: "Pleated, tailored and relaxed cuts in wool, tweed and linen. Room to move, lines that keep their crease." },
+  { id: "jackets", slug: "jackets", label: "Jackets", title: "JACKETS", heroFeatured: "cloud-puffer", thumbnail: "cloud-puffer",
+    description: "Puffers, biker, varsity and trench in considered materials. The outer layer that finishes every outfit." },
 ];
+export const getCategory = (id: string) => CATEGORIES.find((c) => c.id === id || c.slug === id) ?? CATEGORIES[0];
+/** The four styles of a category, featured one first-class in the showcase order. */
+export const stylesOf = (cat: Category) => products.filter((p) => p.category === cat);
+export const featuredOf = (cat: Category) => products.find((p) => p.slug === getCategory(cat).heroFeatured) ?? stylesOf(cat)[0];
+/** Ratings and review counts below are SAMPLE data for the demo store (marked in the UI). */
+export const RATINGS_ARE_SAMPLE = true;
 export const FIT_GROUPS: FitGroup[] = ["Oversized", "Loose", "Relaxed", "Regular", "Slim"];
 
 export interface ColorOpt {
@@ -47,7 +62,7 @@ export interface Product {
   rating: number;
   reviewCount: number;
   // ── merchandising flags ──
-  heroFeatured?: boolean; // the product shown in the home hero (first one flagged wins; falls back to bestSeller, then Nordic Drift)
+
   heroColor?: string; // colour slug for the hero (default: first colour)
   bestSeller?: boolean;
   isNew?: boolean;
@@ -73,7 +88,7 @@ export const products: Product[] = [
     story: "A dense 450 GSM fleece falls straight from a dropped shoulder, holding its shape without ever feeling stiff. Nordic Drift is the hoodie we wear on repeat from the first frost to the last.",
     madeIn: "Portugal", manufacturing: "Cut and sewn in a family-run mill near Guimarães. Flatlock seams, double-needle hems, garment-washed for a lived-in hand.",
     care: CARE_COTTON, objectPosition: "center top", rating: 4.8, reviewCount: 214,
-  heroFeatured: true, heroColor: "black", bestSeller: true },
+  heroColor: "black", bestSeller: true },
   {
     id: "h2", slug: "midnight-ember", name: "Midnight Ember", tagline: "A slow glow in deep colour.", category: "hoodies",
     type: "Regular-fit full-zip hoodie", fit: "Regular", fitGroup: "Regular", price: 164, stock: "in",
@@ -247,8 +262,8 @@ export const SIZE_CHARTS: Record<Category, SizeChart> = {
   trousers: { title: "Trousers", head: ["Size", "Waist", "Hip", "Inseam"], rows: [["28", "71", "92", "79"], ["30", "76", "97", "80"], ["32", "81", "102", "81"], ["34", "86", "107", "82"], ["36", "91", "112", "82"], ["38", "97", "117", "83"]], note: "Waist size in inches. Milan Pleat is a loose fit: take your usual size for a relaxed drape." },
 };
 
-/** The product the home hero features. Change it by moving `heroFeatured: true` (or `heroColor`) in the data above. */
+/** Legacy helper (kept for old sections): the featured hoodie. Real source of truth: CATEGORIES[].heroFeatured. */
 export function getHeroProduct() {
-  const p = products.find((x) => x.heroFeatured) ?? products.find((x) => x.bestSeller) ?? getProduct("nordic-drift") ?? products[0];
+  const p = featuredOf("hoodies");
   return { product: p, color: colorOf(p, p.heroColor) };
 }

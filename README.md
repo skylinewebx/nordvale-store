@@ -1,6 +1,6 @@
-# NORDVALE: Winter Hoodie Store
+# NORDVALE: showcase store
 
-Vite + React + TypeScript + Tailwind, with sharp for the image pipeline, plus Three.js (R3F), GSAP ScrollTrigger, Lenis, Framer Motion and Zustand.
+Vite + React + TypeScript + Tailwind. GSAP ScrollTrigger + Lenis (desktop only), Framer Motion (lazy), Zustand, sharp for images.
 
 ```bash
 npm install
@@ -8,27 +8,35 @@ npm run dev      # http://localhost:5173
 npm run build
 ```
 
+## Routes
+| Route | What |
+|---|---|
+| `/` | Showcase hero, Full Collection, Contact, Footer |
+| `/product/:slug?color=` | Product page (colour is kept in the URL) |
+| `/craftsmanship` | Six fabrics + stitching, sizing, sustainability |
+| `/story`, `/reviews`, `/faq`, `/size-guide`, `/shipping-returns`, `/track`, `/privacy` | Simple pages linked from the footer |
+| `/checkout`, `/order-confirmation` | Checkout (demo payments) |
+
+## Change the featured product of a category (one place)
+`src/data/products.ts` → `CATEGORIES[].heroFeatured` (product slug). The same entry holds the category title, description and the round chip thumbnail.
+
 ## Where to edit things
 | What | File |
 |---|---|
-| Products, colours, designs, prices, stock | `src/data/products.ts` |
-| Asset paths (one line each), brand name, contact info, shipping rules | `src/config/assets.ts` |
-| Reviews, FAQ, fabrics, Winter Essentials picks | `src/data/content.ts` |
-| Size charts per category | `src/data/products.ts` (`SIZE_CHARTS`) |
-| Promo codes (`WINTER10`, `FIRSTFROST`, `WARMUP`) | `src/store/useStore.ts` |
-| Payment integrations (TODOs and env vars) | `src/lib/payments.ts`, `.env.example` |
+| Categories, products, colours, prices, stock, size charts | `src/data/products.ts` |
+| Brand name, contact info, shipping rules | `src/config/assets.ts` |
+| Sample reviews, FAQ, fabrics | `src/data/content.ts` (ratings and reviews are **sample data**) |
+| Theme tokens (cream, charcoal, mauve, wine, easing) | `src/index.css` (`:root`) + `tailwind.config.js` |
+| Showcase hero (State A / State B) | `src/hero/Showcase.tsx` |
 
-## Product images
-16 products × 4 colours, one portrait photo each. Drop new photos or videos in `incoming/` and run `npm run images`; see **ASSETS.md**. Everything else (swatches, designs, icons, OG image) is generated in code.
+## Images
+- Product photos: `incoming/{slug}-{colour-slug}.jpg`.
+- **Cut-outs** (transparent, model stands on the page): `node scripts/cutout.mjs` (needs `npm i -D @imgly/background-removal-node`, offline model, about 8 s per photo) writes `cutouts/{key}.png`.
+- `npm run images` builds `public/assets/products/{key}.webp` (1080 w) and `{key}-card.webp` (540 w) from the cut-outs (bottom fade; trousers are cropped at the waist and trimmed to the feet), plus `manifest.json` (sizes, LQIP, hashes, videos).
+- Originals of the studio photos are backed up in `public/assets/products-original/`.
+- Fabric macros: `public/assets/fabrics/fabric-{fleece,french-terry,faux-leather,wool-tweed,linen,cotton-jersey}.webp`. Missing files fall back to a procedural SVG textile.
+- Missing product photos fall back to a tinted garment silhouette. Real files override automatically by filename.
+- Optional: `public/assets/hero/{hoodies|tshirts|trousers|jackets}.mp4` (muted clip over the featured product after 1.2 s idle) and `public/assets/products/{slug}-{colour}.mp4` ("Drag to turn" slider on the product page).
 
-## Hero product
-The hero features the product flagged `heroFeatured: true` in `src/data/products.ts` (colour via `heroColor`). Name, colour, price, Shop Now and the colour dots all come from it. Assets: `public/assets/hero/hoodie-assembly.mp4` and `hoodie-static.webp` (prompts in **FLOW_PROMPTS.md**).
-
-## Hero modes
-- `video` (desktop and Android): scroll-scrubbed `hero-assembly.mp4`.
-- `static`: iOS, low-end, data-saver, reduced motion; shows `hero-static.webp`.
-- `webgl`: built-in procedural hoodie, shown only while the real hero files are missing.
-- Force a mode with `?hero=static` or `?hero=3d`.
-
-## Routes
-`/`, `/product/:slug`, `/checkout`, `/order-confirmation`, `/track`, `/privacy`, and a 404 page.
+## Hosting under a sub-path
+`BASE=/nordvale-store/ npm run build` (GitHub Pages project site). All asset URLs, the router and the service worker honour `import.meta.env.BASE_URL`.

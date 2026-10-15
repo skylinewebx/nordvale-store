@@ -9,12 +9,30 @@ import { reducedMotion } from "../lib/env";
 /** true when the caller already positions the box (absolute/relative/fixed), so we must not add `relative` */
 const hasPos = (c: string) => c.split(" ").some((t) => t === "absolute" || t === "relative" || t === "fixed");
 
+const SIL: Record<string, string> = {
+  hoodies: "M135 64c-26 0-42 12-47 32l-46 20-24 156 30 8 16-84v200h142V196l16 84 30-8-24-156-46-20c-5-20-21-32-47-32zM108 98c8 22 18 30 27 30s19-8 27-30c-9-8-18-12-27-12s-18 4-27 12z",
+  tshirts: "M92 66L32 96l22 64 30-12v206h132V148l30 12 22-64-60-30c-10 18-26 28-46 28s-36-10-46-28z",
+  trousers: "M84 58h102l16 384h-52l-15-244-15 244H68z",
+  jackets: "M98 56h74l56 32 20 190-30 8-12-84v200H64V202l-12 84-30-8 20-190z",
+};
+/** Tasteful product placeholder (used only while a photo does not exist): a soft garment silhouette on the cream tone. */
+export function Silhouette({ category, className = "", tint }: { category: string; className?: string; tint?: string }) {
+  return (
+    <svg viewBox="0 0 270 480" preserveAspectRatio="xMidYMax meet" className={className} role="img" aria-label="Product preview">
+      <defs><linearGradient id="silg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="rgb(var(--c-ink))" stopOpacity="0.1" /><stop offset="1" stopColor="rgb(var(--c-ink))" stopOpacity="0.04" /></linearGradient></defs>
+      <path d={SIL[category] ?? SIL.hoodies} fill={tint ?? "url(#silg)"} fillOpacity={tint ? 0.62 : 1} stroke="rgb(var(--c-ink))" strokeOpacity="0.14" strokeWidth="1.2" strokeLinejoin="round" />
+      {category === "trousers" && <path d="M135 58v140M84 58h102" stroke="rgb(var(--c-ink))" strokeOpacity="0.16" strokeWidth="1.2" fill="none" />}
+      {category !== "trousers" && <path d="M135 96v300" stroke="rgb(var(--c-ink))" strokeOpacity="0.1" strokeWidth="1.2" fill="none" />}
+    </svg>
+  );
+}
+
 export function Placeholder({ product, hex }: { product: Product; hex: string }) {
   const loaded = useCatalog((s) => s.loaded);
   if (!loaded) return <div className="skeleton absolute inset-0" aria-hidden="true" />; // manifest still loading
   return (
-    <div className="absolute inset-0 flex items-end p-4" style={{ background: `linear-gradient(165deg, ${hex}26, rgb(var(--c-mist)) 70%)` }} aria-hidden="true">
-      <span className="eyebrow !text-ink/40">{product.name}</span>
+    <div className="absolute inset-0 flex items-end justify-center" style={{ background: `radial-gradient(60% 50% at 50% 70%, ${hex}22, transparent 70%)` }}>
+      <Silhouette category={product.category} tint={hex} className="w-full h-full" />
     </div>
   );
 }
@@ -40,7 +58,7 @@ export function ProductImage({ product, colorId, className = "", variant = "card
           loading={priority ? "eager" : "lazy"} {...hi(priority)}
           ref={(el) => { if (el?.complete && el.naturalWidth && st === "loading") setSt("ok"); }}
           onLoad={() => setSt("ok")} onError={() => setSt("err")}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${st === "ok" ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 w-full h-full object-contain object-bottom transition-opacity duration-300 ${st === "ok" ? "opacity-100" : "opacity-0"}`}
           style={{ objectPosition: product.objectPosition }}
         />
       )}
@@ -56,7 +74,7 @@ function Layer({ src, visible, alt, w, h, pos, priority, srcSet, sizes, onReady,
   return (
     <img ref={ref} src={src} srcSet={srcSet} sizes={sizes} alt={visible ? alt : ""} aria-hidden={!visible} width={w} height={h} draggable={false} decoding="async"
       loading={priority ? "eager" : "lazy"} {...hi(priority)} onLoad={() => onReady(src)} onError={() => onFail(src)}
-      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-100 ease-linear ${visible ? "opacity-100" : "opacity-0"}`} style={{ objectPosition: pos }} />
+      className={`absolute inset-0 w-full h-full object-contain object-bottom transition-opacity duration-100 ease-linear ${visible ? "opacity-100" : "opacity-0"}`} />
   );
 }
 

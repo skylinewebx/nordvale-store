@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { BRAND } from "../config/assets";
-import { effectivePrice, getProduct } from "../data/products";
+import { Category, effectivePrice, getProduct } from "../data/products";
 
 export interface CartItem { key: string; slug: string; colorId: string; size: string; qty: number }
 export interface Order { id: string; date: string; items: CartItem[]; total: number; method: string; email: string; name: string }
@@ -24,6 +24,8 @@ interface State {
   searchOpen: boolean;
   wishlistOpen: boolean;
   openProduct: string | null;
+  heroCat: Category; // category shown by the showcase hero (not persisted)
+  setHeroCat: (c: Category) => void;
   addToCart: (i: Omit<CartItem, "key">) => void;
   setQty: (key: string, qty: number) => void;
   remove: (key: string) => void;
@@ -45,6 +47,8 @@ export const useStore = create<State>()(
   persist(
     (set, get) => ({
       liked: [],
+      heroCat: "hoodies" as Category,
+      setHeroCat: (c) => set({ heroCat: c }),
       picked: {},
       pickColor: (slug, colorId) => set((s) => (s.picked[slug] === colorId ? s : { picked: { ...s.picked, [slug]: colorId } })),
       toggleLike: (id) => set((s) => ({ liked: s.liked.includes(id) ? s.liked.filter((l) => l !== id) : [...s.liked, id] })),

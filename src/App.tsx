@@ -5,7 +5,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CartDrawer from "./components/CartDrawer";
 import Navbar from "./components/Navbar";
 import { CookieNotice, ProductModal, SearchOverlay, WishlistDrawer } from "./components/Overlays";
-import Loader from "./hero/Loader";
 import { initScroll, refreshOnceWhenSettled } from "./lib/scroll";
 import { startFpsMonitor } from "./lib/perf";
 import { cardUrl, preloadHigh, useCatalog, warmCards } from "./lib/catalog";
@@ -17,11 +16,14 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const Confirmation = lazy(() => import("./pages/Misc").then((m) => ({ default: m.Confirmation })));
 const NotFound = lazy(() => import("./pages/Misc").then((m) => ({ default: m.NotFound })));
 const Privacy = lazy(() => import("./pages/Misc").then((m) => ({ default: m.Privacy })));
-const ProductPage = lazy(() => import("./pages/Misc").then((m) => ({ default: m.ProductPage })));
+const ProductPage = lazy(() => import("./pages/ProductPage"));
+const Craftsmanship = lazy(() => import("./pages/Craftsmanship"));
+const StoryPage = lazy(() => import("./pages/Pages").then((m) => ({ default: m.StoryPage })));
+const ReviewsPage = lazy(() => import("./pages/Pages").then((m) => ({ default: m.ReviewsPage })));
+const HelpPage = lazy(() => import("./pages/Pages").then((m) => ({ default: m.HelpPage })));
 const Track = lazy(() => import("./pages/Misc").then((m) => ({ default: m.Track })));
 import Deferred from "./components/Deferred";
 import Footer from "./sections/Footer";
-import ScrollProgress from "./components/ScrollProgress";
 
 export default function App() {
   const location = useLocation(); const { pathname } = location;
@@ -41,18 +43,22 @@ export default function App() {
   }, [catLoaded]);
   return (
     <>
-      <ScrollProgress />
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:bg-snow focus:p-3">Skip to content</a>
-      {pathname === "/" && <Loader />}
       <Navbar />
       <div id="main">
         {/* opacity-only page transition: a transformed ancestor would break the hero's pinned (position: fixed) scroll */}
         <AnimatePresence mode="wait" initial={false} onExitComplete={() => { window.scrollTo(0, 0); ScrollTrigger.refresh(); }}>
-          <m.div key={location.pathname} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease: "easeInOut" }}>
+          <m.div key={location.pathname} className={pathname === "/" || pathname.startsWith("/product/") ? "" : "pt-[68px] md:pt-20"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: "easeInOut" }}>
             <Suspense fallback={<div className="min-h-[60vh]" />}>
             <Routes location={location}>
               <Route path="/" element={<Home />} />
               <Route path="/product/:slug" element={<ProductPage />} />
+              <Route path="/craftsmanship" element={<Craftsmanship />} />
+              <Route path="/story" element={<StoryPage />} />
+              <Route path="/reviews" element={<ReviewsPage />} />
+              <Route path={"/faq"} element={<HelpPage />} />
+              <Route path="/size-guide" element={<HelpPage />} />
+              <Route path="/shipping-returns" element={<HelpPage />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-confirmation" element={<Confirmation />} />
               <Route path="/track" element={<Track />} />

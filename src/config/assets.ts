@@ -5,8 +5,6 @@
 const IMG = import.meta.env.BASE_URL + "assets/images";
 
 export const P = {
-  heroVideo: import.meta.env.BASE_URL + "assets/hero/hoodie-assembly.mp4", // scroll-scrubbed assembly clip of the featured hoodie
-  heroStatic: import.meta.env.BASE_URL + "assets/hero/hoodie-static.webp", // assembled hoodie: iOS, low-end and reduced-motion fallback
   story: `${IMG}/story.webp`,
   fabric: (key: string) => `${IMG}/fabric-${key}.webp`,
   /** ONE neutral-grey photo per hoodie. Every colour is tinted from it in code. */

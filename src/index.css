@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* THEME: near-black + soft white + crimson accent. `.theme-light` flips a section to a white "stage" (used by the hero). */
-:root { color-scheme: dark; --c-snow: 11 9 10; --c-ink: 246 242 241; --c-stone: 163 154 156; --c-mist: 24 20 21; --c-accent: 230 32 50; --hair: 246 242 241; }
+/* THEME: warm cream + charcoal + dusty mauve + deep wine. `.theme-light` flips a section to a white "stage" (used by the hero). */
+:root { color-scheme: light; --c-snow: 245 240 232; --c-ink: 38 34 33; --c-stone: 112 102 98; --c-mist: 234 226 214; --c-accent: 124 94 104; --c-wine: 110 28 50; --hair: 38 34 33; --ease: cubic-bezier(0.22, 1, 0.36, 1); }
 .theme-dark { color-scheme: dark; --c-snow: 10 8 9; --c-ink: 255 255 255; --c-stone: 255 214 218; --c-mist: 26 20 22; --c-accent: 255 255 255; --hair: 255 255 255; }
 .theme-red { color-scheme: dark; --c-snow: 190 14 30; --c-ink: 255 255 255; --c-stone: 255 224 227; --c-mist: 150 8 22; --c-accent: 255 255 255; --hair: 255 255 255; background: rgb(190 14 30); }
 html { -webkit-text-size-adjust: 100%; }
@@ -13,31 +13,31 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-stopped { overflow: hidden; }
 
 body {
-  @apply bg-snow text-ink font-sans font-normal antialiased;
+  @apply bg-snow text-ink font-sans font-light antialiased;
   font-size: 15px;
   line-height: 1.65;
 }
-h1, h2, h3 { @apply font-display font-normal; letter-spacing: -0.015em; line-height: 1.04; }
+h1, h2, h3 { @apply font-display; font-weight: 200; letter-spacing: -0.01em; line-height: 1.05; }
 button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 1px solid rgb(var(--c-accent)); outline-offset: 3px; }
-em { font-style: normal; color: rgb(var(--c-accent)); }
-::selection { background: rgb(var(--c-accent)); color: #fff; }
+em { font-style: normal; color: rgb(var(--c-wine)); }
+::selection { background: rgb(var(--c-wine)); color: #fff; }
 
 .hair { border-color: rgb(var(--hair) / 0.14); }
 .eyebrow { @apply text-[10px] uppercase text-stone font-light; letter-spacing: 0.22em; }
 .btn {
-  @apply relative inline-flex items-center justify-center min-h-[48px] px-8 text-[11px] uppercase font-medium border border-ink transition-colors duration-500 overflow-hidden;
+  @apply relative inline-flex items-center justify-center min-h-[48px] px-8 text-[11px] uppercase font-normal rounded-full border border-ink transition-colors duration-500 overflow-hidden;
   letter-spacing: 0.2em; isolation: isolate; --sweep: rgb(var(--c-ink));
 }
 /* a fill that sweeps up from the bottom on hover: transform only */
 .btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--sweep); transform: translateY(101%); transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
 .btn:hover::before, .btn:focus-visible::before { transform: translateY(0); }
 .btn:active { transform: scale(0.98); }
-.btn-solid { @apply bg-ink text-snow; --sweep: rgb(var(--c-accent)); }
-.btn-solid:hover, .btn-solid:focus-visible { color: #fff; }
-.theme-dark .btn-solid, .theme-red .btn-solid { --sweep: #0b090a; }
+.btn-solid { @apply bg-accent text-white border-accent; --sweep: rgb(var(--c-ink)); }
+.btn-solid:hover, .btn-solid:focus-visible { color: #fff; border-color: rgb(var(--c-ink)); }
+
 .btn-line { @apply bg-transparent text-ink; }
-.btn-line:hover, .btn-line:focus-visible { color: #0b090a; }
+.btn-line:hover, .btn-line:focus-visible { color: rgb(var(--c-snow)); }
 .btn:disabled { @apply opacity-40 pointer-events-none; }
 .field {
   @apply w-full bg-transparent border-0 border-b hair py-3 min-h-[48px] text-[14px] font-light outline-none transition-colors;
@@ -92,7 +92,7 @@ html[data-lite="1"] .band-track { animation: none !important; }
 html[data-lite="1"] .tilt { transform: none; }
 
 /* red glow atmosphere */
-body { background-image: radial-gradient(900px 500px at 85% -5%, rgb(var(--c-accent) / 0.12), transparent 70%); background-attachment: fixed; }
+
 
 /* reviews: pure-CSS marquee (transform only), pauses on hover/focus, native swipe row on touch / reduced motion / LITE */
 .rv-row { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
@@ -109,3 +109,31 @@ body { background-image: radial-gradient(900px 500px at 85% -5%, rgb(var(--c-acc
 .nav-u::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: rgb(var(--c-accent)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
 .nav-u:hover::after, .nav-u:focus-visible::after { transform: scaleX(1); }
 button:not(:disabled):active, a.btn:active { transition-duration: 0.1s; }
+
+/* ───────── SHOWCASE HERO ───────── */
+@keyframes scTitleIn { from { opacity: 0; letter-spacing: 0.52em; } to { opacity: 1; letter-spacing: 0.3em; } }
+@keyframes scTitleOut { from { opacity: 1; letter-spacing: 0.3em; } to { opacity: 0; letter-spacing: 0.58em; } }
+.sc-title span { letter-spacing: 0.3em; padding-left: 0.3em; }
+.sc-title-in span { animation: scTitleIn 0.9s var(--ease) both; }
+.sc-title-out span { animation: scTitleOut 0.7s var(--ease) both; }
+@keyframes scIn { from { opacity: 0; transform: translate3d(0, 14px, 0); } to { opacity: 1; transform: none; } }
+@keyframes scOut { to { opacity: 0; transform: translate3d(0, 10px, 0); } }
+.sc-stage.sc-in { animation: scIn 0.8s var(--ease) both; }
+.sc-stage.sc-out { animation: scOut 0.6s var(--ease) both; }
+@keyframes scFloat { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -7px, 0); } }
+.sc-float { animation: scFloat 7s ease-in-out infinite; }
+html[data-lite="1"] .sc-float { animation: none; }
+@media (prefers-reduced-motion: reduce) { .sc-float { animation: none; } .sc-title-in span, .sc-title-out span, .sc-stage.sc-in, .sc-stage.sc-out { animation-duration: 0.01s; } }
+@keyframes scLabel { from { opacity: 0; transform: translate3d(0, 6px, 0); } to { opacity: 1; transform: none; } }
+.sc-label { animation: scLabel 0.5s var(--ease) both; }
+.sc-desc { animation: scLabel 0.9s var(--ease) 0.15s both; }
+.sc-item { backface-visibility: hidden; }
+
+/* collection: scroll reveal (ScrollTrigger.batch toggles .in), columns alternate rise / slide-from-side */
+@media (prefers-reduced-motion: no-preference) {
+  .pcard[data-rv] { opacity: 0; transition: opacity 0.9s var(--ease), transform 1s var(--ease); }
+  .pcard[data-rv="up"] { transform: translate3d(0, 48px, 0); }
+  .pcard[data-rv="left"] { transform: translate3d(-40px, 24px, 0); }
+  .pcard[data-rv="right"] { transform: translate3d(40px, 24px, 0); }
+  .pcard[data-rv].in { opacity: 1; transform: none; }
+}

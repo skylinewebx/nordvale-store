@@ -4,10 +4,10 @@ export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      colors: { snow: c("snow"), ink: c("ink"), stone: c("stone"), mist: c("mist"), accent: c("accent") },
+      colors: { snow: c("snow"), ink: c("ink"), stone: c("stone"), mist: c("mist"), accent: c("accent"), wine: c("wine") },
       fontFamily: {
-        display: ['"Instrument Serif"', "Georgia", "serif"],
-        sans: ['"Manrope"', "system-ui", "sans-serif"],
+        display: ['"Jost"', "system-ui", "sans-serif"],
+        sans: ['"Jost"', "system-ui", "sans-serif"],
       },
       letterSpacing: { wide2: "0.18em" },
     },

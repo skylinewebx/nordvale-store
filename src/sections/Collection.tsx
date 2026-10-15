@@ -6,6 +6,7 @@ import { Overlay, Reveal } from "../components/ui";
 import { CATEGORIES, Category, effectivePrice, FIT_GROUPS, products } from "../data/products";
 import { useCatalog } from "../lib/catalog";
 import { reducedMotion } from "../lib/env";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const family = (hex: string) => {
   const n = parseInt(hex.slice(1), 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
@@ -57,7 +58,7 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
 }
 
 export default function Collection() {
-  const section = useRef<HTMLElement>(null);
+  const section = useRef<HTMLElement>(null); const grid = useRef<HTMLDivElement>(null);
   const loaded = useCatalog((s) => s.loaded);
   const [tab, setTab] = useState<"all" | Category>("all");
   const [fam, setFam] = useState<string | null>(null);
@@ -78,7 +79,7 @@ export default function Collection() {
       (!size || p.sizes.includes(size)) &&
       (!fit || p.fitGroup === fit) &&
       (!price || (price === "lt" ? effectivePrice(p) < 100 : price === "mid" ? effectivePrice(p) >= 100 && effectivePrice(p) <= 180 : effectivePrice(p) > 180)));
-    if (sort === "featured") l = [...l].sort((a, b) => Number(!!b.heroFeatured) - Number(!!a.heroFeatured) || Number(!!b.bestSeller) - Number(!!a.bestSeller));
+    if (sort === "featured") l = [...l].sort((a, b) => Number(!!b.bestSeller) - Number(!!a.bestSeller));
     if (sort === "asc") l = [...l].sort((a, b) => effectivePrice(a) - effectivePrice(b));
     if (sort === "desc") l = [...l].sort((a, b) => effectivePrice(b) - effectivePrice(a));
     if (sort === "rating") l = [...l].sort((a, b) => b.rating - a.rating);
@@ -93,20 +94,30 @@ export default function Collection() {
     return () => clearTimeout(id);
   }, [cap]);
   const shown = list.slice(0, cap);
+  // batch reveal: cards fade/slide in as they enter (transform + opacity only); re-armed whenever the visible set changes
+  const sig = shown.map((p) => p.slug).join();
+  useEffect(() => {
+    if (!loaded || !grid.current) return;
+    const cards = [...grid.current.querySelectorAll<HTMLElement>(".pcard[data-rv]:not(.in)")];
+    if (reducedMotion()) { cards.forEach((c) => c.classList.add("in")); return; }
+    const trig = ScrollTrigger.batch(cards, { start: "top 92%", once: true, onEnter: (els) => els.forEach((el, i) => setTimeout(() => el.classList.add("in"), i * 90)) });
+    const safety = setTimeout(() => cards.forEach((c) => { if (c.getBoundingClientRect().top < window.innerHeight) c.classList.add("in"); }), 1400);
+    return () => { trig.forEach((t) => t.kill()); clearTimeout(safety); };
+  }, [sig, loaded]);
 
   return (
     <section ref={section} id="collection" className="pt-28 md:pt-44 pb-28 md:pb-44 wrap" aria-labelledby="col-h">
-      {/* editorial title with a live count */}
+      {/* thin title with a live count */}
       <Reveal className="mb-10 md:mb-14 flex items-end justify-between gap-6">
         <div>
-          <p className="eyebrow">The Collection</p>
-          <h2 id="col-h" className="mt-3 text-[clamp(44px,8.5vw,120px)] leading-[0.95] font-light tracking-[-0.02em]">Considered <em className="font-light">pieces.</em></h2>
+          <p className="eyebrow">The full collection</p>
+          <h2 id="col-h" className="mt-3 text-[clamp(36px,7.2vw,104px)] leading-[0.95] tracking-[0.1em]" style={{ fontWeight: 200 }}>COLLECTIONS</h2>
         </div>
-        <p className="font-display font-light text-[clamp(44px,8vw,110px)] leading-[0.9] text-ink/20 tabular-nums select-none" aria-live="polite" aria-label={`${list.length} pieces`}><Count n={list.length} /></p>
+        <p className="text-[clamp(36px,6vw,84px)] leading-[0.9] text-ink/25 tabular-nums select-none" style={{ fontWeight: 200 }} aria-live="polite" aria-label={`${list.length} pieces`}><Count n={list.length} /></p>
       </Reveal>
 
       {/* sticky pill bar */}
-      <div onPointerEnter={() => setLay(true)} onTouchStart={() => setLay(true)} onFocus={() => setLay(true)} className="sticky z-30 top-[92px] md:top-[100px] -mx-5 px-5 md:-mx-10 md:px-10 py-3 mb-8 md:mb-12 bg-snow/90 border-y hair rounded-none">
+      <div onPointerEnter={() => setLay(true)} onTouchStart={() => setLay(true)} onFocus={() => setLay(true)} className="sticky z-30 top-[56px] -mx-5 px-5 md:-mx-10 md:px-10 py-2 mb-8 md:mb-12 bg-snow border-y hair rounded-none">
         <div className="flex items-center gap-3">
           <LayoutGroup id="pills">
             <div className="flex gap-1 overflow-x-auto no-scrollbar flex-1 -mx-1 px-1" role="tablist" aria-label="Category">
@@ -125,9 +136,9 @@ export default function Collection() {
       </div>
 
       {/* bento grid: one large featured card, the rest standard (2 columns on mobile) */}
-      <div role="tabpanel" className="card-grid grid grid-cols-2 lg:grid-cols-4 gap-x-5 md:gap-x-8 lg:gap-x-10 gap-y-14 md:gap-y-24">
+      <div role="tabpanel" ref={grid} className="card-grid grid grid-cols-2 lg:grid-cols-4 gap-x-4 md:gap-x-8 lg:gap-x-10 gap-y-12 md:gap-y-20">
         {!loaded && Array.from({ length: 8 }).map((_, i) => (
-          <div key={i}><div className="skeleton relative aspect-[3/4] rounded-[20px]" /><div className="mt-6 h-4 w-1/2 skeleton relative rounded" /></div>
+          <div key={i}><div className="skeleton relative aspect-[3/4]" /><div className="mt-6 h-4 w-1/2 skeleton relative rounded" /></div>
         ))}
         {loaded && (
           <AnimatePresence mode="popLayout" initial={false}>
@@ -137,7 +148,7 @@ export default function Collection() {
       </div>
       {loaded && list.length === 0 && <p className="text-center text-stone py-24">No pieces match those filters. <button className="underline" onClick={clear}>Clear filters</button></p>}
 
-      <CursorFollower scope={section} />
+      
 
       {/* compact filter drawer */}
       <Overlay open={drawer} onClose={() => setDrawer(false)} side="right" label="Filters" z={85}>

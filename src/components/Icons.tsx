@@ -26,6 +26,8 @@ const P: Record<string, ReactNode> = {
   pin: <><path d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z" /><circle cx="12" cy="10" r="2.500" /></>,
   user: <><circle cx="12" cy="8" r="3.500" /><path d="M5 20c1-4 4-6 7-6s6 2 7 6" /></>,
   instagram: <><rect x="4" y="4" width="16" height="16" rx="4" /><circle cx="12" cy="12" r="3.500" /><circle cx="17" cy="7" r=".5" /></>,
+  facebook: <path d="M14 8h3V4h-3a4 4 0 00-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z" />,
+  mail: <><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M3 8l9 6 9-6" /></>,
   rotate: <path d="M4 12a8 8 0 0114-5M20 4v4h-4M20 12a8 8 0 01-14 5M4 20v-4h4" />,
 };
 

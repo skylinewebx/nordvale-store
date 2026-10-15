@@ -14,7 +14,33 @@ const OUT = "public/assets/products";
 const DIRS = (process.env.INCOMING ?? "incoming").split(";").filter((d) => fs.existsSync(d));
 const IMG = /\.(jpe?g|png|webp|avif|tiff?)$/i;
 const VID = /\.(mp4|webm)$/i;
-const CARD_MAX = 45 * 1024;
+const CARD_MAX = 60 * 1024;
+// Transparent cut-outs (scripts/cutout.mjs → cutouts/{key}.png) win over the studio photo: the model then stands directly on the page.
+const CUT = process.env.CUTOUTS ?? "cutouts";
+/** soft-fade the last 4% of rows so a mid-thigh crop dissolves into the floor shadow instead of ending on a hard line */
+async function fadeEdges(input, trousers) {
+  // trousers are waist-down, full-length shots: drop the shirt hem at the top (11%), dissolve the new top edge,
+  // and trim the empty floor below the shoes so the feet touch the shared floor line (no bottom fade there)
+  let img = sharp(input).ensureAlpha();
+  const m = await sharp(input).metadata();
+  let top = 0, h = m.height;
+  if (trousers) {
+    top = Math.round(m.height * 0.11);
+    const { data: a0, info: i0 } = await sharp(input).ensureAlpha().extractChannel(3).raw().toBuffer({ resolveWithObject: true });
+    let last = i0.height - 1;
+    for (; last > top; last--) { let hit = false; for (let x = 0; x < i0.width; x += 3) if (a0[last * i0.width + x] > 70) { hit = true; break; } if (hit) break; }
+    h = Math.min(m.height, last + 5) - top;
+  }
+  if (trousers) img = img.extract({ left: 0, top, width: m.width, height: h });
+  const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
+  const fb = trousers ? info.height : Math.floor(info.height * 0.96), ft = trousers ? Math.floor(info.height * 0.05) : 0;
+  for (let y = 0; y < info.height; y++) {
+    const k = y >= fb ? Math.pow(1 - (y - fb) / (info.height - fb), 2) : y < ft ? Math.pow(y / ft, 2) : 1;
+    if (k === 1) continue;
+    for (let x = 0; x < info.width; x++) { const i = (y * info.width + x) * 4 + 3; data[i] = Math.round(data[i] * k); }
+  }
+  return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } });
+}
 fs.mkdirSync(OUT, { recursive: true });
 
 const expected = products.flatMap((p) => p.colors.map((c) => ({ key: `${p.slug}-${c.slug}`, product: p.name, colour: c.name })));
@@ -61,18 +87,20 @@ for (const { key } of expected) {
   if (list.length) {
     const best = list[0];
     if (list.length > 1) dupFiles[key] = list.slice(1).map((x) => path.basename(x.file));
-    if (prev[key]?.src === best.sig && fs.existsSync(path.join(OUT, `${key}.webp`)) && fs.existsSync(path.join(OUT, `${key}-card.webp`))) { items[key] = prev[key]; status[key] = "matched"; continue; }
-    const base = sharp(best.file).rotate();
-    const detail = await base.clone().resize({ width: 1080, withoutEnlargement: true }).webp({ quality: 80, effort: 5 }).toBuffer({ resolveWithObject: true });
+    if (prev[key]?.src === best.sig + (fs.existsSync(path.join(CUT, `${key}.png`)) ? "-cut3" : "") && fs.existsSync(path.join(OUT, `${key}.webp`)) && fs.existsSync(path.join(OUT, `${key}-card.webp`))) { items[key] = prev[key]; status[key] = "matched"; continue; }
+    const cutFile = path.join(CUT, `${key}.png`);
+    const hasCut = fs.existsSync(cutFile);
+    const base = hasCut ? await fadeEdges(cutFile, products.find((p) => key.startsWith(p.slug + "-"))?.category === "trousers") : sharp(best.file).rotate();
+    const detail = await base.clone().resize({ width: 1080, withoutEnlargement: true }).webp({ quality: 82, effort: 5, alphaQuality: 90 }).toBuffer({ resolveWithObject: true });
     let card, q = 72;
-    for (; q >= 52; q -= 5) { card = await base.clone().resize({ width: 540 }).webp({ quality: q, effort: 6, smartSubsample: true }).toBuffer({ resolveWithObject: true }); if (card.data.length <= CARD_MAX) break; }
-    const lqip = await base.clone().resize({ width: 24 }).blur(0.8).webp({ quality: 40 }).toBuffer();
+    for (; q >= 52; q -= 5) { card = await base.clone().resize({ width: 540 }).webp({ quality: q, effort: 6, smartSubsample: true, alphaQuality: 85 }).toBuffer({ resolveWithObject: true }); if (card.data.length <= CARD_MAX) break; }
+    const lqip = await base.clone().resize({ width: 24 }).blur(0.8).webp({ quality: 40, alphaQuality: 60 }).toBuffer();
     fs.writeFileSync(path.join(OUT, `${key}.webp`), detail.data);
     fs.writeFileSync(path.join(OUT, `${key}-card.webp`), card.data);
     items[key] = {
       w: detail.info.width, h: detail.info.height, cw: card.info.width, ch: card.info.height,
       lqip: `data:image/webp;base64,${lqip.toString("base64")}`,
-      v: crypto.createHash("md5").update(card.data).digest("hex").slice(0, 8), src: best.sig, cardKB: Math.round(card.data.length / 1024),
+      v: crypto.createHash("md5").update(card.data).digest("hex").slice(0, 8), src: best.sig + (hasCut ? "-cut3" : ""), cut: hasCut, cardKB: Math.round(card.data.length / 1024),
     };
     status[key] = "matched";
   } else if (prev[key] && fs.existsSync(path.join(OUT, `${key}.webp`))) { items[key] = prev[key]; status[key] = "matched"; }
