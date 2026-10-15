@@ -18,6 +18,7 @@ const NotFound = lazy(() => import("./pages/Misc").then((m) => ({ default: m.Not
 const Privacy = lazy(() => import("./pages/Misc").then((m) => ({ default: m.Privacy })));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const Craftsmanship = lazy(() => import("./pages/Craftsmanship"));
+const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const StoryPage = lazy(() => import("./pages/Pages").then((m) => ({ default: m.StoryPage })));
 const ReviewsPage = lazy(() => import("./pages/Pages").then((m) => ({ default: m.ReviewsPage })));
 const HelpPage = lazy(() => import("./pages/Pages").then((m) => ({ default: m.HelpPage })));
@@ -48,12 +49,13 @@ export default function App() {
       <div id="main">
         {/* opacity-only page transition: a transformed ancestor would break the hero's pinned (position: fixed) scroll */}
         <AnimatePresence mode="wait" initial={false} onExitComplete={() => { window.scrollTo(0, 0); ScrollTrigger.refresh(); }}>
-          <m.div key={location.pathname} className={pathname === "/" || pathname.startsWith("/product/") ? "" : "pt-[68px] md:pt-20"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: "easeInOut" }}>
+          <m.div key={location.pathname} className={pathname === "/" || pathname.startsWith("/product/") ? "" : "pt-[68px] md:pt-20"} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
             <Suspense fallback={<div className="min-h-[60vh]" />}>
             <Routes location={location}>
               <Route path="/" element={<Home />} />
               <Route path="/product/:slug" element={<ProductPage />} />
               <Route path="/craftsmanship" element={<Craftsmanship />} />
+              <Route path="/category/:slug" element={<CategoryPage />} />
               <Route path="/story" element={<StoryPage />} />
               <Route path="/reviews" element={<ReviewsPage />} />
               <Route path={"/faq"} element={<HelpPage />} />

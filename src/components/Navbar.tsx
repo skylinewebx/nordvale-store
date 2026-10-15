@@ -15,13 +15,10 @@ export function useGoSection() {
   };
 }
 
-/** switch the showcase to a category: go home, scroll to the top, change the hero (cross-fade happens in the hero itself) */
+/** category links smooth-scroll to that category's section on the home page (from any other page: go home first) */
 export function useGoCategory() {
-  const nav = useNavigate(); const loc = useLocation(); const setCat = useStore((s) => s.setHeroCat);
-  return (c: Category) => {
-    const top = () => { const l = getLenis(); if (l) l.scrollTo(0, { duration: 1 }); else window.scrollTo({ top: 0, behavior: "smooth" }); };
-    if (loc.pathname !== "/") { nav("/"); setTimeout(() => { window.scrollTo(0, 0); setCat(c); }, 380); } else { top(); setCat(c); }
-  };
+  const go = useGoSection();
+  return (c: Category) => go(`cat-${c}`);
 }
 
 const TOP = "inline-flex items-center text-[10.5px] leading-none uppercase tracking-[0.2em] nav-u py-3";
@@ -50,7 +47,7 @@ export default function Navbar() {
 
           <ul className="hidden xl:flex items-center gap-7 2xl:gap-9">
             {CATEGORIES.map((c) => (
-              <li key={c.id}><button onClick={() => goCat(c.id)} aria-current={onHome && heroCat === c.id ? "true" : undefined} className={`${TOP} ${onHome && heroCat === c.id ? "after:!scale-x-100" : ""}`}>{c.label}</button></li>
+              <li key={c.id}><button onClick={() => goCat(c.id)} className={TOP}>{c.label}</button></li>
             ))}
             <li><button onClick={() => go("collection")} className={TOP}>Collections</button></li>
             <li><Link to="/craftsmanship" className={`${TOP} ${loc.pathname === "/craftsmanship" ? "after:!scale-x-100" : ""}`}>Craftsmanship</Link></li>

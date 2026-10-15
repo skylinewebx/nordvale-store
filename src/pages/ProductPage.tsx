@@ -13,7 +13,7 @@ import { reducedMotion } from "../lib/env";
 import { playFlip } from "../lib/flip";
 import { loadImage } from "../lib/imageCache";
 import { useSeo } from "../lib/seo";
-import { useTilt } from "../lib/tilt";
+import { TurnShadow, TurnSlider, TurnTarget, useTurn } from "../lib/turn";
 import { useStore } from "../store/useStore";
 import { NotFound } from "./Misc";
 
@@ -28,39 +28,6 @@ function Acc({ title, children, open: o = false }: { title: string; children: Re
         {open && <m.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="overflow-hidden"><div className="pb-5 text-[13px] text-ink/75 leading-relaxed">{children}</div></m.div>}
       </AnimatePresence>
     </div>
-  );
-}
-
-/** "Drag to turn": scrubs {slug}-{colour}.mp4 (only rendered when that video exists in the manifest). One rAF loop, lerped, seeks only on real change. */
-function TurnSlider({ src, active }: { src: string; active: boolean }) {
-  const video = useRef<HTMLVideoElement>(null);
-  const track = useRef<HTMLDivElement>(null);
-  const handle = useRef<HTMLSpanElement>(null);
-  const [shown, setShown] = useState(false);
-  const s = useRef({ target: 0, cur: 0, last: -1, raf: 0, dragging: false });
-  const loop = useCallback(() => {
-    const v = video.current, st = s.current; st.raf = 0;
-    st.cur += (st.target - st.cur) * 0.18;
-    if (handle.current) handle.current.style.transform = `translate3d(${(st.cur * (track.current?.clientWidth ?? 0)).toFixed(1)}px, -50%, 0)`;
-    if (v && v.duration) { const t = st.cur * v.duration; if (Math.abs(t - st.last) > 0.015) { v.currentTime = t; st.last = t; } }
-    if (Math.abs(st.target - st.cur) > 0.0008) st.raf = requestAnimationFrame(loop);
-  }, []);
-  const set = (clientX: number) => { const r = track.current!.getBoundingClientRect(); s.current.target = Math.min(1, Math.max(0, (clientX - r.left) / r.width)); setShown(true); if (!s.current.raf) s.current.raf = requestAnimationFrame(loop); };
-  useEffect(() => () => cancelAnimationFrame(s.current.raf), []);
-  return (
-    <>
-      <video ref={video} src={src} muted playsInline preload="auto" aria-hidden="true" tabIndex={-1} className={`absolute inset-0 w-full h-full object-contain object-bottom pointer-events-none transition-opacity duration-150 ${shown && active ? "opacity-100" : "opacity-0"}`} />
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-3 md:bottom-5 w-[min(64%,300px)] z-10">
-        <p className="text-center text-[10px] uppercase tracking-[0.28em] text-stone mb-3">Drag to turn</p>
-        <div ref={track} className="relative h-6 cursor-grab active:cursor-grabbing touch-none" role="slider" aria-label="Turn the model" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(s.current.target * 100)} tabIndex={0}
-          onPointerDown={(e) => { s.current.dragging = true; (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); set(e.clientX); }}
-          onPointerMove={(e) => { if (s.current.dragging) set(e.clientX); }} onPointerUp={() => { s.current.dragging = false; }}
-          onKeyDown={(e) => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { const r = track.current!.getBoundingClientRect(); set(r.left + r.width * (s.current.target + (e.key === "ArrowRight" ? 0.06 : -0.06))); } }}>
-          <span className="absolute left-0 right-0 top-1/2 h-px bg-ink/25" />
-          <span ref={handle} className="absolute left-0 top-1/2 -ml-[9px] w-[18px] h-[18px] rounded-full bg-snow border border-ink shadow-[0_2px_8px_rgba(38,34,33,0.18)]" />
-        </div>
-      </div>
-    </>
   );
 }
 
@@ -110,7 +77,9 @@ function ProductView({ p }: { p: Product }) {
   const price = effectivePrice(p);
   const key = photoKey(p.slug, color.slug); const it = items[key];
   const related = useMemo(() => [...products.filter((x) => x.slug !== p.slug && x.category === p.category), ...products.filter((x) => x.category !== p.category)].slice(0, 4), [p]);
-  const tilt = useTilt(3.5);
+  const ctl = useTurn();
+  const vref = useRef<HTMLVideoElement>(null);
+  const stageBox = useRef<HTMLDivElement>(null);
   const box = useRef<HTMLDivElement>(null); const first = useRef(true);
   const sizeRef = useRef<HTMLFieldSetElement>(null);
 
@@ -131,8 +100,6 @@ function ProductView({ p }: { p: Product }) {
   }, [color.slug]);
 
   const choose = (slugc: string) => { const n = new URLSearchParams(q); n.set("color", slugc); setQ(n, { replace: true }); pick(p.slug, p.colors.find((c) => c.slug === slugc)!.id); };
-  const swipe = useRef<number | null>(null);
-  const idxC = p.colors.findIndex((c) => c.id === color.id);
 
   const doAdd = () => {
     if (!size) { setErr(true); sizeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
@@ -140,30 +107,32 @@ function ProductView({ p }: { p: Product }) {
     setAdded(true); setTimeout(() => setAdded(false), 1800);
   };
   const video = it?.video ? videoUrl(key, it) : null;
+  useEffect(() => { if (!video) ctl.video = null; ctl.t = 0; ctl.target = 0; }, [video, ctl]);
+  useEffect(() => { const el = stageBox.current; if (!el) return; const io = new IntersectionObserver(([e]) => ctl.setVisible(e.isIntersecting)); io.observe(el); return () => io.disconnect(); }, [ctl]);
 
   return (
     <main className="relative pt-[68px] md:pt-20 pb-24 md:pb-0">
       <div className="grid lg:grid-cols-[1.08fr_1fr] min-h-[calc(100svh-80px)]">
         {/* ── stage: the model stands on the page tone ── */}
-        <div className="relative lg:sticky lg:top-20 h-[55svh] min-h-[380px] lg:h-[calc(100svh-80px)] overflow-hidden"
-          onPointerDown={(e) => { if (e.pointerType === "touch") swipe.current = e.clientX; }}
-          onPointerUp={(e) => { if (swipe.current !== null) { const d = e.clientX - swipe.current; swipe.current = null; if (Math.abs(d) > 50) choose(p.colors[(idxC + (d < 0 ? 1 : -1) + p.colors.length) % p.colors.length].slug); } }}
-          style={{ touchAction: "pan-y" }}>
+        <div className="relative lg:sticky lg:top-20 h-[58svh] min-h-[400px] lg:h-[calc(100svh-80px)] overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(700px 520px at 12% 4%, rgba(255,253,248,0.95), transparent 62%), radial-gradient(ellipse at 50% 60%, transparent 55%, rgba(110,92,70,0.13) 100%)" }} />
           <p className="absolute left-5 md:left-10 top-5 text-[10px] uppercase tracking-[0.28em] text-stone">{color.name}</p>
-          <div className="absolute inset-x-0 top-6 bottom-[4%] md:bottom-[6%] flex items-end justify-center" style={{ ["--sh" as string]: "100%" }}>
-            <div className="relative h-full max-h-[920px] aspect-[9/16]" onPointerMove={tilt.onPointerMove} onPointerLeave={tilt.onPointerLeave}>
-              <span className="absolute left-[4%] right-[4%] -bottom-[1.2%] h-[4.5%] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(38,34,33,0.4) 0%, rgba(38,34,33,0.14) 46%, transparent 72%)" }} />
-              <div ref={tilt.ref} className="tilt absolute inset-0 group">
-                <div ref={box} className="absolute inset-0 transition-transform duration-[5000ms] ease-out hover:scale-[1.035] origin-bottom">
+          <div className="absolute inset-x-0 top-6 bottom-[72px] md:bottom-[84px] flex items-end justify-center">
+            <div ref={stageBox} className="relative h-full max-h-[880px] aspect-[9/16] cursor-grab active:cursor-grabbing" style={{ touchAction: "pan-y" }}
+              onPointerDown={(e) => { if (e.pointerType === "mouse" && e.button !== 0) return; e.currentTarget.setPointerCapture(e.pointerId); ctl.grab(e.clientX); }}
+              onPointerMove={(e) => ctl.move(e.clientX, e.currentTarget.clientWidth)} onPointerUp={() => ctl.release()} onPointerCancel={() => ctl.release()}>
+              <TurnShadow ctl={ctl} className="left-[4%] right-[4%] -bottom-[1.2%] h-[4.5%]" />
+              <div ref={box} className="absolute inset-0 transition-transform duration-[5000ms] ease-out hover:scale-[1.03] origin-bottom">
+                <TurnTarget ctl={ctl} maskUrl={it ? detailUrl(key, it) : null}>
                   {it ? <SwapImage product={p} colorId={color.id} upgrade priority className="absolute inset-0" /> : <Silhouette category={p.category} tint={color.hex} className="absolute inset-0 w-full h-full" />}
-                  {video && <TurnSlider src={video} active />}
-                </div>
+                </TurnTarget>
+                {video && <video ref={vref} key={video} src={video} muted playsInline preload="auto" aria-hidden="true" tabIndex={-1} onLoadedMetadata={() => { ctl.video = vref.current; ctl.seeked = -1; }} onError={() => { ctl.video = null; }} className="absolute inset-0 w-full h-full object-contain object-bottom pointer-events-none opacity-0 transition-opacity duration-150" />}
               </div>
             </div>
           </div>
+          <TurnSlider ctl={ctl} className="absolute left-1/2 -translate-x-1/2 bottom-3 md:bottom-5 w-[min(62%,320px)] z-10" />
           {/* related mini strip */}
-          <ul className="absolute right-4 md:right-8 bottom-4 md:bottom-8 hidden sm:flex gap-2" aria-label="Related pieces">
+          <ul className="absolute right-4 md:right-8 top-4 md:top-6 hidden sm:flex gap-2" aria-label="Related pieces">
             {related.map((r) => { const c = colorOf(r, useStore.getState().picked[r.slug]); const k = photoKey(r.slug, c.slug); const i = items[k]; return (
               <li key={r.slug}><Link to={`/product/${r.slug}?color=${c.slug}`} aria-label={r.name} className="block w-11 h-[60px] md:w-12 md:h-16 border hair overflow-hidden hover:-translate-y-1 hover:border-ink/60 transition-[transform,border-color] duration-300 bg-snow/50">
                 {i ? <img src={cardUrl(k, i)} alt="" loading="lazy" draggable={false} className="w-full h-full object-cover object-top" /> : <Silhouette category={r.category} className="w-full h-full" />}

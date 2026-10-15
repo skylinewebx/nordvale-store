@@ -94,10 +94,9 @@ export default function Craftsmanship() {
     const r = root.current; if (!r) return;
     const ctx = gsap.context(() => {
       if (reducedMotion()) { r.querySelectorAll<HTMLElement>(".cf-img, .cf-txt").forEach((e) => { e.style.opacity = "1"; e.style.transform = "none"; }); if (line.current) line.current.style.transform = "scaleY(1)"; return; }
-      r.querySelectorAll<HTMLElement>(".cf-img, .cf-txt").forEach((e) => {
-        const dir = e.dataset.side === "left" ? -1 : 1;
-        gsap.fromTo(e, { opacity: 0, x: dir * 70 }, { opacity: 1, x: 0, duration: 1.1, ease: "power3.out", scrollTrigger: { trigger: e, start: "top 85%", once: true } });
-      });
+      const els = [...r.querySelectorAll<HTMLElement>(".cf-img, .cf-txt")];
+      els.forEach((e) => gsap.set(e, { opacity: 0, x: (e.dataset.side === "left" ? -1 : 1) * 70 }));
+      ScrollTrigger.batch(els, { start: "top 88%", once: true, onEnter: (b) => gsap.to(b, { opacity: 1, x: 0, duration: 1.1, ease: "power3.out", stagger: 0.12, overwrite: true }) });
       r.querySelectorAll<HTMLElement>("[data-par]").forEach((img) => gsap.fromTo(img, { yPercent: -5 }, { yPercent: 5, ease: "none", scrollTrigger: { trigger: img.parentElement!.parentElement!, start: "top bottom", end: "bottom top", scrub: true } }));
       if (line.current) gsap.fromTo(line.current, { scaleY: 0 }, { scaleY: 1, ease: "none", scrollTrigger: { trigger: r.querySelector(".cf-list"), start: "top 60%", end: "bottom 70%", scrub: true } });
     }, r);

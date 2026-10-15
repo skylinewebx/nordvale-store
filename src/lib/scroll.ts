@@ -13,10 +13,10 @@ export const getLenis = () => lenis;
  * One rAF loop drives both Lenis and GSAP; Lenis updates ScrollTrigger.
  */
 export function initScroll() {
-  ScrollTrigger.config({ ignoreMobileResize: true }); // no refresh when mobile URL bars show/hide
+  ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true }); // no refresh when mobile URL bars show/hide
   gsap.ticker.lagSmoothing(0);
   if (lenis || reducedMotion() || isTouch()) return;
-  lenis = new Lenis({ autoRaf: false, lerp: 0.1, wheelMultiplier: 1, smoothWheel: true, syncTouch: false });
+  lenis = new Lenis({ autoRaf: false, lerp: 0.085, wheelMultiplier: 0.95, smoothWheel: true, syncTouch: false });
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add((t) => lenis!.raf(t * 1000));
 }

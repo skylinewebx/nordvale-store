@@ -40,3 +40,9 @@ npm run build
 
 ## Hosting under a sub-path
 `BASE=/nordvale-store/ npm run build` (GitHub Pages project site). All asset URLs, the router and the service worker honour `import.meta.env.BASE_URL`.
+
+## Drag to turn
+`src/lib/turn.tsx`: one controller used by the hero and the product page. Drag the product (or the slider under it): real 3D turn with CSS perspective (rotateY ±35°, stretching floor shadow, light sweep) when there is no video; if `{slug}-{colour}.mp4` (product page) or `public/assets/hero/{category}.mp4` (hero) exists it scrubs the video instead.
+
+## Category sections
+Home = Showcase → Hoodies / Jackets / Trousers / T-Shirts sections (`src/sections/CategorySection.tsx`) → Full Collection → Contact. Each links to `/category/:slug`. Navbar category links scroll to these sections.
