@@ -77,7 +77,7 @@ export default function App() {
       <Deferred minHeight="0px" delay={2400}><CartDrawer /></Deferred>
       <Deferred minHeight="0px" delay={2700}><WishlistDrawer /></Deferred>
       <Deferred minHeight="0px" delay={3000}><SearchOverlay /></Deferred>
-      <Deferred minHeight="0px" delay={3300}><CookieNotice /></Deferred>
+      <Deferred minHeight="0px" delay={1200}><CookieNotice /></Deferred>
     </>
   );
 }

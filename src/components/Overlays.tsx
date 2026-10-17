@@ -97,16 +97,13 @@ export function SearchOverlay() {
 
 export function CookieNotice() {
   const c = useStore((s) => s.cookies); const set = useStore((s) => s.setCookies);
+  // plain CSS entrance (no framer exit/delay): it stays until the visitor clicks Accept or Decline
+  if (c !== "unset") return null;
   return (
-    <AnimatePresence>
-      {c === "unset" && (
-        <m.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ delay: 2.5 }} role="region" aria-label="Cookie notice"
-          className="fixed z-[60] bottom-4 left-4 right-4 md:right-auto md:max-w-[400px] bg-snow border hair p-5 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
-          <p className="text-[15px] text-ink/90">We use a few cookies to remember your bag and improve the site. See our <Link className="underline" to="/privacy">privacy notice</Link>.</p>
-          <div className="flex gap-3 mt-4"><button className="btn btn-solid flex-1 !px-4" onClick={() => set("accepted")}>Accept</button><button className="btn btn-line flex-1 !px-4" onClick={() => set("declined")}>Decline</button></div>
-        </m.div>
-      )}
-    </AnimatePresence>
+    <div role="region" aria-label="Cookie notice" className="cookie-in fixed z-[95] bottom-4 left-4 right-4 md:right-auto md:max-w-[400px] bg-snow border hair p-5 shadow-[0_10px_40px_rgba(0,0,0,0.12)]">
+      <p className="text-[15px] text-ink/90">We use a few cookies to remember your bag and improve the site. See our <Link className="underline" to="/privacy">privacy notice</Link>.</p>
+      <div className="flex gap-3 mt-4"><button type="button" className="btn btn-solid flex-1 !px-4" onClick={() => set("accepted")}>Accept</button><button type="button" className="btn btn-line flex-1 !px-4" onClick={() => set("declined")}>Decline</button></div>
+    </div>
   );
 }
 
