@@ -13,11 +13,11 @@ function Acc({ title, children, open: o = false }: { title: string; children: Re
   const [open, setOpen] = useState(o);
   return (
     <div className="border-t hair">
-      <button className="w-full flex justify-between items-center min-h-[52px] text-[11px] uppercase tracking-[0.18em]" onClick={() => setOpen(!open)} aria-expanded={open}>
+      <button className="w-full flex justify-between items-center min-h-[52px] text-[12.5px] uppercase tracking-[0.18em]" onClick={() => setOpen(!open)} aria-expanded={open}>
         {title}<Icon name={open ? "minus" : "plus"} size={16} />
       </button>
       <AnimatePresence initial={false}>
-        {open && <m.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden"><div className="pb-5 text-[13px] text-ink/75 leading-relaxed">{children}</div></m.div>}
+        {open && <m.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden"><div className="pb-5 text-[15px] text-ink/90 leading-relaxed">{children}</div></m.div>}
       </AnimatePresence>
     </div>
   );
@@ -67,13 +67,13 @@ export default function ProductDetail({ product: p, onOpen }: { product: Product
         <p className="font-display italic text-[19px] text-stone mt-2">{p.tagline}</p>
         <div className="mt-5 flex items-center gap-4 flex-wrap">
           <span className="text-[20px] tabular-nums">{money(price)}</span>
-          {p.salePrice && <s className="text-stone text-[14px]">{money(p.price)}</s>}
-          <span className="flex items-center gap-2 text-[12px] text-stone"><Stars value={p.rating} />{p.rating} ({p.reviewCount})</span>
+          {p.salePrice && <s className="text-stone text-[15px]">{money(p.price)}</s>}
+          <span className="flex items-center gap-2 text-[12.5px] text-stone"><Stars value={p.rating} />{p.rating} ({p.reviewCount})</span>
         </div>
-        <p className={`mt-3 text-[12px] ${p.stock === "low" ? "text-accent" : "text-stone"}`}>{p.stock === "out" ? "Out of stock" : p.stock === "low" ? "Low stock · only a few left" : "In stock · ships in 24h"}</p>
+        <p className={`mt-3 text-[12.5px] ${p.stock === "low" ? "text-accent" : "text-stone"}`}>{p.stock === "out" ? "Out of stock" : p.stock === "low" ? "Low stock · only a few left" : "In stock · ships from Houston, TX in 24h"}</p>
 
         <fieldset className="mt-8">
-          <legend className="eyebrow mb-3">Colour · <span className="text-ink normal-case tracking-normal text-[13px]">{color.name}</span></legend>
+          <legend className="eyebrow mb-3">Colour · <span className="text-ink normal-case tracking-normal text-[15px]">{color.name}</span></legend>
           <div className="flex gap-1 -ml-1 flex-wrap">
             {p.colors.map((c) => (
               <button key={c.id} onClick={() => pick(p.slug, c.id)} aria-label={c.name} aria-pressed={c.id === color.id} className="w-12 h-12 flex items-center justify-center">
@@ -84,21 +84,21 @@ export default function ProductDetail({ product: p, onOpen }: { product: Product
         </fieldset>
 
         <fieldset className="mt-6">
-          <legend className="eyebrow mb-3 flex justify-between w-full">Size <button type="button" className="underline normal-case tracking-normal text-[12px] min-h-[24px]" onClick={() => setGuide(!guide)}>Size guide</button></legend>
+          <legend className="eyebrow mb-3 flex justify-between w-full">Size <button type="button" className="underline normal-case tracking-normal text-[12.5px] min-h-[24px]" onClick={() => setGuide(!guide)}>Size guide</button></legend>
           <div className="grid grid-cols-6 gap-2" role="radiogroup" aria-label="Size">
             {p.sizes.map((s) => (
-              <button key={s} role="radio" aria-checked={size === s} onClick={() => { setSize(s); setErr(false); }} className={`min-h-[48px] text-[13px] border transition-colors ${size === s ? "bg-ink text-snow border-ink" : "hair hover:border-ink"}`}>{s}</button>
+              <button key={s} role="radio" aria-checked={size === s} onClick={() => { setSize(s); setErr(false); }} className={`min-h-[48px] text-[15px] border transition-colors ${size === s ? "bg-ink text-snow border-ink" : "hair hover:border-ink"}`}>{s}</button>
             ))}
           </div>
-          {err && <p role="alert" className="text-[12px] text-accent mt-2">Please select a size.</p>}
+          {err && <p role="alert" className="text-[12.5px] text-accent mt-2">Please select a size.</p>}
           <AnimatePresence>
             {guide && (
               <m.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                <table className="w-full mt-4 text-[12px] text-center"><caption className="sr-only">{chart.title} size chart in centimetres</caption>
+                <table className="w-full mt-4 text-[12.5px] text-center"><caption className="sr-only">{chart.title} size chart in centimetres</caption>
                   <thead className="text-stone"><tr>{chart.head.map((h) => <th key={h} scope="col" className="py-2 font-light">{h}</th>)}</tr></thead>
                   <tbody>{chart.rows.map((r) => <tr key={r[0]} className={`border-t hair ${r[0] === size ? "bg-mist/60" : ""}`}>{r.map((cell, i) => <td key={i} className="py-2">{cell}</td>)}</tr>)}</tbody>
                 </table>
-                <p className="text-[11px] text-stone mt-2">Measurements in cm{p.category === "trousers" ? " (waist size in inches)" : ""}. {chart.note}</p>
+                <p className="text-[12.5px] text-stone mt-2">Measurements in cm{p.category === "trousers" ? " (waist size in inches)" : ""}. {chart.note}</p>
               </m.div>
             )}
           </AnimatePresence>
@@ -107,13 +107,13 @@ export default function ProductDetail({ product: p, onOpen }: { product: Product
         <div className="mt-8 flex gap-3">
           <div className="flex items-center border hair">
             <button className="w-12 h-12 flex items-center justify-center" onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Decrease quantity"><Icon name="minus" size={14} /></button>
-            <span className="w-8 text-center text-[14px] tabular-nums">{qty}</span>
+            <span className="w-8 text-center text-[15px] tabular-nums">{qty}</span>
             <button className="w-12 h-12 flex items-center justify-center" onClick={() => setQty(Math.min(10, qty + 1))} aria-label="Increase quantity"><Icon name="plus" size={14} /></button>
           </div>
           <button className="btn btn-solid flex-1" onClick={doAdd} disabled={p.stock === "out"}>{added ? "Added ✓" : "Add to bag"}</button>
           <button className="w-12 h-12 border hair flex items-center justify-center hover:border-ink transition-colors" onClick={() => toggle(p.slug)} aria-pressed={wished} aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}><Icon name="heart" className={wished ? "fill-ink" : ""} /></button>
         </div>
-        <ul className="mt-5 grid grid-cols-2 gap-3 text-[12px] text-stone">
+        <ul className="mt-5 grid grid-cols-2 gap-3 text-[12.5px] text-stone">
           <li className="flex gap-2 items-center"><Icon name="truck" size={16} />Free shipping over {money(BRAND.freeShippingThreshold)}</li>
           <li className="flex gap-2 items-center"><Icon name="return" size={16} />30-day free returns</li>
         </ul>
@@ -131,7 +131,7 @@ export default function ProductDetail({ product: p, onOpen }: { product: Product
           </Acc>
           <Acc title={`Made in ${p.madeIn}`}><p>{p.manufacturing}</p></Acc>
           <Acc title="Care"><ul className="list-disc pl-4 space-y-1">{p.care.map((c) => <li key={c}>{c}</li>)}</ul></Acc>
-          <Acc title="Shipping & returns"><p>Free shipping over {money(BRAND.freeShippingThreshold)}, otherwise {money(BRAND.shippingFlat)}. Domestic delivery 2–4 days, international 5–10 days. Returns are free within 30 days on unworn items with tags.</p></Acc>
+          <Acc title="Shipping & returns"><p>Ships from Houston, TX. Free US shipping over {money(BRAND.freeShippingThreshold)}, otherwise {money(BRAND.shippingFlat)}; US delivery in 2–5 business days, international 7–14. Returns are free within 30 days on unworn items with tags.</p></Acc>
           <div className="border-t hair" />
         </div>
       </div>
@@ -144,7 +144,7 @@ export default function ProductDetail({ product: p, onOpen }: { product: Product
             <button key={r.slug} className="text-left group" onClick={() => onOpen(r.slug)}>
               <div className="aspect-[3/4] relative overflow-hidden"><ProductImage product={r} colorId={useStore.getState().picked[r.slug]} className="absolute inset-0" /></div>
               <p className="font-display text-[19px] mt-3">{r.name}</p>
-              <p className="text-[12px] text-stone">{money(effectivePrice(r))}</p>
+              <p className="text-[12.5px] text-stone">{money(effectivePrice(r))}</p>
             </button>
           ))}
         </div>

@@ -1,3 +1,4 @@
+import { BUSINESS, formatUsd } from "../config/business";
 export interface Fabric {
   key: string; // → /assets/images/fabric-<key>.webp (optional photo; a textured placeholder shows without it)
   name: string;
@@ -30,7 +31,7 @@ export const whyUs = [
   { title: "Quality that lasts", text: "Double-needle seams, pre-shrunk cloth and bartacked stress points. Made to outlive trends.", icon: "needle" },
   { title: "Honest sustainability", text: "Organic and recycled fibres, vegan leather, water-based dyes, and limited runs to avoid waste.", icon: "leaf" },
   { title: "Sizing that works", text: "A size chart for every category, true-to-size fits and free exchanges on the first swap.", icon: "ruler" },
-  { title: "Delivery & returns", text: "Free shipping over $150. Ships in 24h. 30-day free returns, no questions.", icon: "box" },
+  { title: "Delivery & returns", text: `Free US shipping over ${formatUsd(BUSINESS.freeShippingThreshold)}. Ships from Houston, TX in 24h. ${BUSINESS.returnDays}-day free returns, no questions.`, icon: "box" },
 ] as const;
 
 export interface Review { id: string; name: string; product: string; rating: number; text: string; likes: number; avatar: number }
@@ -45,12 +46,12 @@ export const reviews: Review[] = [
 
 export const faqs = [
   { q: "How do your pieces fit?", a: "Each product page lists its fit. Oversized pieces (Nordic Drift, Cloud Puffer, Drop Tee, Acid Wash Tee) are cut generously, so size down for a regular fit. Slim pieces (Noir Biker, Savile Slim, Rib Slim Tee) are close-fitting." },
-  { q: "How long does delivery take?", a: "Domestic orders arrive in 2–4 working days. International orders take 5–10 working days. Orders over $150 ship free." },
+  { q: "How long does delivery take?", a: `Orders ship from ${BUSINESS.city}, ${BUSINESS.state}. US orders arrive in ${BUSINESS.domesticDays}; international orders take ${BUSINESS.intlDays}. US orders over ${formatUsd(BUSINESS.freeShippingThreshold)} ship free, otherwise ${formatUsd(BUSINESS.shippingFlat)}.` },
   { q: "What is your return policy?", a: "Free returns within 30 days on unworn items with tags. Your first size exchange is always free." },
   { q: "How should I care for my pieces?", a: "Cotton fleece, terry and jersey: wash cold, inside out, tumble dry low. Wool and tweed: dry clean or hand wash cold and dry flat. Faux leather: wipe clean with a damp cloth. Linen: wash cold and line dry." },
   { q: "Is the leather real?", a: "No. The Noir Biker and the Campus Varsity sleeves are vegan faux leather: a polyurethane coating on a knit backing." },
-  { q: "Do you ship internationally?", a: "Yes. We ship worldwide with PayPal and Stripe for international payments. Duties may apply depending on your country." },
-  { q: "Which payment methods do you accept?", a: "Cash on delivery, cards, mobile wallets such as JazzCash and Easypaisa, and PayPal or Stripe for customers abroad." },
+  { q: "Do you ship internationally?", a: `Yes. We ship from Houston, Texas to most countries for a flat ${formatUsd(BUSINESS.intlFlat)} (free over ${formatUsd(BUSINESS.intlFreeOver)}), paid with PayPal or Stripe. Duties and import taxes may apply in your country.` },
+  { q: "Which payment methods do you accept?", a: "Credit and debit cards (the default), cash on delivery for US orders, mobile wallets such as JazzCash and Easypaisa, and PayPal or Stripe for customers outside the United States." },
 ];
 
 // Winter Essentials reuses the collection photos (`color` is an index into the product's colours).

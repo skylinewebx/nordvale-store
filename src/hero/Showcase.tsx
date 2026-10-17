@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BRAND, money } from "../config/assets";
 import { Icon } from "../components/Icons";
 import { Silhouette } from "../components/ProductImage";
+import { HANG_ASPECT, HANG_TOP, HangShadow, hangShadowTop, Hung, isHanging, Sway } from "../components/Hanger";
 import { CATEGORIES, Category, colorOf, effectivePrice, featuredOf, getCategory, photoKey, Product, stylesOf } from "../data/products";
 import { cardUrl, detailUrl, useCatalog } from "../lib/catalog";
 import { flip } from "../lib/flip";
@@ -31,19 +32,25 @@ function useImg(p: Product) {
 const Item = memo(function Item({ p, i, setRef, priority, ctl, active }: { p: Product; i: number; setRef: (i: number, el: HTMLDivElement | null) => void; priority: boolean; ctl: Turn; active: boolean }) {
   const { it, detail, card, color } = useImg(p);
   const [ok, setOk] = useState(true);
+  const hang = isHanging(p.category);
+  const img = it && ok && detail ? (
+    <img src={detail} srcSet={`${card} 540w, ${detail} 1080w`} sizes="(max-width: 768px) 70vw, 460px" alt={`${p.name} in ${color.name}`} width={it.w} height={it.h} draggable={false}
+      decoding="async" loading={priority ? "eager" : "lazy"} {...(priority ? ({ fetchpriority: "high" } as object) : {})} onError={() => setOk(false)}
+      className={`absolute inset-0 w-full h-full object-contain ${hang ? "object-top" : "object-bottom"} pointer-events-none`} />
+  ) : <Silhouette category={p.category} tint={color.hex} className="absolute inset-0 w-full h-full" />;
   return (
-    <div ref={(el) => setRef(i, el)} className="sc-item absolute left-1/2 bottom-0 will-change-transform select-none" style={{ width: "calc(var(--ph) * 0.5625)", height: "var(--ph)", opacity: 0 }} data-i={i} aria-hidden="true">
-      {/* floor shadow: part of the item, so it scales and fades with it */}
-      {active ? <TurnShadow ctl={ctl} className="left-[6%] right-[6%] -bottom-[2.2%] h-[5.5%]" /> : <span className="absolute left-[6%] right-[6%] -bottom-[2.2%] h-[5.5%] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(38,34,33,0.42) 0%, rgba(38,34,33,0.16) 45%, transparent 72%)" }} />}
-      <div className="sc-float absolute inset-0">
-        <TurnTarget ctl={ctl} active={active} maskUrl={it && ok ? detail : null}>
-        {it && ok && detail ? (
-          <img src={detail} srcSet={`${card} 540w, ${detail} 1080w`} sizes="(max-width: 768px) 60vw, 340px" alt={`${p.name} in ${color.name}`} width={it.w} height={it.h} draggable={false}
-            decoding="async" loading={priority ? "eager" : "lazy"} {...(priority ? ({ fetchpriority: "high" } as object) : {})} onError={() => setOk(false)}
-            className="absolute inset-0 w-full h-full object-contain object-bottom pointer-events-none" />
-        ) : <Silhouette category={p.category} tint={color.hex} className="absolute inset-0 w-full h-full" />}
-        </TurnTarget>
-      </div>
+    <div ref={(el) => setRef(i, el)} className="sc-item absolute left-1/2 bottom-0 will-change-transform select-none" style={{ width: `calc(var(--ph) * ${hang ? HANG_ASPECT : 0.5625})`, height: "var(--ph)", opacity: 0 }} data-i={i} aria-hidden="true">
+      {/* shadow: part of the item, so it scales and fades with it (floor shadow for trousers, soft shadow under hanging tops) */}
+      {hang
+        ? (active ? <TurnShadow soft ctl={ctl} className="left-[12%] right-[12%] h-[6%]" style={{ top: hangShadowTop(it?.gb) }} /> : <HangShadow gb={it?.gb} className="left-[12%] right-[12%]" />)
+        : (active ? <TurnShadow ctl={ctl} className="left-[6%] right-[6%] -bottom-[2.2%] h-[5.5%]" /> : <span className="absolute left-[6%] right-[6%] -bottom-[2.2%] h-[5.5%] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(38,34,33,0.42) 0%, rgba(38,34,33,0.16) 45%, transparent 72%)" }} />)}
+      {hang ? (
+        <Sway delay={i * 1.7}>
+          <TurnTarget ctl={ctl} active={active} maskUrl={it && ok ? detail : null} maskTop={HANG_TOP}><Hung>{img}</Hung></TurnTarget>
+        </Sway>
+      ) : (
+        <div className="sc-float absolute inset-0"><TurnTarget ctl={ctl} active={active} maskUrl={it && ok ? detail : null}>{img}</TurnTarget></div>
+      )}
     </div>
   );
 });
@@ -58,7 +65,8 @@ function Stage({ ctl, cat, mode, idx, onIdx, onSwipeCat, onEnterB, onSelect, out
   const lite = usePerfLite();
   const reduced = reducedMotion();
   const live = useRef(true);
-  const cur = useRef({ mode, idx, onIdx }); cur.current = { mode, idx, onIdx };
+  const hang = isHanging(cat);
+  const cur = useRef({ mode, idx, onIdx, hang }); cur.current = { mode, idx, onIdx, hang };
 
   const setRef = useCallback((i: number, el: HTMLDivElement | null) => { items.current[i] = el; }, []);
 
@@ -66,7 +74,7 @@ function Stage({ ctl, cat, mode, idx, onIdx, onSwipeCat, onEnterB, onSelect, out
     const s = st.current, root_ = root.current; if (!root_) return;
     const w = root_.clientWidth;
     const ph = parseFloat(getComputedStyle(root_).getPropertyValue("--ph")) || 560;
-    s.step = Math.min(ph * 0.5625 * 0.86, w * 0.5);
+    s.step = Math.min(ph * (cur.current.hang ? HANG_ASPECT : 0.5625) * 0.86, w * 0.5);
     const showB = s.mix;
     items.current.forEach((el, i) => {
       if (!el) return;
@@ -184,7 +192,7 @@ function Stage({ ctl, cat, mode, idx, onIdx, onSwipeCat, onEnterB, onSelect, out
 function Title({ text, out }: { text: string; out?: boolean }) {
   return (
     <h1 className={`sc-title absolute inset-0 flex items-center justify-center pointer-events-none select-none ${out ? "sc-title-out" : "sc-title-in"}`} aria-hidden={out || undefined}>
-      <span className="whitespace-nowrap font-display text-[11.5vw] md:text-[clamp(56px,9vw,124px)] leading-none text-ink/90" style={{ fontWeight: 200 }}>{text}</span>
+      <span className="whitespace-nowrap font-display text-[11.5vw] md:text-[clamp(56px,9vw,124px)] leading-none text-ink/90" style={{ fontWeight: 300 }}>{text}</span>
     </h1>
   );
 }
@@ -201,6 +209,7 @@ export default function Showcase() {
   const cat = useStore((s) => s.heroCat); const setCat = useStore((s) => s.setHeroCat);
   const [mode, setMode] = useState<"A" | "B">("A");
   const info = getCategory(cat);
+  const tops = isHanging(cat);
   const styles = useMemo(() => stylesOf(cat), [cat]);
   const featIdx = Math.max(0, styles.findIndex((p) => p.slug === info.heroFeatured));
   const [idx, setIdx] = useState(featIdx);
@@ -235,7 +244,7 @@ export default function Showcase() {
   // optional: a muted clip public/assets/hero/{category}.mp4 plays over the centre product after 1.2 s idle (one at a time)
   const [clip, setClip] = useState<string | null>(null);
   useEffect(() => {
-    setClip(null); if (mode !== "A" || reducedMotion() || usePerfLiteNow()) return;
+    setClip(null); if (mode !== "A" || cat !== "trousers" || reducedMotion() || usePerfLiteNow()) return;
     const url = `${import.meta.env.BASE_URL}assets/hero/${cat}.mp4`;
     const t = setTimeout(() => { fetch(url, { method: "HEAD" }).then((r) => { if (r.ok && /video/.test(r.headers.get("content-type") ?? "")) setClip(url); }).catch(() => {}); }, 1200);
     return () => clearTimeout(t);
@@ -252,7 +261,7 @@ export default function Showcase() {
       </div>
 
       {/* product zone (sets the shared floor line + product height) */}
-      <div className="sc-zone absolute inset-x-0 top-[11svh] bottom-[25svh] md:top-[9svh] md:bottom-[26svh]" style={{ ["--ph" as string]: "clamp(240px, min(58svh, 100vw * 1.1), 640px)" }}>
+      <div className="sc-zone absolute inset-x-0 top-[11svh] bottom-[25svh] md:top-[9svh] md:bottom-[26svh]" style={{ ["--ph" as string]: tops ? "clamp(240px, min(58svh, 100vw * 0.95), 640px)" : "clamp(240px, min(58svh, 100vw * 1.1), 640px)" }}>
         <div className="absolute inset-x-0 bottom-[2.5%] top-0">
           {groups.map((g) => (
             <Stage key={g.id} ctl={ctl} cat={g.cat} out={g.out} mode={g.out ? "A" : mode} idx={g.out ? 0 : idx} onIdx={setIdx} onSwipeCat={swipeCat} onEnterB={() => setMode("B")} onSelect={select} />
@@ -270,16 +279,16 @@ export default function Showcase() {
 
       {/* B: style label under the strip */}
       <div className={`absolute inset-x-0 bottom-[calc(25svh-48px)] md:bottom-[calc(26svh-52px)] text-center pointer-events-none transition-[opacity,transform] duration-[600ms] ${mode === "B" ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`} style={{ transitionTimingFunction: EASE }}>
-        <p key={current.slug} className="sc-label text-[12px] md:text-[13px] uppercase tracking-[0.3em] pl-[0.3em]">{current.name}</p>
-        <p className="text-[12px] text-stone mt-0.5"><span className="text-wine">{money(effectivePrice(current))}</span>{current.salePrice && <s className="ml-2 opacity-60">{money(current.price)}</s>}</p>
+        <p key={current.slug} className="sc-label text-[12.5px] md:text-[15px] uppercase tracking-[0.3em] pl-[0.3em]">{current.name}</p>
+        <p className="text-[12.5px] text-stone mt-0.5"><span className="text-wine">{money(effectivePrice(current))}</span>{current.salePrice && <s className="ml-2 opacity-60">{money(current.price)}</s>}</p>
       </div>
 
       {/* controls: chips + pill */}
       <div className="absolute inset-x-0 bottom-0 pb-[max(20px,env(safe-area-inset-bottom))] flex flex-col items-center gap-4 md:gap-5 pt-3">
         <div className={`flex items-center gap-2 md:gap-3 transition-[opacity,transform] duration-[600ms] ${mode === "B" ? "opacity-0 translate-y-2 pointer-events-none" : "opacity-100 translate-y-0"}`} style={{ transitionTimingFunction: EASE }} role="group" aria-label="Categories">
-          <button className="w-11 h-11 flex items-center justify-center text-ink/60 hover:text-ink transition-colors" onClick={() => swipeCat(-1)} aria-label="Previous category"><Icon name="chevron" className="rotate-180" size={18} /></button>
+          <button className="w-11 h-11 flex items-center justify-center text-ink/90 hover:text-ink transition-colors" onClick={() => swipeCat(-1)} aria-label="Previous category"><Icon name="chevron" className="rotate-180" size={18} /></button>
           {CATEGORIES.map((c) => <Chip key={c.id} slug={c.thumbnail} label={c.label} on={c.id === cat} onClick={() => setCat(c.id)} />)}
-          <button className="w-11 h-11 flex items-center justify-center text-ink/60 hover:text-ink transition-colors" onClick={() => swipeCat(1)} aria-label="Next category"><Icon name="chevron" size={18} /></button>
+          <button className="w-11 h-11 flex items-center justify-center text-ink/90 hover:text-ink transition-colors" onClick={() => swipeCat(1)} aria-label="Next category"><Icon name="chevron" size={18} /></button>
         </div>
         <div className="flex items-center gap-3">
           {mode === "B" && <button className="btn btn-line !min-h-[48px] !px-6" onClick={() => setMode("A")}>Back</button>}
@@ -300,14 +309,14 @@ export default function Showcase() {
       )}
 
       {/* vertical social icons (left edge) */}
-      <ul className="hidden md:flex absolute left-5 lg:left-8 top-1/2 -translate-y-1/2 flex-col items-center gap-1 text-ink/55">
+      <ul className="hidden md:flex absolute left-5 lg:left-8 top-1/2 -translate-y-1/2 flex-col items-center gap-1 text-ink/90">
         <li className="w-px h-14 bg-ink/20 mx-auto mb-2" aria-hidden="true" />
         {SOCIAL.map(([ic, label, href]) => <li key={ic}><a href={href} target={ic === "mail" ? undefined : "_blank"} rel="noopener noreferrer" aria-label={label} className="w-11 h-11 flex items-center justify-center hover:text-wine hover:-translate-y-0.5 transition-[color,transform] duration-300"><Icon name={ic} size={18} /></a></li>)}
         <li className="w-px h-14 bg-ink/20 mx-auto mt-2" aria-hidden="true" />
       </ul>
 
       {/* tiny category description (bottom right) */}
-      <p key={cat} className="sc-desc hidden lg:block absolute right-8 lg:right-12 bottom-8 max-w-[260px] text-[11px] leading-relaxed text-stone text-right">{info.description}</p>
+      <p key={cat} className="sc-desc hidden lg:block absolute right-8 lg:right-12 bottom-8 max-w-[260px] text-[12.5px] leading-relaxed text-stone text-right">{info.description}</p>
     </section>
   );
 }

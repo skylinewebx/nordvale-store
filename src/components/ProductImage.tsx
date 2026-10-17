@@ -58,7 +58,7 @@ export function ProductImage({ product, colorId, className = "", variant = "card
           loading={priority ? "eager" : "lazy"} {...hi(priority)}
           ref={(el) => { if (el?.complete && el.naturalWidth && st === "loading") setSt("ok"); }}
           onLoad={() => setSt("ok")} onError={() => setSt("err")}
-          className={`absolute inset-0 w-full h-full object-contain object-bottom transition-opacity duration-300 ${st === "ok" ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 w-full h-full object-contain ${product.category === "trousers" ? "object-bottom" : "object-top"} transition-opacity duration-300 ${st === "ok" ? "opacity-100" : "opacity-0"}`}
           style={{ objectPosition: product.objectPosition }}
         />
       )}
@@ -66,15 +66,15 @@ export function ProductImage({ product, colorId, className = "", variant = "card
   );
 }
 
-interface LayerProps { src: string | null; visible: boolean; alt: string; w: number; h: number; pos: string; priority: boolean; srcSet?: string; sizes?: string; onReady: (u: string) => void; onFail: (u: string) => void }
-function Layer({ src, visible, alt, w, h, pos, priority, srcSet, sizes, onReady, onFail }: LayerProps) {
+interface LayerProps { top: boolean; src: string | null; visible: boolean; alt: string; w: number; h: number; pos: string; priority: boolean; srcSet?: string; sizes?: string; onReady: (u: string) => void; onFail: (u: string) => void }
+function Layer({ top, src, visible, alt, w, h, pos, priority, srcSet, sizes, onReady, onFail }: LayerProps) {
   const ref = useRef<HTMLImageElement>(null);
   useEffect(() => { const el = ref.current; if (el && src && el.complete && el.naturalWidth) onReady(src); }, [src]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!src) return null;
   return (
     <img ref={ref} src={src} srcSet={srcSet} sizes={sizes} alt={visible ? alt : ""} aria-hidden={!visible} width={w} height={h} draggable={false} decoding="async"
       loading={priority ? "eager" : "lazy"} {...hi(priority)} onLoad={() => onReady(src)} onError={() => onFail(src)}
-      className={`absolute inset-0 w-full h-full object-contain object-bottom transition-opacity duration-100 ease-linear ${visible ? "opacity-100" : "opacity-0"}`} />
+      className={`absolute inset-0 w-full h-full object-contain ${top ? "object-top" : "object-bottom"} transition-opacity duration-100 ease-linear ${visible ? "opacity-100" : "opacity-0"}`} />
   );
 }
 
@@ -113,7 +113,7 @@ export function SwapImage({ product, colorId, upgrade = false, priority = false,
     return () => { live = false; };
   }, [detail]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const common = { alt: `${product.name} in ${color.name}`, w: it?.cw ?? 540, h: it?.ch ?? 960, pos: product.objectPosition, priority, onReady, onFail };
+  const common = { alt: `${product.name} in ${color.name}`, w: it?.cw ?? 540, h: it?.ch ?? 960, pos: product.objectPosition, top: product.category !== "trousers", priority, onReady, onFail };
   const srcSet = (u: string | null) => (u && !upgrade && u === card && it ? `${card} 540w, ${detailUrl(key, it)} 1080w` : undefined);
   return (
     <div className={`overflow-hidden ${hasPos(className) ? "" : "relative"} ${className}`} style={lqipStyle(it, !s.settled)}>
@@ -144,7 +144,7 @@ export function ProductVideo({ product, colorId, want, slot, className = "" }: {
   const [mounted, setMounted] = useState(false);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
-  const active = want && it?.video && videoAllowed() && !failed;
+  const active = want && product.category === "trousers" && it?.video && videoAllowed() && !failed; // no person videos for tops (ghost-mannequin garments)
   const allowed = active && list.includes(id);
 
   useEffect(() => { if (active) { request(id); setMounted(true); } else release(id); return () => release(id); }, [active, id, request, release]);

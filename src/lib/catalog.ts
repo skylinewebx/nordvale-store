@@ -3,7 +3,7 @@ import { loadImage } from "./imageCache";
 
 // Product-photo manifest produced by `npm run images` (public/assets/products/manifest.json).
 // It lists which photos / videos exist, their sizes and a 24px base64 LQIP, so the browser never probes for 404s.
-export interface CatItem { w: number; h: number; cw: number; ch: number; lqip: string; v: string; video?: boolean; vv?: string }
+export interface CatItem { w: number; h: number; cw: number; ch: number; lqip: string; v: string; video?: boolean; vv?: string; gb?: number }
 interface Cat { items: Record<string, CatItem>; loaded: boolean }
 // The build inlines the manifest as window.__PRODUCTS__ (vite.config.ts), so the catalog is ready synchronously on first render.
 const inlined = (window as unknown as { __PRODUCTS__?: { items?: Record<string, CatItem> } }).__PRODUCTS__;

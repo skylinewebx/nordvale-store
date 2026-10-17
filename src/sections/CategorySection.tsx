@@ -16,6 +16,8 @@ export function preloadCategory(cat: Category, items: Record<string, { v: string
   stylesOf(cat).forEach((p) => p.colors.slice(0, 2).forEach((c) => { const k = photoKey(p.slug, c.slug), it = items[k]; if (it) loadImage(cardUrl(k, it as never), "low").catch(() => {}); }));
 }
 
+const idle = (fn: () => void) => ("requestIdleCallback" in window ? (window as Window & { requestIdleCallback: (f: () => void, o?: object) => void }).requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 200));
+
 export default function CategorySection({ cat, next }: { cat: Category; next?: Category }) {
   const info = getCategory(cat);
   const styles = useMemo(() => stylesOf(cat), [cat]);
@@ -29,7 +31,7 @@ export default function CategorySection({ cat, next }: { cat: Category; next?: C
     const title = ScrollTrigger.create({ trigger: el, start: "top 72%", once: true, onEnter: () => el.classList.add("in") });
     const batch = ScrollTrigger.batch(cards, { start: "top 94%", once: true, onEnter: (els) => els.forEach((c, i) => setTimeout(() => c.classList.add("in"), 140 + i * 110)) });
     // preload this section's images when it is near, and the NEXT section's images when this one is on screen
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { preloadCategory(cat, items); if (next) setTimeout(() => preloadCategory(next, items), 400); io.disconnect(); } }, { rootMargin: "140% 0px" });
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { idle(() => { preloadCategory(cat, items); if (next) idle(() => preloadCategory(next, items)); }); io.disconnect(); } }, { rootMargin: "140% 0px" });
     io.observe(el);
     const safety = setTimeout(() => { if (el.getBoundingClientRect().top < window.innerHeight * 0.7) { el.classList.add("in"); cards.forEach((c) => c.classList.add("in")); } }, 2200);
     return () => { title.kill(); batch.forEach((t) => t.kill()); io.disconnect(); clearTimeout(safety); };
@@ -40,11 +42,11 @@ export default function CategorySection({ cat, next }: { cat: Category; next?: C
       <div className="grid md:grid-cols-[1fr_auto] gap-6 md:gap-12 items-end mb-12 md:mb-20">
         <div>
           <p className="eyebrow">0{["hoodies", "jackets", "trousers", "tshirts"].indexOf(cat) + 1} · {info.label}</p>
-          <h2 id={`cat-h-${cat}`} className="cat-title mt-4 text-[clamp(44px,10.5vw,150px)] leading-[0.92]" style={{ fontWeight: 200 }}><span className="inline-block">{info.title}</span></h2>
+          <h2 id={`cat-h-${cat}`} className="cat-title mt-4 text-[clamp(44px,10.5vw,150px)] leading-[0.92]" style={{ fontWeight: 300 }}><span className="inline-block">{info.title}</span></h2>
         </div>
         <div className="md:max-w-[340px] md:pb-3">
-          <p className="cat-desc text-[14px] leading-relaxed text-ink/70">{info.description}</p>
-          <Link to={`/category/${info.slug}`} className="cat-link mt-6 inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] min-h-[44px] group">
+          <p className="cat-desc text-[15px] leading-relaxed text-ink/90">{info.description}</p>
+          <Link to={`/category/${info.slug}`} className="cat-link mt-6 inline-flex items-center gap-3 text-[12.5px] uppercase tracking-[0.24em] min-h-[44px] group">
             <span className="nav-u py-1">Explore {info.label}</span><span className="w-9 h-9 rounded-full border border-ink/30 flex items-center justify-center group-hover:bg-ink group-hover:text-snow group-hover:border-ink group-hover:translate-x-1 transition-[background-color,color,border-color,transform] duration-500"><Icon name="arrow" size={14} /></span>
           </Link>
         </div>

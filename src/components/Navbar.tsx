@@ -21,7 +21,7 @@ export function useGoCategory() {
   return (c: Category) => go(`cat-${c}`);
 }
 
-const TOP = "inline-flex items-center text-[10.5px] leading-none uppercase tracking-[0.2em] nav-u py-3";
+const TOP = "inline-flex items-center text-[12.5px] leading-none uppercase tracking-[0.08em] nav-u py-3";
 
 export default function Navbar() {
   const [menu, setMenu] = useState(false);
@@ -36,14 +36,14 @@ export default function Navbar() {
   useEffect(() => { setMenu(false); }, [loc.pathname]);
   useEffect(() => { lockScroll(menu); return () => { if (menu) lockScroll(false); }; }, [menu]);
 
-  const iconBtn = "relative w-11 h-11 flex items-center justify-center text-ink/80 hover:text-ink hover:scale-110 transition-[transform,color] duration-300";
+  const iconBtn = "relative w-11 h-11 flex items-center justify-center text-ink/90 hover:text-ink hover:scale-110 transition-[transform,color] duration-300";
   const close = (fn: () => void) => () => { setMenu(false); setTimeout(fn, 320); };
   const onHome = loc.pathname === "/";
   return (
     <header className="fixed top-0 inset-x-0 z-50">
       <nav className={`transition-[background-color,box-shadow] duration-500 ${scrolled ? "bg-snow shadow-[0_1px_0_rgb(var(--hair)/0.1)]" : "bg-transparent"}`} aria-label="Main">
         <div className={`mx-auto w-full px-5 md:px-10 max-w-[1560px] flex items-center justify-between gap-6 transition-[height] duration-500 ${scrolled ? "h-14" : "h-[68px] md:h-20"}`} style={{ transitionTimingFunction: "cubic-bezier(.22,1,.36,1)" }}>
-          <Link to="/" onClick={() => { if (onHome) window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-display text-[19px] md:text-[21px] tracking-[0.42em] pl-[0.1em] shrink-0" style={{ fontWeight: 300 }} aria-label={`${BRAND.name} home`}>{BRAND.name}</Link>
+          <Link to="/" onClick={() => { if (onHome) window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-display text-[19px] md:text-[21px] tracking-[0.42em] pl-[0.1em] shrink-0" style={{ fontWeight: 450 }} aria-label={`${BRAND.name} home`}>{BRAND.name}</Link>
 
           <ul className="hidden xl:flex items-center gap-7 2xl:gap-9">
             {CATEGORIES.map((c) => (
@@ -71,17 +71,17 @@ export default function Navbar() {
         {menu && (
           <m.div className="fixed inset-0 z-[90] bg-snow flex flex-col pt-[env(safe-area-inset-top)]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }} role="dialog" aria-modal="true" aria-label="Menu" data-lenis-prevent>
             <div className="px-5 h-[68px] flex items-center justify-between shrink-0">
-              <span className="font-display text-[19px] tracking-[0.42em]" style={{ fontWeight: 300 }}>{BRAND.name}</span>
+              <span className="font-display text-[19px] tracking-[0.42em]" style={{ fontWeight: 450 }}>{BRAND.name}</span>
               <button className={`${iconBtn} -mr-2`} onClick={() => setMenu(false)} aria-label="Close menu"><Icon name="close" /></button>
             </div>
             <ul className="px-5 flex-1 flex flex-col justify-center overflow-y-auto">
               {[...CATEGORIES.map((c) => [c.label, () => goCat(c.id)] as const), ["Collections", () => go("collection")] as const, ["Craftsmanship", () => navigate("/craftsmanship")] as const, ["Contact", () => go("contact")] as const].map(([l, fn], k) => (
                 <m.li key={l} initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.06 * k + 0.12, duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="border-b hair">
-                  <button onClick={close(fn)} className="font-display text-[clamp(30px,9vw,44px)] py-3 min-h-[56px] w-full text-left" style={{ fontWeight: 200 }}>{l}</button>
+                  <button onClick={close(fn)} className="font-display text-[clamp(30px,9vw,44px)] py-3 min-h-[56px] w-full text-left" style={{ fontWeight: 300 }}>{l}</button>
                 </m.li>
               ))}
             </ul>
-            <div className="px-5 py-6 flex gap-6 text-[11px] uppercase tracking-[0.2em] text-stone shrink-0 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+            <div className="px-5 py-6 flex gap-6 text-[12.5px] uppercase tracking-[0.2em] text-stone shrink-0 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
               <button onClick={close(() => set({ searchOpen: true }))}>Search</button>
               <button onClick={close(() => set({ wishlistOpen: true }))}>Wishlist ({wish})</button>
               <Link to="/track" onClick={() => setMenu(false)}>Track order</Link>

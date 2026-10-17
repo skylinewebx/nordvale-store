@@ -7,10 +7,10 @@
 export type PayMethod = "cod" | "card" | "wallet" | "intl";
 
 export const PAY_METHODS: { id: PayMethod; title: string; note: string }[] = [
-  { id: "cod", title: "Cash on Delivery", note: "Pay in cash when your order arrives. Available domestically." },
+  { id: "cod", title: "Cash on Delivery", note: "Pay in cash when your order arrives. Available for US orders." },
   { id: "card", title: "Credit / Debit Card", note: "Secure card payment (Stripe-ready placeholder)." },
   { id: "wallet", title: "Mobile Wallet", note: "JazzCash or Easypaisa. You'll confirm on your phone." },
-  { id: "intl", title: "International (PayPal / Stripe)", note: "For customers outside Pakistan." },
+  { id: "intl", title: "International (PayPal / Stripe)", note: "For customers outside the United States." },
 ];
 
 export interface PayResult { status: "pending" | "paid"; reference?: string; message: string }

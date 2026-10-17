@@ -4,14 +4,15 @@ import Collection from "../sections/Collection";
 import CategorySection from "../sections/CategorySection";
 import { useSeo } from "../lib/seo";
 import { products } from "../data/products";
+import { businessJsonLd } from "../config/business";
 
 // Home = Showcase hero → 4 category sections → Full Collection → Contact → (Footer in App). Everything else lives on its own page.
 const Contact = lazy(() => import("../sections/Info").then((m) => ({ default: m.Contact })));
 
-const ld = { "@context": "https://schema.org", "@type": "Store", name: "NORDVALE", description: "Hoodies, jackets, trousers and t-shirts.", makesOffer: products.map((p) => ({ "@type": "Offer", itemOffered: { "@type": "Product", name: p.name } })) };
+const ld = { ...businessJsonLd, makesOffer: products.map((p) => ({ "@type": "Offer", itemOffered: { "@type": "Product", name: p.name } })) };
 
 export default function Home() {
-  useSeo("NORDVALE — Hoodies, Jackets, Trousers & T-Shirts", "Sixteen considered pieces across hoodies, jackets, trousers and t-shirts, cut and sewn with care, built to last.", ld);
+  useSeo("NORDVALE — Hoodies, Jackets, Trousers & T-Shirts", "Sixteen considered pieces across hoodies, jackets, trousers and t-shirts. Ships from Houston, Texas.", ld);
   return (
     <main>
       <Showcase />

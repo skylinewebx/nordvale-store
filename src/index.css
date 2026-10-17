@@ -1,9 +1,12 @@
+/* self-hosted fonts: only the used (latin) subset, variable weights */
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("/fonts/inter-latin-var.woff2") format("woff2"); }
+@font-face { font-family: "Jost"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("/fonts/jost-latin-var.woff2") format("woff2"); }
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* THEME: warm cream + charcoal + dusty mauve + deep wine. `.theme-light` flips a section to a white "stage" (used by the hero). */
-:root { color-scheme: light; --c-snow: 245 240 232; --c-ink: 38 34 33; --c-stone: 112 102 98; --c-mist: 234 226 214; --c-accent: 124 94 104; --c-wine: 110 28 50; --hair: 38 34 33; --ease: cubic-bezier(0.22, 1, 0.36, 1); }
+:root { color-scheme: light; --c-snow: 245 240 232; --c-ink: 28 26 23; --c-stone: 85 78 70; --c-mist: 234 226 214; --c-accent: 112 82 92; --c-wine: 110 28 50; --hair: 28 26 23; --ease: cubic-bezier(0.22, 1, 0.36, 1); }
 .theme-dark { color-scheme: dark; --c-snow: 10 8 9; --c-ink: 255 255 255; --c-stone: 255 214 218; --c-mist: 26 20 22; --c-accent: 255 255 255; --hair: 255 255 255; }
 .theme-red { color-scheme: dark; --c-snow: 190 14 30; --c-ink: 255 255 255; --c-stone: 255 224 227; --c-mist: 150 8 22; --c-accent: 255 255 255; --hair: 255 255 255; background: rgb(190 14 30); }
 html { -webkit-text-size-adjust: 100%; }
@@ -181,3 +184,33 @@ button, a { transition-property: color, background-color, border-color, opacity,
 /* skip rendering of off-screen sections (remembers the real size after the first render) */
 .cat-sec, #contact { content-visibility: auto; contain-intrinsic-size: auto 1150px; }
 @media (max-width: 767px) { .cat-sec { contain-intrinsic-size: auto 1450px; } }
+
+/* ───────── TYPOGRAPHY: stronger, clearer (WCAG AA+ on cream) ─────────
+   body Inter 16/400 · labels 12.5/500 · nav 12.5 +0.08em · titles Jost 300 · numbers tabular */
+html { font-size: 16px; }
+body { font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; font-weight: 400; line-height: 1.65; letter-spacing: -0.003em; color: rgb(var(--c-ink)); font-feature-settings: "cv11", "ss01"; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+h1, h2, h3, .font-display { font-family: "Jost", system-ui, sans-serif; color: rgb(var(--c-ink)); }
+h1, h2 { font-weight: 300; line-height: 1.04; letter-spacing: -0.005em; }
+h3 { font-weight: 400; }
+.font-light { font-weight: 400; }
+.eyebrow { font-size: 12.5px; font-weight: 500; letter-spacing: 0.16em; color: rgb(var(--c-stone)); }
+.btn { font-size: 12.5px; font-weight: 500; letter-spacing: 0.16em; }
+.tabular-nums, .text-wine { font-variant-numeric: tabular-nums lining-nums; }
+.text-wine { font-weight: 500; }
+.field { font-size: 16px; font-weight: 400; }
+::placeholder { color: rgb(var(--c-stone) / 0.85); opacity: 1; }
+/* (min sizes and AA text colours are applied in the components themselves: no attribute selectors) */
+.text-stone { color: rgb(var(--c-stone)); }
+nav button, nav a, .nav-u { letter-spacing: 0.08em; font-weight: 500; }
+nav ul .nav-u { font-size: 12.5px; }
+.hair { border-color: rgb(var(--hair) / 0.16); }
+
+/* ───────── HANGING GARMENTS ───────── */
+@keyframes hangSway { 0%, 100% { transform: rotate(-1.1deg); } 50% { transform: rotate(1.1deg); } }
+.hang-sway { animation: hangSway 7.5s ease-in-out infinite; animation-delay: var(--sd, 0s); }
+.pcard[data-in] .hang-sway, .sc .hang-sway, .pp .hang-sway { will-change: transform; }
+.hang-shadow { background: radial-gradient(ellipse at center, rgba(28,26,23,0.20) 0%, rgba(28,26,23,0.07) 50%, transparent 74%); }
+html[data-lite="1"] .hang-sway { animation: none; will-change: auto; }
+.pcard:not([data-in]) .hang-sway, .sc[data-live="0"] .hang-sway, .pp[data-live="0"] .hang-sway { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .hang-sway { animation: none; } }
+#collection { content-visibility: auto; contain-intrinsic-size: auto 2600px; }

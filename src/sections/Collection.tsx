@@ -54,7 +54,7 @@ function CursorFollower({ scope }: { scope: React.RefObject<HTMLElement> }) {
 }
 
 function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
-  return <button onClick={onClick} aria-pressed={on} className={`min-h-[44px] px-4 text-[12px] border transition-colors ${on ? "bg-ink text-snow border-ink" : "hair hover:border-ink"}`}>{children}</button>;
+  return <button onClick={onClick} aria-pressed={on} className={`min-h-[44px] px-4 text-[12.5px] border transition-colors ${on ? "bg-ink text-snow border-ink" : "hair hover:border-ink"}`}>{children}</button>;
 }
 
 export default function Collection() {
@@ -111,9 +111,9 @@ export default function Collection() {
       <Reveal className="mb-10 md:mb-14 flex items-end justify-between gap-6">
         <div>
           <p className="eyebrow">The full collection</p>
-          <h2 id="col-h" className="mt-3 text-[clamp(36px,7.2vw,104px)] leading-[0.95] tracking-[0.1em]" style={{ fontWeight: 200 }}>COLLECTIONS</h2>
+          <h2 id="col-h" className="mt-3 text-[clamp(36px,7.2vw,104px)] leading-[0.95] tracking-[0.1em]" style={{ fontWeight: 300 }}>COLLECTIONS</h2>
         </div>
-        <p className="text-[clamp(36px,6vw,84px)] leading-[0.9] text-ink/25 tabular-nums select-none" style={{ fontWeight: 200 }} aria-live="polite" aria-label={`${list.length} pieces`}><Count n={list.length} /></p>
+        <p className="text-[clamp(36px,6vw,84px)] leading-[0.9] text-stone tabular-nums select-none" style={{ fontWeight: 300 }} aria-live="polite" aria-label={`${list.length} pieces`}><Count n={list.length} /></p>
       </Reveal>
 
       {/* sticky pill bar */}
@@ -122,15 +122,15 @@ export default function Collection() {
           <LayoutGroup id="pills">
             <div className="flex gap-1 overflow-x-auto no-scrollbar flex-1 -mx-1 px-1" role="tablist" aria-label="Category">
               {TABS.map((t) => (
-                <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => switchTab(t.id)} className={`relative shrink-0 min-h-[44px] px-5 rounded-full text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${tab === t.id ? "text-snow" : "text-stone hover:text-ink"}`}>
+                <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => switchTab(t.id)} className={`relative shrink-0 min-h-[44px] px-5 rounded-full text-[12.5px] uppercase tracking-[0.18em] transition-colors duration-300 ${tab === t.id ? "text-snow" : "text-stone hover:text-ink"}`}>
                   {tab === t.id && <m.span layoutId="pill" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
-                  <span className="relative">{t.label}<span className="ml-1.5 opacity-50 text-[10px]">{t.id === "all" ? products.length : products.filter((p) => p.category === t.id).length}</span></span>
+                  <span className="relative">{t.label}<span className="ml-1.5 opacity-50 text-[12.5px]">{t.id === "all" ? products.length : products.filter((p) => p.category === t.id).length}</span></span>
                 </button>
               ))}
             </div>
           </LayoutGroup>
-          <button onClick={() => setDrawer(true)} className="shrink-0 min-h-[44px] px-5 rounded-full border hair hover:border-ink transition-colors flex items-center gap-2 text-[11px] uppercase tracking-[0.18em]" aria-label={`Filters${activeCount ? `, ${activeCount} active` : ""}`}>
-            <Icon name="menu" size={14} />Filters{activeCount > 0 && <span className="w-4 h-4 rounded-full bg-ink text-snow text-[9px] flex items-center justify-center">{activeCount}</span>}
+          <button onClick={() => setDrawer(true)} className="shrink-0 min-h-[44px] px-5 rounded-full border hair hover:border-ink transition-colors flex items-center gap-2 text-[12.5px] uppercase tracking-[0.18em]" aria-label={`Filters${activeCount ? `, ${activeCount} active` : ""}`}>
+            <Icon name="menu" size={14} />Filters{activeCount > 0 && <span className="w-4 h-4 rounded-full bg-ink text-snow text-[12.5px] flex items-center justify-center">{activeCount}</span>}
           </button>
         </div>
       </div>

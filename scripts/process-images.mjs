@@ -17,6 +17,22 @@ const VID = /\.(mp4|webm)$/i;
 const CARD_MAX = 60 * 1024;
 // Transparent cut-outs (scripts/cutout.mjs → cutouts/{key}.png) win over the studio photo: the model then stands directly on the page.
 const CUT = process.env.CUTOUTS ?? "cutouts";
+// TOPS (hoodies, jackets, t-shirts) come from scripts/ghost.mjs: garment only (ghost mannequin), composed top-aligned on a 1080x1200 canvas
+const GHOST = process.env.GHOST_OUT ?? "ghost";
+const isTop = (key) => products.find((p) => key.startsWith(p.slug + "-"))?.category !== "trousers";
+const GW = 1080, GH = 1200;
+let lastGb = 0.9; // where (fraction of the canvas height) the hanging garment ends: the UI puts the soft shadow right under it
+async function composeGhost(file, key) {
+  const g = sharp(file); const m = await g.metadata();
+  const sc = Math.min((GW - 72) / m.width, (GH - 44) / m.height);
+  const rw = Math.round(m.width * sc), rh = Math.round(m.height * sc);
+  lastGb = Math.round((rh / GH) * 1000) / 1000;
+  let buf = await g.resize(rw, rh, { kernel: "lanczos3" }).ensureAlpha().raw().toBuffer();
+  if (/^regent-trench/.test(key)) { const f0 = Math.floor(rh * 0.94); for (let y = f0; y < rh; y++) { const k = Math.pow(1 - (y - f0) / (rh - f0), 2); for (let x = 0; x < rw; x++) buf[(y * rw + x) * 4 + 3] = Math.round(buf[(y * rw + x) * 4 + 3] * k); } } // long coat: dissolve the cut hem
+  const png = await sharp(buf, { raw: { width: rw, height: rh, channels: 4 } }).png().toBuffer();
+  const canvas = await sharp({ create: { width: GW, height: GH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).composite([{ input: png, left: Math.round((GW - rw) / 2), top: 0 }]).png().toBuffer();
+  return sharp(canvas); // flattened first: sharp would otherwise composite AFTER the later resize
+}
 /** soft-fade the last 4% of rows so a mid-thigh crop dissolves into the floor shadow instead of ending on a hard line */
 async function fadeEdges(input, trousers) {
   // trousers are waist-down, full-length shots: drop the shirt hem at the top (11%), dissolve the new top edge,
@@ -87,10 +103,12 @@ for (const { key } of expected) {
   if (list.length) {
     const best = list[0];
     if (list.length > 1) dupFiles[key] = list.slice(1).map((x) => path.basename(x.file));
-    if (prev[key]?.src === best.sig + (fs.existsSync(path.join(CUT, `${key}.png`)) ? "-cut3" : "") && fs.existsSync(path.join(OUT, `${key}.webp`)) && fs.existsSync(path.join(OUT, `${key}-card.webp`))) { items[key] = prev[key]; status[key] = "matched"; continue; }
+    if (prev[key]?.src === best.sig + (isTop(key) && fs.existsSync(path.join(GHOST, `${key}.png`)) ? "-ghost2" : fs.existsSync(path.join(CUT, `${key}.png`)) ? "-cut3" : "") && fs.existsSync(path.join(OUT, `${key}.webp`)) && fs.existsSync(path.join(OUT, `${key}-card.webp`))) { items[key] = prev[key]; status[key] = "matched"; continue; }
     const cutFile = path.join(CUT, `${key}.png`);
     const hasCut = fs.existsSync(cutFile);
-    const base = hasCut ? await fadeEdges(cutFile, products.find((p) => key.startsWith(p.slug + "-"))?.category === "trousers") : sharp(best.file).rotate();
+    const ghostFile = path.join(GHOST, `${key}.png`);
+    const hasGhost = isTop(key) && fs.existsSync(ghostFile);
+    const base = hasGhost ? await composeGhost(ghostFile, key) : hasCut ? await fadeEdges(cutFile, products.find((p) => key.startsWith(p.slug + "-"))?.category === "trousers") : sharp(best.file).rotate();
     const detail = await base.clone().resize({ width: 1080, withoutEnlargement: true }).webp({ quality: 82, effort: 5, alphaQuality: 90 }).toBuffer({ resolveWithObject: true });
     let card, q = 72;
     for (; q >= 52; q -= 5) { card = await base.clone().resize({ width: 540 }).webp({ quality: q, effort: 6, smartSubsample: true, alphaQuality: 85 }).toBuffer({ resolveWithObject: true }); if (card.data.length <= CARD_MAX) break; }
@@ -100,7 +118,7 @@ for (const { key } of expected) {
     items[key] = {
       w: detail.info.width, h: detail.info.height, cw: card.info.width, ch: card.info.height,
       lqip: `data:image/webp;base64,${lqip.toString("base64")}`,
-      v: crypto.createHash("md5").update(card.data).digest("hex").slice(0, 8), src: best.sig + (hasCut ? "-cut3" : ""), cut: hasCut, cardKB: Math.round(card.data.length / 1024),
+      v: crypto.createHash("md5").update(card.data).digest("hex").slice(0, 8), src: best.sig + (hasGhost ? "-ghost2" : hasCut ? "-cut3" : ""), cut: hasCut, ghost: hasGhost, ...(hasGhost ? { gb: lastGb } : {}), cardKB: Math.round(card.data.length / 1024),
     };
     status[key] = "matched";
   } else if (prev[key] && fs.existsSync(path.join(OUT, `${key}.webp`))) { items[key] = prev[key]; status[key] = "matched"; }

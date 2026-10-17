@@ -21,7 +21,7 @@ export function ProductModal() {
       <div className="flex items-center justify-between px-5 h-14 border-b hair shrink-0">
         <span className="eyebrow">Product</span>
         <div className="flex items-center">
-          {p && <Link to={`/product/${p.slug}`} onClick={close} className="text-[11px] uppercase tracking-[0.18em] link-u mr-4 hidden sm:block">Open full page</Link>}
+          {p && <Link to={`/product/${p.slug}`} onClick={close} className="text-[12.5px] uppercase tracking-[0.18em] link-u mr-4 hidden sm:block">Open full page</Link>}
           <button className="w-12 h-12 -mr-3 flex items-center justify-center" onClick={close} aria-label="Close product"><Icon name="close" /></button>
         </div>
       </div>
@@ -43,12 +43,12 @@ export function WishlistDrawer() {
         <button className="w-12 h-12 -mr-3 flex items-center justify-center" onClick={close} aria-label="Close wishlist"><Icon name="close" /></button>
       </div>
       <div className="flex-1 overflow-y-auto px-6 overscroll-contain" data-lenis-prevent>
-        {items.length === 0 ? <p className="text-stone text-[14px] text-center mt-24">Nothing saved yet. Tap the heart on any piece.</p> : (
+        {items.length === 0 ? <p className="text-stone text-[15px] text-center mt-24">Nothing saved yet. Tap the heart on any piece.</p> : (
           <ul className="divide-y hair">
             {items.map((p) => (
               <li key={p.slug} className="flex gap-4 py-5">
                 <button onClick={() => { close(); setTimeout(() => set({ openProduct: p.slug }), 300); }} className="w-20 h-24 shrink-0" aria-label={`View ${p.name}`}><ProductImage product={p} colorId={p.colors[0].id} className="w-full h-full" /></button>
-                <div className="flex-1"><h3 className="font-display text-[19px]">{p.name}</h3><p className="text-[12px] text-stone">{p.category}</p><p className="text-[13px] mt-1">{money(p.salePrice ?? p.price)}</p></div>
+                <div className="flex-1"><h3 className="font-display text-[19px]">{p.name}</h3><p className="text-[12.5px] text-stone">{p.category}</p><p className="text-[15px] mt-1">{money(p.salePrice ?? p.price)}</p></div>
                 <button className="w-11 h-11 flex items-center justify-center" onClick={() => toggle(p.slug)} aria-label={`Remove ${p.name}`}><Icon name="close" size={16} /></button>
               </li>
             ))}
@@ -83,7 +83,7 @@ export function SearchOverlay() {
               {results.map((p) => (
                 <m.button layout key={p.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-left" onClick={() => { close(); setTimeout(() => set({ openProduct: p.slug }), 300); }}>
                   <div className="aspect-[3/4] relative"><ProductImage product={p} colorId={p.colors[0].id} className="absolute inset-0" /></div>
-                  <p className="font-display text-[19px] mt-2">{p.name}</p><p className="text-[12px] text-stone">{p.category}</p>
+                  <p className="font-display text-[19px] mt-2">{p.name}</p><p className="text-[12.5px] text-stone">{p.category}</p>
                 </m.button>
               ))}
             </div>
@@ -102,7 +102,7 @@ export function CookieNotice() {
       {c === "unset" && (
         <m.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ delay: 2.5 }} role="region" aria-label="Cookie notice"
           className="fixed z-[60] bottom-4 left-4 right-4 md:right-auto md:max-w-[400px] bg-snow border hair p-5 shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
-          <p className="text-[13px] text-ink/80">We use a few cookies to remember your bag and improve the site. See our <Link className="underline" to="/privacy">privacy notice</Link>.</p>
+          <p className="text-[15px] text-ink/90">We use a few cookies to remember your bag and improve the site. See our <Link className="underline" to="/privacy">privacy notice</Link>.</p>
           <div className="flex gap-3 mt-4"><button className="btn btn-solid flex-1 !px-4" onClick={() => set("accepted")}>Accept</button><button className="btn btn-line flex-1 !px-4" onClick={() => set("declined")}>Decline</button></div>
         </m.div>
       )}

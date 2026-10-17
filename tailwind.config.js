@@ -6,8 +6,8 @@ export default {
     extend: {
       colors: { snow: c("snow"), ink: c("ink"), stone: c("stone"), mist: c("mist"), accent: c("accent"), wine: c("wine") },
       fontFamily: {
-        display: ['"Jost"', "system-ui", "sans-serif"],
-        sans: ['"Jost"', "system-ui", "sans-serif"],
+        display: ['"Jost"', "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        sans: ['"Inter"', "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
       },
       letterSpacing: { wide2: "0.18em" },
     },

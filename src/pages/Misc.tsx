@@ -13,7 +13,7 @@ export function ProductPage() {
   useSeo(p ? `${p.name} — ${p.type} | NORDVALE` : "Not found", p ? `${p.tagline} ${p.fabric.type}, ${p.fabric.gsm} GSM. Made in ${p.madeIn}.` : "", p ? { "@context": "https://schema.org", "@type": "Product", name: p.name, description: p.story, offers: { "@type": "Offer", priceCurrency: BRAND.currencyCode, price: p.salePrice ?? p.price, availability: p.stock === "out" ? "https://schema.org/OutOfStock" : "https://schema.org/InStock" }, aggregateRating: { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.reviewCount } } : undefined);
   useEffect(() => { if (p) viewed(p.slug); }, [p, viewed]);
   if (!p) return <NotFound />;
-  return <main><div className="wrap pt-6"><Link to="/#collection" className="text-[11px] uppercase tracking-[0.18em] link-u">← Collection</Link></div><ProductDetail key={p.slug} product={p} onOpen={(s) => { nav(`/product/${s}`); window.scrollTo(0, 0); }} /></main>;
+  return <main><div className="wrap pt-6"><Link to="/#collection" className="text-[12.5px] uppercase tracking-[0.18em] link-u">← Collection</Link></div><ProductDetail key={p.slug} product={p} onOpen={(s) => { nav(`/product/${s}`); window.scrollTo(0, 0); }} /></main>;
 }
 
 export function Confirmation() {
@@ -26,14 +26,14 @@ export function Confirmation() {
       <h1 className="text-[clamp(34px,5vw,56px)] mt-8">Thank you, {order.name.split(" ")[0]}.</h1>
       <p className="text-stone mt-4">Your order <b className="font-normal text-ink tracking-widest">{order.id}</b> is confirmed. A receipt has been sent to {order.email}.</p>
       <dl className="mt-12 text-left border-t hair">
-        {[["Payment", order.method], ["Total", money(order.total)], ["Estimated delivery", "2–4 working days"]].map(([k, v]) => <div key={k} className="flex justify-between py-4 border-b hair text-[14px]"><dt className="text-stone">{k}</dt><dd>{v}</dd></div>)}
+        {[["Payment", order.method], ["Total", money(order.total)], ["Estimated delivery", "2–5 business days (ships from Houston, TX)"]].map(([k, v]) => <div key={k} className="flex justify-between py-4 border-b hair text-[15px]"><dt className="text-stone">{k}</dt><dd>{v}</dd></div>)}
       </dl>
       <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center"><Link className="btn btn-solid" to={`/track?id=${order.id}`}>Track order</Link><Link className="btn btn-line" to="/">Continue shopping</Link></div>
     </main>
   );
 }
 
-const STEPS = ["Order placed", "Packed", "Shipped", "Out for delivery", "Delivered"];
+const STEPS = ["Order placed", "Packed in Houston, TX", "Shipped from Houston, TX", "Out for delivery", "Delivered"];
 
 export function Track() {
   useSeo("Track your order — NORDVALE", "Check the status of your Nordvale order.");
@@ -45,9 +45,9 @@ export function Track() {
   return (
     <main className="wrap py-16 md:py-28 max-w-2xl">
       <h1 className="text-[clamp(34px,5vw,52px)]">Track your order</h1>
-      <p className="text-stone text-[14px] mt-3">Enter the order number from your confirmation email. (Demo: shows orders placed on this device.)</p>
+      <p className="text-stone text-[15px] mt-3">Enter the order number from your confirmation email. All orders ship from Houston, TX. (Demo: shows orders placed on this device.)</p>
       <form onSubmit={lookup} className="mt-10 flex gap-4 items-end"><label className="flex-1"><span className="sr-only">Order number</span><input className="field" placeholder="e.g. NV7K2P9Q" value={id} onChange={(e) => setId(e.target.value)} /></label><button className="btn btn-solid" type="submit">Track</button></form>
-      {found === "none" && <p role="alert" className="mt-8 text-accent text-[14px]">We couldn't find that order on this device.</p>}
+      {found === "none" && <p role="alert" className="mt-8 text-accent text-[15px]">We couldn't find that order on this device.</p>}
       {found && found !== "none" && (
         <div className="mt-14">
           <p className="eyebrow">Order {found.id}</p>
@@ -59,7 +59,7 @@ export function Track() {
                 <span className={on ? "text-ink" : "text-stone"}>{s}</span>
               </li>); })}
           </ol>
-          <ul className="mt-10 border-t hair">{found.items.map((i) => { const p = getProduct(i.slug)!; return <li key={i.key} className="flex justify-between py-3 text-[13px] border-b hair"><span>{p.name} × {i.qty} · {i.size}</span><span>{money(effectivePrice(p) * i.qty)}</span></li>; })}</ul>
+          <ul className="mt-10 border-t hair">{found.items.map((i) => { const p = getProduct(i.slug)!; return <li key={i.key} className="flex justify-between py-3 text-[15px] border-b hair"><span>{p.name} × {i.qty} · {i.size}</span><span>{money(effectivePrice(p) * i.qty)}</span></li>; })}</ul>
         </div>
       )}
     </main>
@@ -81,7 +81,7 @@ export function NotFound() {
 export function Privacy() {
   useSeo("Privacy — NORDVALE", "How Nordvale handles your data.");
   return (
-    <main className="wrap py-20 max-w-2xl space-y-6 text-[14px] text-ink/75 leading-relaxed">
+    <main className="wrap py-20 max-w-2xl space-y-6 text-[15px] text-ink/90 leading-relaxed">
       <h1 className="text-[44px] text-ink">Privacy notice</h1>
       <p>This is a demo store. Your bag, wishlist and recently viewed items are saved in your browser's local storage only; nothing is sent to a server.</p>
       <p>When connected to a real backend, we will collect only what is needed to fulfil orders (name, address, contact details) and process payments through our providers. We never store card numbers.</p>

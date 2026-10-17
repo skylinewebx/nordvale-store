@@ -64,7 +64,7 @@ export function Story() {
             <span key={l} className="block overflow-hidden pb-[0.12em]" aria-hidden="true"><span className="st-line block">{l}</span></span>
           ))}
         </h2>
-        <p className="st-sub mt-10 max-w-md text-[14px] text-ink/70">Nordvale began with a single sample, cut from a fleece so dense it held its shape on the hanger. Sixteen pieces later, across hoodies, jackets, trousers and tees, we still design around one idea: quality you can feel, craft you can see.</p>
+        <p className="st-sub mt-10 max-w-md text-[15px] text-ink/90">Nordvale began in Houston, Texas, with a single sample cut from a fleece so dense it held its shape on the hanger. Sixteen pieces later, across hoodies, jackets, trousers and tees, we still design from our Houston studio around one idea: quality you can feel, craft you can see.</p>
         <div className="st-stats mt-12 max-w-md">
           <div className="st-hline h-px bg-ink/30 origin-left" />
           <dl className="grid grid-cols-3 gap-4 pt-6">
@@ -177,30 +177,30 @@ export function Craft() {
                     <div className="cf-par absolute inset-x-0 -top-[8%] h-[116%]">
                       <div className="cf-zoom absolute inset-0"><SmartImg src={P.fabric(f.key)} alt={`Macro close-up of ${f.name} fabric`} className="absolute inset-0" imgClass="transition-transform duration-[1400ms] ease-out group-hover:scale-[1.07]" fallback={<FabricFallback k={f.key} />} /></div>
                     </div>
-                    <figcaption className="absolute bottom-4 left-4 eyebrow !text-ink/70 pointer-events-none">{f.gsmRange}</figcaption>
+                    <figcaption className="absolute bottom-4 left-4 eyebrow !text-ink/90 pointer-events-none">{f.gsmRange}</figcaption>
                   </div>
                 </figure>
                 <div className={`cf-txt md:col-span-5 ${left ? "md:col-start-8" : "md:col-start-1 md:order-1"}`}>
-                  <div className="flex items-center gap-4 text-ink/60">
-                    <span className="font-display text-[56px] md:text-[72px] font-light leading-none text-ink/25">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="flex items-center gap-4 text-ink/90">
+                    <span className="font-display text-[56px] md:text-[72px] font-light leading-none text-stone">{String(i + 1).padStart(2, "0")}</span>
                     <Icon name={f.icon} size={34} sw={0.8} />
                   </div>
                   <h3 className="text-[clamp(28px,3vw,38px)] leading-tight mt-4">{f.name}</h3>
-                  <p className="text-[13px] text-ink/60 mt-4 leading-relaxed max-w-sm">{f.note}</p>
+                  <p className="text-[15px] text-ink/90 mt-4 leading-relaxed max-w-sm">{f.note}</p>
                   <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-ink/15 pt-6">
                     <div>
-                      <dt className="eyebrow !text-ink/45">Weight</dt>
-                      <dd className="mt-2 font-display text-[40px] leading-none tabular-nums"><span className="cf-gsm inline-block" style={{ contain: "layout paint", minWidth: `${String(f.gsmNum).length}ch` }} data-to={f.gsmNum}>{f.gsmNum}</span><span className="text-[13px] font-sans text-ink/50 ml-1">GSM</span></dd>
+                      <dt className="eyebrow !text-ink/90">Weight</dt>
+                      <dd className="mt-2 font-display text-[40px] leading-none tabular-nums"><span className="cf-gsm inline-block" style={{ contain: "layout paint", minWidth: `${String(f.gsmNum).length}ch` }} data-to={f.gsmNum}>{f.gsmNum}</span><span className="text-[15px] font-sans text-ink/90 ml-1">GSM</span></dd>
                     </div>
                     <div>
-                      <dt className="eyebrow !text-ink/45">Warmth</dt>
+                      <dt className="eyebrow !text-ink/90">Warmth</dt>
                       <dd className="mt-2">
-                        <span className="font-display text-[40px] leading-none tabular-nums"><span className="cf-warm inline-block" style={{ contain: "layout paint", minWidth: "1ch" }} data-to={f.warmth}>{f.warmth}</span><span className="text-[13px] font-sans text-ink/50 ml-1">/ 5</span></span>
+                        <span className="font-display text-[40px] leading-none tabular-nums"><span className="cf-warm inline-block" style={{ contain: "layout paint", minWidth: "1ch" }} data-to={f.warmth}>{f.warmth}</span><span className="text-[15px] font-sans text-ink/90 ml-1">/ 5</span></span>
                         <span className="flex gap-1 mt-3" aria-hidden="true">{[1, 2, 3, 4, 5].map((n) => <span key={n} className="relative w-5 h-[2px] bg-ink/20 overflow-hidden"><span className={`cf-bar absolute inset-0 origin-left bg-ink ${n <= f.warmth ? "" : "hidden"}`} /></span>)}</span>
                       </dd>
                     </div>
                   </dl>
-                  <p className="mt-6 text-[12px] text-ink/50"><span className="text-ink/80">{f.feel}</span> · Best for {f.bestFor.toLowerCase()}</p>
+                  <p className="mt-6 text-[12.5px] text-ink/90"><span className="text-ink/90">{f.feel}</span> · Best for {f.bestFor.toLowerCase()}</p>
                 </div>
               </article>
             );
@@ -220,7 +220,7 @@ export function WhyUs() {
           <Reveal key={w.title} delay={i * 0.08}>
             <Icon name={w.icon} size={32} sw={0.8} className="text-accent" />
             <h3 className="text-[24px] mt-5">{w.title}</h3>
-            <p className="text-[13px] text-ink/65 mt-3 leading-relaxed">{w.text}</p>
+            <p className="text-[15px] text-ink/90 mt-3 leading-relaxed">{w.text}</p>
           </Reveal>
         ))}
       </div>

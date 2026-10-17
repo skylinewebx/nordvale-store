@@ -16,7 +16,7 @@ function LikeButton({ id, base, onLike }: { id: string; base: number; onLike: ()
     <button
       onClick={() => { toggle(id); if (!liked) { setBurst((b) => b + 1); onLike(); } }}
       aria-pressed={liked} aria-label={`${liked ? "Unlike" : "Like"} this review, ${count} likes`}
-      className="relative flex items-center gap-2 min-h-[44px] pr-2 -ml-2 pl-2 text-[12px] text-stone"
+      className="relative flex items-center gap-2 min-h-[44px] pr-2 -ml-2 pl-2 text-[12.5px] text-stone"
     >
       <span className="relative w-5 h-5 flex items-center justify-center">
         <m.span key={`h${burst}`} initial={false} animate={liked ? { scale: [1, 1.55, 0.9, 1] } : { scale: 1 }} transition={{ duration: 0.45, ease: "easeOut" }} className={liked ? "text-accent" : ""}>
@@ -46,8 +46,8 @@ const ReviewCard = memo(function ReviewCard({ r }: { r: Review }) {
       <blockquote className="font-display text-[22px] md:text-[24px] leading-[1.25] flex-1">“{r.text}”</blockquote>
       <footer className="flex items-center justify-between gap-3 pt-4 border-t hair">
         <div className="flex items-center gap-3 min-w-0">
-          <span aria-hidden="true" className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-[12px] font-medium tracking-wider bg-accent text-white">{initials}</span>
-          <p className="text-[12px] text-stone truncate"><span className="text-ink font-medium">{r.name}</span><br />{r.product} · Verified buyer</p>
+          <span aria-hidden="true" className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-[12.5px] font-medium tracking-wider bg-accent text-white">{initials}</span>
+          <p className="text-[12.5px] text-stone truncate"><span className="text-ink font-medium">{r.name}</span><br />{r.product} · Verified buyer</p>
         </div>
         <LikeButton id={r.id} base={r.likes} onLike={() => {}} />
       </footer>
@@ -59,7 +59,7 @@ const ReviewCard = memo(function ReviewCard({ r }: { r: Review }) {
 function Row({ items, rev, speed, swipe }: { items: Review[]; rev?: boolean; speed: number; swipe: boolean }) {
   const list = swipe ? items : [...items, ...items];
   return (
-    <div className={`rv-row ${rev ? "rev" : ""} ${swipe ? "rv-scroll no-scrollbar" : ""}`} style={{ "--rv": `${Math.round(items.length * 400 / speed)}s` } as React.CSSProperties} role="region" aria-roledescription="carousel" aria-label="Customer reviews">
+    <div className={`rv-row ${rev ? "rev" : ""} ${swipe ? "rv-scroll no-scrollbar" : ""}`} style={{ "--rv": `${Math.round(items.length * 400 / speed)}s` } as React.CSSProperties} role="region" aria-roledescription="carousel" aria-label={rev ? "Customer reviews, second row" : "Customer reviews"}>
       <div className={swipe ? "flex w-max px-5" : "rv-track py-3"}>
         {list.map((r, i) => <ReviewCard key={`${r.id}-${i}`} r={r} />)}
       </div>
@@ -80,13 +80,13 @@ export default function Reviews() {
     <section ref={sec} id="reviews" className="py-24 md:py-36 bg-snow overflow-hidden border-t hair">
       <div className="wrap">
         <SectionHead eyebrow="Reviews" title={<>Loved by <em>12,000+</em> customers.</>} />
-        <div className="flex items-center gap-3 -mt-6 mb-12 text-[13px] text-stone"><Stars value={4.7} size={14} />4.7 average · 1,240 verified reviews</div>
+        <div className="flex items-center gap-3 -mt-6 mb-12 text-[15px] text-stone"><Stars value={4.7} size={14} />4.7 average · 1,240 verified reviews</div>
       </div>
       <div className="space-y-5 md:space-y-6">
         <Row items={reviews} speed={34} swipe={swipe} />
         {!swipe && <div className="hidden md:block"><Row items={rev} rev speed={28} swipe={false} /></div>}
       </div>
-      <p className="wrap mt-8 text-[11px] text-stone">{swipe ? "Swipe to browse · tap the heart to like" : "Hover or press to pause · tap the heart to like"}</p>
+      <p className="wrap mt-8 text-[12.5px] text-stone">{swipe ? "Swipe to browse · tap the heart to like" : "Hover or press to pause · tap the heart to like"}</p>
     </section>
   );
 }

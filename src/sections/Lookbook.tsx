@@ -21,9 +21,9 @@ function Card({ i, x, center, w, vw, onOpen, moved }: { i: number; x: MotionValu
       <m.button style={{ scale, opacity }} className="group block w-full text-left" onClick={() => { if (!moved.current) onOpen(); }} aria-label={`${item.title}: ${p.name}, ${color.name}`}>
         <div ref={tilt.ref} onPointerMove={tilt.onPointerMove} onPointerLeave={tilt.onPointerLeave} className="tilt spot relative aspect-[3/4] rounded-[22px] overflow-hidden select-none bg-mist ring-1 ring-ink/10 transition-[box-shadow] duration-500 group-hover:ring-2 group-hover:ring-accent/80">
           <div className="absolute inset-0 transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"><ProductImage product={p} colorId={color.id} className="absolute inset-0" /></div>
-          <span className="absolute top-4 left-4 eyebrow !text-ink/70">0{i + 1}</span>
+          <span className="absolute top-4 left-4 eyebrow !text-ink/90">0{i + 1}</span>
         </div>
-        <div className="mt-4 flex justify-between items-baseline gap-3"><h3 className="font-display text-[24px] md:text-[26px]">{item.title}</h3><span className="text-[12px] text-stone shrink-0">{p.name}</span></div>
+        <div className="mt-4 flex justify-between items-baseline gap-3"><h3 className="font-display text-[24px] md:text-[26px]">{item.title}</h3><span className="text-[12.5px] text-stone shrink-0">{p.name}</span></div>
       </m.button>
     </m.li>
   );

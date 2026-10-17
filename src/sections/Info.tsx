@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { Link } from "react-router-dom";
 import { BRAND, money } from "../config/assets";
+import { BUSINESS, DIRECTIONS_URL } from "../config/business";
 import { Icon, Stars } from "../components/Icons";
 import { ProductImage } from "../components/ProductImage";
 import { SectionHead } from "../components/ui";
@@ -21,7 +22,7 @@ export function RecentlyViewed() {
         {items.map((p) => (
           <button key={p.slug} className="shrink-0 w-32 md:w-40 text-left group" onClick={() => set({ openProduct: p.slug })}>
             <div className="aspect-[3/4] relative overflow-hidden"><ProductImage product={p} colorId={p.colors[0].id} className="absolute inset-0" /></div>
-            <p className="font-display text-[17px] mt-2">{p.name}</p><p className="text-[12px] text-stone">{money(p.salePrice ?? p.price)}</p>
+            <p className="font-display text-[17px] mt-2">{p.name}</p><p className="text-[12.5px] text-stone">{money(p.salePrice ?? p.price)}</p>
           </button>
         ))}
       </div>
@@ -43,7 +44,7 @@ export function Faq() {
               <h3><button className="w-full flex justify-between items-center gap-6 text-left min-h-[60px] font-display text-[20px]" aria-expanded={open === i} aria-controls={`faq-${i}`} onClick={() => setOpen(open === i ? null : i)}>
                 {f.q}<Icon name={open === i ? "minus" : "plus"} size={18} className="shrink-0" /></button></h3>
               <AnimatePresence initial={false}>
-                {open === i && <m.div id={`faq-${i}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden"><p className="pb-6 text-[14px] text-ink/65 max-w-md">{f.a}</p></m.div>}
+                {open === i && <m.div id={`faq-${i}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden"><p className="pb-6 text-[15px] text-ink/90 max-w-md">{f.a}</p></m.div>}
               </AnimatePresence>
             </div>
           ))}
@@ -52,18 +53,18 @@ export function Faq() {
       <div id="size-guide">
         <SectionHead eyebrow="Size Guide" title={<>Find your <em>fit.</em></>} />
         <div className="flex gap-1 border-b hair mb-2" role="tablist" aria-label="Size guide category">
-          {CATEGORIES.map((c) => <button key={c.id} role="tab" aria-selected={guide === c.id} onClick={() => setGuide(c.id)} className={`min-h-[44px] px-4 text-[11px] uppercase tracking-[0.16em] border-b -mb-px transition-colors ${guide === c.id ? "border-ink text-ink" : "border-transparent text-stone hover:text-ink"}`}>{c.label}</button>)}
+          {CATEGORIES.map((c) => <button key={c.id} role="tab" aria-selected={guide === c.id} onClick={() => setGuide(c.id)} className={`min-h-[44px] px-4 text-[12.5px] uppercase tracking-[0.16em] border-b -mb-px transition-colors ${guide === c.id ? "border-ink text-ink" : "border-transparent text-stone hover:text-ink"}`}>{c.label}</button>)}
         </div>
         <div className="overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0">
-          <table className="w-full text-[13px] text-center min-w-[360px]">
+          <table className="w-full text-[15px] text-center min-w-[360px]">
             <caption className="sr-only">{chart.title} measurements in centimetres</caption>
-            <thead><tr className="text-stone text-[11px] uppercase tracking-[0.16em]">{chart.head.map((h, i) => <th key={h} scope="col" className={`py-3 font-light ${i === 0 ? "text-left" : ""}`}>{h}{i > 0 && guide !== "trousers" ? " (cm)" : ""}</th>)}</tr></thead>
+            <thead><tr className="text-stone text-[12.5px] uppercase tracking-[0.16em]">{chart.head.map((h, i) => <th key={h} scope="col" className={`py-3 font-light ${i === 0 ? "text-left" : ""}`}>{h}{i > 0 && guide !== "trousers" ? " (cm)" : ""}</th>)}</tr></thead>
             <tbody>{chart.rows.map((r) => <tr key={r[0]} className="border-t hair">{r.map((cell, i) => i === 0 ? <th key={i} scope="row" className="py-4 text-left font-light">{cell}</th> : <td key={i}>{cell}</td>)}</tr>)}</tbody>
           </table>
         </div>
-        <p className="text-[12px] text-stone mt-6 max-w-sm">{chart.note}</p>
-        <div className="mt-8 grid grid-cols-2 gap-4 text-[12px] text-stone">
-          <div className="border hair p-4 flex gap-3"><Icon name="truck" size={22} />Free shipping over $150. 2–4 days domestic.</div>
+        <p className="text-[12.5px] text-stone mt-6 max-w-sm">{chart.note}</p>
+        <div className="mt-8 grid grid-cols-2 gap-4 text-[12.5px] text-stone">
+          <div className="border hair p-4 flex gap-3"><Icon name="truck" size={22} />Free US shipping over {money(BRAND.freeShippingThreshold)}. Ships from Houston, TX in 2–5 days.</div>
           <div className="border hair p-4 flex gap-3"><Icon name="return" size={22} />30-day returns. First exchange free.</div>
         </div>
       </div>
@@ -84,17 +85,17 @@ export function Newsletter() {
   return (
     <section className="py-24 md:py-32 theme-red text-ink">
       <div className="wrap max-w-2xl text-center">
-        <p className="eyebrow !text-ink/50">Newsletter</p>
+        <p className="eyebrow !text-ink/90">Newsletter</p>
         <h2 className="mt-4 text-[clamp(28px,4vw,44px)]">Join the first frost.</h2>
-        <p className="text-[14px] text-ink/60 mt-4">New drops, restocks and 10% off your first order.</p>
+        <p className="text-[15px] text-ink/90 mt-4">New drops, restocks and 10% off your first order.</p>
         {state === "ok" ? <p className="mt-10 font-display text-[22px]" role="status">Thank you. Check your inbox for WINTER10.</p> : (
           <form className="mt-10 flex flex-col sm:flex-row gap-4 items-end" onSubmit={submit} noValidate>
             <label className="flex-1 w-full text-left"><span className="sr-only">Email address</span>
-              <input type="email" autoComplete="email" placeholder="Your email" value={email} onChange={(e) => { setEmail(e.target.value); setState("idle"); }} aria-invalid={state === "err"} className={`field !text-ink placeholder:text-ink/40 !border-ink/30 focus:!border-ink ${state === "err" ? "!border-accent" : ""}`} /></label>
+              <input type="email" autoComplete="email" placeholder="Your email" value={email} onChange={(e) => { setEmail(e.target.value); setState("idle"); }} aria-invalid={state === "err"} className={`field !text-ink placeholder:text-ink/90 !border-ink/30 focus:!border-ink ${state === "err" ? "!border-accent" : ""}`} /></label>
             <button className="btn !border-ink text-ink hover:bg-ink hover:text-snow w-full sm:w-auto" type="submit">Subscribe</button>
           </form>
         )}
-        {state === "err" && <p role="alert" className="text-[12px] text-accent mt-3">Please enter a valid email.</p>}
+        {state === "err" && <p role="alert" className="text-[12.5px] text-accent mt-3">Please enter a valid email.</p>}
       </div>
     </section>
   );
@@ -112,25 +113,38 @@ export function Contact() {
     // TODO: send via your backend / Formspree / Resend. Env: VITE_CONTACT_ENDPOINT
     if (!Object.keys(er).length) setSent(true);
   };
-  const L = ({ k, label, children }: { k: string; label: string; children: React.ReactNode }) => <label className="block"><span className="eyebrow">{label}</span>{children}{err[k] && <span role="alert" className="block text-[12px] text-accent mt-1">{err[k]}</span>}</label>;
+  const L = ({ k, label, children }: { k: string; label: string; children: React.ReactNode }) => <label className="block"><span className="eyebrow">{label}</span>{children}{err[k] && <span role="alert" className="block text-[15px] text-wine mt-1">{err[k]}</span>}</label>;
   const ln = "flex items-center gap-4 min-h-[48px] link-u w-fit";
+  const bb = 0.03; // map window around the pin
+  const osm = `https://www.openstreetmap.org/export/embed.html?bbox=${BUSINESS.lng - bb * 1.6},${BUSINESS.lat - bb},${BUSINESS.lng + bb * 1.6},${BUSINESS.lat + bb}&layer=mapnik&marker=${BUSINESS.lat},${BUSINESS.lng}`;
   return (
-    <section id="contact" className="py-24 md:py-36 wrap grid lg:grid-cols-2 gap-16">
+    <section id="contact" className="sec wrap grid lg:grid-cols-2 gap-16">
       <div>
         <SectionHead eyebrow="Contact" title={<>Say <em>hello.</em></>} />
-        <ul className="space-y-1 text-[14px]">
-          <li><a className={ln} href={`mailto:${BRAND.email}`}><Icon name="user" size={18} />{BRAND.email}</a></li>
-          <li><a className={ln} href={`tel:${BRAND.phone.replace(/\s/g, "")}`}><Icon name="truck" size={18} />{BRAND.phone}</a></li>
-          <li><a className={ln} href={`https://wa.me/${BRAND.whatsapp}`} target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" size={18} />Chat on WhatsApp</a></li>
-          <li><a className={ln} href="https://instagram.com" target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} />@nordvale</a></li>
+        <address className="not-italic text-[16px] leading-relaxed">
+          <p className="text-[12.5px] uppercase tracking-[0.2em] text-stone mb-2">Our studio</p>
+          {BUSINESS.street}<br />{BUSINESS.city}, {BUSINESS.state} {BUSINESS.zip}<br />{BUSINESS.countryName}
+        </address>
+        <p className="mt-4 text-[15px] text-ink/90">{BUSINESS.hours}</p>
+        <ul className="mt-5 space-y-1 text-[16px]">
+          <li><a className={ln} href={`mailto:${BUSINESS.email}`}><Icon name="mail" size={18} />{BUSINESS.email}</a></li>
+          <li><a className={ln} href={`tel:${BUSINESS.phone.replace(/\s/g, "")}`}><Icon name="truck" size={18} />{BUSINESS.phoneDisplay}</a></li>
+          <li><a className={ln} href={`https://wa.me/${BUSINESS.whatsapp}`} target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" size={18} />Chat on WhatsApp</a></li>
+          <li><a className={ln} href={`https://instagram.com/${BUSINESS.instagram}`} target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={18} />@{BUSINESS.instagram}</a></li>
         </ul>
-        <a href={`https://www.google.com/maps/search/${encodeURIComponent(BRAND.address)}`} target="_blank" rel="noopener noreferrer" className="mt-10 block relative h-52 border hair overflow-hidden group" aria-label={`Open map: ${BRAND.address}`}
-          style={{ background: "repeating-linear-gradient(0deg,rgb(var(--c-ink) / 0.07) 0 1px,transparent 1px 34px),repeating-linear-gradient(90deg,rgb(var(--c-ink) / 0.07) 0 1px,transparent 1px 34px),rgb(var(--c-mist))" }}>
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"><Icon name="pin" size={30} className="text-accent group-hover:-translate-y-1 transition-transform" /><span className="text-[13px]">{BRAND.address}</span><span className="eyebrow">Open in Maps</span></div>
-        </a>
+        <div className="mt-8 border hair overflow-hidden bg-mist">
+          <div className="relative h-56 md:h-64">
+            <iframe title={`Map of ${BUSINESS.city}, ${BUSINESS.stateName}`} src={osm} loading="lazy" referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full border-0" style={{ filter: "grayscale(1) sepia(0.18) contrast(0.95) brightness(1.02)" }} />
+          </div>
+          <div className="flex items-center justify-between gap-4 px-4 py-3 border-t hair text-[15px]">
+            <span className="flex items-center gap-2 min-w-0"><Icon name="pin" size={18} className="text-wine shrink-0" /><span className="truncate">{BUSINESS.city}, {BUSINESS.stateName}, USA</span></span>
+            <a href={DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" className="btn btn-line !min-h-[40px] !px-5 shrink-0">Get directions</a>
+          </div>
+        </div>
+        <p className="mt-3 text-[12.5px] text-stone">Sample address and phone number: edit them in <code>src/config/business.ts</code>.</p>
       </div>
       <form onSubmit={submit} noValidate className="space-y-7 self-end">
-        {sent ? <p className="font-display text-[26px]" role="status">Thank you — we'll reply within one working day.</p> : <>
+        {sent ? <p className="font-display text-[26px]" role="status">Thank you — we'll reply within one business day.</p> : <>
           <L k="name" label="Name"><input className={`field ${err.name ? "err" : ""}`} autoComplete="name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></L>
           <L k="email" label="Email"><input type="email" className={`field ${err.email ? "err" : ""}`} autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></L>
           <L k="msg" label="Message"><textarea rows={4} className={`field resize-none ${err.msg ? "err" : ""}`} value={f.msg} onChange={(e) => setF({ ...f, msg: e.target.value })} /></L>

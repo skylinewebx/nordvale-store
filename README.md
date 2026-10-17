@@ -46,3 +46,6 @@ npm run build
 
 ## Category sections
 Home = Showcase → Hoodies / Jackets / Trousers / T-Shirts sections (`src/sections/CategorySection.tsx`) → Full Collection → Contact. Each links to `/category/:slug`. Navbar category links scroll to these sections.
+
+## Business details (Houston, TX)
+Everything location-related (address, phone, email, support hours in Central Time, WhatsApp, map coordinates, shipping thresholds, US states list, USD formatting) lives in **`src/config/business.ts`**. The values are SAMPLES (street address in Houston TX 77002, a 713-555-01xx phone number): replace them with your real ones.

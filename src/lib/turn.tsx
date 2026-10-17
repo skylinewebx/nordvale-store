@@ -75,7 +75,7 @@ export class Turn {
 export function useTurn() { const r = useRef<Turn>(); if (!r.current) r.current = new Turn(); return r.current; }
 
 /** Wrap the product: it is the element that rotates; a light sweep (masked by the garment's own alpha) and the floor shadow follow the turn. */
-export function TurnTarget({ ctl, active = true, maskUrl, children, className = "" }: { ctl: Turn; active?: boolean; maskUrl?: string | null; children: ReactNode; className?: string }) {
+export function TurnTarget({ ctl, active = true, maskUrl, maskTop, children, className = "" }: { ctl: Turn; active?: boolean; maskUrl?: string | null; maskTop?: string; children: ReactNode; className?: string }) {
   const rot = useRef<HTMLDivElement>(null); const light = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     if (!active) return;
@@ -86,7 +86,7 @@ export function TurnTarget({ ctl, active = true, maskUrl, children, className = 
     <div ref={rot} className={`absolute inset-0 ${className}`} style={{ transformOrigin: "50% 100%", willChange: active ? "transform" : undefined }}>
       {children}
       {maskUrl && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ WebkitMaskImage: `url(${maskUrl})`, maskImage: `url(${maskUrl})`, WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "50% 100%", maskPosition: "50% 100%", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat" }}>
+        <div className="absolute inset-x-0 bottom-0 pointer-events-none overflow-hidden" style={{ top: maskTop ?? 0, WebkitMaskImage: `url(${maskUrl})`, maskImage: `url(${maskUrl})`, WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: maskTop ? "50% 0%" : "50% 100%", maskPosition: maskTop ? "50% 0%" : "50% 100%", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat" }}>
           <div ref={light} className="absolute inset-y-0 -left-1/2 w-[70%] opacity-0" style={{ background: "linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.0) 20%, rgba(255,250,240,0.85) 50%, rgba(255,255,255,0) 80%, transparent 100%)", mixBlendMode: "soft-light", left: "15%" }} />
         </div>
       )}
@@ -95,10 +95,10 @@ export function TurnTarget({ ctl, active = true, maskUrl, children, className = 
 }
 
 /** the floor shadow that stretches while he turns (place it under the product, inside the same positioned box) */
-export function TurnShadow({ ctl, className = "" }: { ctl: Turn; className?: string }) {
+export function TurnShadow({ ctl, className = "", soft = false, style }: { ctl: Turn; className?: string; soft?: boolean; style?: React.CSSProperties }) {
   const el = useRef<HTMLSpanElement>(null);
   useLayoutEffect(() => { ctl.shadow = el.current; ctl.apply(); return () => { if (ctl.shadow === el.current) ctl.shadow = null; }; }, [ctl]);
-  return <span ref={el} className={`absolute pointer-events-none ${className}`} style={{ background: "radial-gradient(ellipse at center, rgba(38,34,33,0.42) 0%, rgba(38,34,33,0.16) 46%, transparent 72%)", transformOrigin: "50% 50%" }} />;
+  return <span ref={el} className={`absolute pointer-events-none ${className}`} style={{ background: soft ? "radial-gradient(ellipse at center, rgba(28,26,23,0.20) 0%, rgba(28,26,23,0.07) 50%, transparent 74%)" : "radial-gradient(ellipse at center, rgba(38,34,33,0.42) 0%, rgba(38,34,33,0.16) 46%, transparent 72%)", transformOrigin: "50% 50%", ...style }} />;
 }
 
 /** thin slider with a round handle: always visible, with a "Drag to turn" hint that fades after the first use */
@@ -110,7 +110,7 @@ export function TurnSlider({ ctl, className = "" }: { ctl: Turn; className?: str
   const pos = (e: React.PointerEvent) => { const r = track.current!.getBoundingClientRect(); return clamp((e.clientX - r.left) / r.width, 0, 1); };
   return (
     <div className={`select-none ${className}`}>
-      <p className={`text-center text-[10px] uppercase tracking-[0.3em] pl-[0.3em] text-stone transition-opacity duration-[1200ms] ${used ? "opacity-0" : "opacity-100"}`} aria-hidden={used}>Drag to turn</p>
+      <p className={`text-center text-[12.5px] uppercase tracking-[0.3em] pl-[0.3em] text-stone transition-opacity duration-[1200ms] ${used ? "opacity-0" : "opacity-100"}`} aria-hidden={used}>Drag to turn</p>
       <div ref={track} className="relative h-7 mt-1 cursor-grab active:cursor-grabbing touch-none" role="slider" aria-label="Turn the model" aria-valuemin={-35} aria-valuemax={35} aria-valuenow={Math.round(ctl.t * 35)} tabIndex={0}
         onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); ctl.setFromSlider(pos(e)); }}
         onPointerMove={(e) => { if (ctl.dragging) ctl.setFromSlider(pos(e)); }}

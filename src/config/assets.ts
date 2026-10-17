@@ -2,6 +2,7 @@
 // THE ONLY ASSETS THE SITE USES (14 files). Drop them into /public/assets with these exact names.
 // Anything missing falls back to a built-in placeholder. See ASSETS.md for sizes and prompts.
 // ─────────────────────────────────────────────────────────────
+import { BUSINESS, ADDRESS_LINE, formatUsd } from "./business";
 const IMG = import.meta.env.BASE_URL + "assets/images";
 
 export const P = {
@@ -12,16 +13,16 @@ export const P = {
 };
 
 export const BRAND = {
-  name: "NORDVALE",
-  tagline: "Built for the cold. Made to be kept.",
-  email: "hello@nordvale.example",
-  phone: "+92 300 0000000",
-  whatsapp: "923000000000",
-  address: "12 Mall Road, Lahore, Pakistan",
-  currency: "$", // the ONE place the currency symbol is set
-  currencyCode: "USD",
-  freeShippingThreshold: 150,
-  shippingFlat: 9,
+  name: BUSINESS.name,
+  tagline: BUSINESS.tagline,
+  email: BUSINESS.email,
+  phone: BUSINESS.phone,
+  whatsapp: BUSINESS.whatsapp,
+  address: ADDRESS_LINE, // from src/config/business.ts: edit the business details THERE
+  currency: BUSINESS.currency,
+  currencyCode: BUSINESS.currencyCode,
+  freeShippingThreshold: BUSINESS.freeShippingThreshold,
+  shippingFlat: BUSINESS.shippingFlat,
 };
 
-export const money = (n: number) => `${BRAND.currency}${n.toFixed(n % 1 ? 2 : 0)}`;
+export const money = formatUsd; // Intl.NumberFormat("en-US", USD)
