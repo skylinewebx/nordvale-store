@@ -32,9 +32,12 @@ function useImg(p: Product) {
 const Item = memo(function Item({ p, i, setRef, priority, ctl, active }: { p: Product; i: number; setRef: (i: number, el: HTMLDivElement | null) => void; priority: boolean; ctl: Turn; active: boolean }) {
   const { it, detail, card, color } = useImg(p);
   const [ok, setOk] = useState(true);
-  const hang = isHanging(p.category);
+  const hang = false; // hero = the standing model photos (no hanging)
+  const modelUrl = `${import.meta.env.BASE_URL}assets/products/${photoKey(p.slug, color.slug)}-model.webp`;
+  const isTop = isHanging(p.category);
+  const src = isTop ? modelUrl : detail;
   const img = it && ok && detail ? (
-    <img src={detail} srcSet={`${card} 540w, ${detail} 1080w`} sizes="(max-width: 768px) 70vw, 460px" alt={`${p.name} in ${color.name}`} width={it.w} height={it.h} draggable={false}
+    <img src={src!} {...(isTop ? {} : { srcSet: `${card} 540w, ${detail} 1080w`, sizes: "(max-width: 768px) 70vw, 460px" })} alt={`${p.name} in ${color.name}`} width={it.w} height={it.h} draggable={false}
       decoding="async" loading={priority ? "eager" : "lazy"} {...(priority ? ({ fetchpriority: "high" } as object) : {})} onError={() => setOk(false)}
       className={`absolute inset-0 w-full h-full object-contain ${hang ? "object-top" : "object-bottom"} pointer-events-none`} />
   ) : <Silhouette category={p.category} tint={color.hex} className="absolute inset-0 w-full h-full" />;
@@ -49,7 +52,7 @@ const Item = memo(function Item({ p, i, setRef, priority, ctl, active }: { p: Pr
           <TurnTarget ctl={ctl} active={active} maskUrl={it && ok ? detail : null} maskTop={HANG_TOP}><Hung>{img}</Hung></TurnTarget>
         </Sway>
       ) : (
-        <div className="sc-float absolute inset-0"><TurnTarget ctl={ctl} active={active} maskUrl={it && ok ? detail : null}>{img}</TurnTarget></div>
+        <div className="sc-float absolute inset-0"><TurnTarget ctl={ctl} active={active} maskUrl={it && ok ? src : null}>{img}</TurnTarget></div>
       )}
     </div>
   );
@@ -65,7 +68,7 @@ function Stage({ ctl, cat, mode, idx, onIdx, onSwipeCat, onEnterB, onSelect, out
   const lite = usePerfLite();
   const reduced = reducedMotion();
   const live = useRef(true);
-  const hang = isHanging(cat);
+  const hang = false;
   const cur = useRef({ mode, idx, onIdx, hang }); cur.current = { mode, idx, onIdx, hang };
 
   const setRef = useCallback((i: number, el: HTMLDivElement | null) => { items.current[i] = el; }, []);
@@ -209,7 +212,7 @@ export default function Showcase() {
   const cat = useStore((s) => s.heroCat); const setCat = useStore((s) => s.setHeroCat);
   const [mode, setMode] = useState<"A" | "B">("A");
   const info = getCategory(cat);
-  const tops = isHanging(cat);
+  const tops = false;
   const styles = useMemo(() => stylesOf(cat), [cat]);
   const featIdx = Math.max(0, styles.findIndex((p) => p.slug === info.heroFeatured));
   const [idx, setIdx] = useState(featIdx);

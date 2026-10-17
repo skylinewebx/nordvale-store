@@ -124,6 +124,12 @@ for (const { key } of expected) {
   } else if (prev[key] && fs.existsSync(path.join(OUT, `${key}.webp`))) { items[key] = prev[key]; status[key] = "matched"; }
   else status[key] = "missing";
 }
+// ── hero model photos: tops only, the standing person (cut-out, bottom fade) → {key}-model.webp ──
+for (const { key } of expected) {
+  if (!isTop(key)) continue; const out = path.join(OUT, `${key}-model.webp`); const cf = path.join(CUT, `${key}.png`);
+  if (fs.existsSync(out) || !fs.existsSync(cf)) continue;
+  await (await fadeEdges(cf, false)).resize({ width: 1080, withoutEnlargement: true }).webp({ quality: 80, effort: 5, alphaQuality: 90 }).toFile(out);
+}
 // ── videos: {key}.mp4 in incoming/ or already in the products folder ──
 for (const { key } of expected) {
   const dest = path.join(OUT, `${key}.mp4`);
